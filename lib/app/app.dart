@@ -1,0 +1,51 @@
+import "package:dth_v4/core/core.dart";
+import "package:dth_v4/features/splash/views/splash_view.dart";
+import "package:dth_v4/widgets/widgets.dart";
+import "package:flutter/foundation.dart";
+import "package:flutter/material.dart";
+import "package:flutter_riverpod/flutter_riverpod.dart";
+import "package:flutter_utils/flutter_utils.dart";
+
+class MyApp extends ConsumerWidget {
+  const MyApp({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final themeMode = ref.watch(themeModeProvider);
+
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      navigatorObservers: [RouteLifecycleObserver.routeObserver],
+      navigatorKey: MobileNavigationService.instance.navigatorKey,
+      builder: (context, widget) {
+        Widget child = Navigator(
+          key: DthFlushBar.navigatorKey,
+          onGenerateRoute: (settings) => MaterialPageRoute(
+            builder: (context) => FlushBarLayer(child: widget!),
+          ),
+        );
+
+        if (kIsWeb) {
+          final data = MediaQuery.of(context);
+          final clampedWidth = data.size.width.clamp(0.0, 650.0);
+          child = Center(
+            child: SizedBox(
+              width: clampedWidth,
+              child: MediaQuery(
+                data: data.copyWith(size: Size(clampedWidth, data.size.height)),
+                child: child,
+              ),
+            ),
+          );
+        }
+
+        return child;
+      },
+      theme: AppThemeData.lightTheme,
+      darkTheme: AppThemeData.darkTheme,
+      themeMode: themeMode,
+      onGenerateRoute: AppRouter.generateRoute,
+      home: const SplashView(),
+    );
+  }
+}

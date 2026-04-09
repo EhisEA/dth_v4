@@ -1,0 +1,39 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "dth",
+            "request": "launch",
+            "type": "dart"
+        },
+        {
+            "name": "dth (profile mode)",
+            "request": "launch",
+            "type": "dart",
+            "flutterMode": "profile"
+        },
+        {
+            "name": "dth prod",
+            "request": "launch",
+            "type": "dart",
+            "program": "lib/main_prod.dart",
+            // assumed fluttermode is debug
+        },
+        {
+            "name": "dth dev",
+            "request": "launch",
+            "type": "dart",
+            "program": "lib/main_dev.dart",
+            // assumed fluttermode is debug
+        },
+        {
+            "name": "dth (release mode)",
+            "request": "launch",
+            "type": "dart",
+            "flutterMode": "release"
+        }
+    ]
+}

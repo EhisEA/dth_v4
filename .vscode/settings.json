@@ -1,3 +1,6 @@
 {
-    "dart.flutterSdkPath": "/Users/dave/Development/projects/trazo_mobile_app/.fvm/versions/3.35.6"
+  "dart.flutterSdkPath": ".fvm/versions/3.41.6",
+  "editor.formatOnSave": true,
+  "editor.formatOnPaste": true,
+  "files.autoSave": "afterDelay"
 }
