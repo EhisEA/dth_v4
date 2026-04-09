@@ -2,6 +2,7 @@ import "package:dth_v4/core/core.dart";
 import "package:dth_v4/widgets/widgets.dart";
 import "package:flutter/material.dart";
 import "package:flutter_riverpod/flutter_riverpod.dart";
+import "package:flutter_svg/svg.dart";
 
 class DthAppBar extends ConsumerWidget implements PreferredSizeWidget {
   const DthAppBar({
@@ -63,13 +64,14 @@ class DthAppBar extends ConsumerWidget implements PreferredSizeWidget {
                 ),
                 child: FittedBox(
                   fit: BoxFit.scaleDown,
-                  child: Icon(
-                    Icons.arrow_back,
-                    // height: 16,
-                    // width: 16,
-                    color: context.isDarkMode
-                        ? AppColors.white
-                        : AppColors.black,
+                  child: SvgPicture.asset(
+                    SvgAssets.backArrow,
+                    height: 20,
+                    width: 20,
+                    colorFilter: ColorFilter.mode(
+                      context.isDarkMode ? AppColors.white : AppColors.black,
+                      BlendMode.srcIn,
+                    ),
                   ),
                 ),
               ),

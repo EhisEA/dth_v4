@@ -1,6 +1,8 @@
 import 'package:dth_v4/core/core.dart';
 import 'package:dth_v4/core/router/router.dart';
 import 'package:dth_v4/features/app_web_view/app_web_view.dart';
+import 'package:dth_v4/features/authentication/views/create_account_view.dart';
+import 'package:dth_v4/features/home/home.dart';
 import 'package:dth_v4/widgets/widgets.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -62,7 +64,7 @@ class _GetStartedViewState extends State<GetStartedView> {
     final theme = Theme.of(context);
     final bodyColor = theme.brightness == Brightness.dark
         ? const Color(0xFFD3D3D3)
-        : const Color(0xFF595959);
+        : const Color(0xFF6A6A6A);
     const linkColor = AppColors.primary;
     final baseStyle =
         theme.textTheme.bodySmall?.copyWith(
@@ -73,10 +75,16 @@ class _GetStartedViewState extends State<GetStartedView> {
         TextStyle(color: bodyColor, fontSize: 12, height: 1.45);
     final linkStyle = baseStyle.copyWith(
       color: linkColor,
-      fontWeight: FontWeight.w600,
+      fontWeight: FontWeight.w400,
+      fontSize: 12,
+    );
+    final blackStyle = baseStyle.copyWith(
+      color: AppColors.black,
+      fontWeight: FontWeight.w400,
+      fontSize: 12,
     );
 
-    Widget svgIcon(String asset, {double size = 22}) {
+    Widget svgIcon(String asset, {double size = 16}) {
       return SvgPicture.asset(asset, width: size, height: size);
     }
 
@@ -99,14 +107,23 @@ class _GetStartedViewState extends State<GetStartedView> {
                 ),
               ),
               const Spacer(),
-              AppButton.primary(text: 'Continue with email', press: () {}),
+              AppButton.primary(
+                text: 'Continue with email',
+                press: () {
+                  MobileNavigationService.instance.push(CreateAccountView.path);
+                },
+              ),
               Gap.h12,
               AppButton.onBorder(
                 text: 'Continue with Google',
                 textColor: AppColors.black,
                 borderColor: AppColors.primary,
                 prefixIcon: svgIcon(SvgAssets.googleLogo),
-                press: () {},
+                press: () {
+                  MobileNavigationService.instance.navigateAndClearStack(
+                    HomeView.path,
+                  );
+                },
               ),
               Gap.h12,
               AppButton.onBorder(
@@ -114,17 +131,20 @@ class _GetStartedViewState extends State<GetStartedView> {
                 textColor: AppColors.black,
                 borderColor: AppColors.primary,
                 prefixIcon: svgIcon(SvgAssets.appleLogo),
-                press: () {},
+                press: () {
+                  MobileNavigationService.instance.navigateAndClearStack(
+                    HomeView.path,
+                  );
+                },
               ),
               Gap.h24,
               Text.rich(
                 TextSpan(
                   style: baseStyle,
                   children: [
-                    const TextSpan(
-                      text:
-                          'By clicking "Continue", you acknowledge and agree to ',
-                    ),
+                    const TextSpan(text: 'By clicking '),
+                    TextSpan(text: '"Continue" ', style: blackStyle),
+                    const TextSpan(text: 'you acknowledge and agree to '),
                     TextSpan(
                       text: "DTH's Terms & Conditions",
                       style: linkStyle,

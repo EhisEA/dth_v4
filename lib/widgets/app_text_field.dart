@@ -147,139 +147,124 @@ class _AppTextFieldState extends ConsumerState<AppTextField> {
               child: Column(
                 children: [
                   Container(
-                    padding: const EdgeInsets.all(0.5),
+                    padding:
+                        widget.padding ??
+                        const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 10,
+                        ),
+                    alignment: Alignment.center,
+                    width: double.infinity,
                     decoration: BoxDecoration(
                       borderRadius:
                           widget.borderRadius ?? BorderRadius.circular(12),
-                      color: widget.showBorder
-                          ? (hasFocus
-                                ? AppColors.primary
-                                : widget.fillColor ??
-                                      (_isDarkMode()
-                                          ? const Color(0xff00334C)
-                                          : AppColors.white))
-                          : Colors.transparent,
+                      color:
+                          widget.fillColor ??
+                          (_isDarkMode()
+                              ? Theme.of(context).scaffoldBackgroundColor
+                              : AppColors.white),
+                      border: Border.all(
+                        color: widget.showBorder
+                            ? hasFocus
+                                  ? (errorMessage == null
+                                        ? AppColors.primary
+                                        : Colors.red)
+                                  : (widget.inActiveBorderColor ??
+                                        (_isDarkMode()
+                                            ? Theme.of(
+                                                context,
+                                              ).scaffoldBackgroundColor
+                                            : const Color(0xffEDEDED)))
+                            : Colors.transparent,
+                      ),
                     ),
-                    child: Container(
-                      padding:
-                          widget.padding ??
-                          const EdgeInsets.symmetric(
-                            horizontal: 16,
-                            vertical: 10,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        if (widget.title != null) ...[
+                          AppText.regular(
+                            widget.title!,
+                            fontSize: widget.titleSize ?? 10,
+                            letterSpacing: -0.2,
+                            color:
+                                widget.titleColor ??
+                                (_isDarkMode()
+                                    ? AppColors.white
+                                    : AppColors.tint15),
                           ),
-                      alignment: Alignment.center,
-                      width: double.infinity,
-                      decoration: BoxDecoration(
-                        borderRadius:
-                            widget.borderRadius ?? BorderRadius.circular(12),
-                        color:
-                            widget.fillColor ??
-                            (_isDarkMode()
-                                ? Theme.of(context).scaffoldBackgroundColor
-                                : AppColors.white),
-                        border: Border.all(
-                          color: widget.showBorder
-                              ? hasFocus
-                                    ? (errorMessage == null
-                                          ? AppColors.primary
-                                          : Colors.red)
-                                    : (widget.inActiveBorderColor ??
-                                          (_isDarkMode()
-                                              ? Theme.of(
-                                                  context,
-                                                ).scaffoldBackgroundColor
-                                              : const Color(0xffEDEDED)))
-                              : Colors.transparent,
-                        ),
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          if (widget.title != null) ...[
-                            AppText.regular(
-                              widget.title!,
-                              fontSize: widget.titleSize ?? 10,
-                              letterSpacing: -0.2,
-                              color:
-                                  widget.titleColor ??
-                                  (_isDarkMode()
-                                      ? AppColors.white
-                                      : AppColors.tint15),
-                            ),
-                            // Gap.h4,
-                          ],
-                          SizedBox(
-                            height: widget.height,
-                            child: TextFormField(
-                              textCapitalization: widget.textCapitalization,
-                              focusNode: widget.focusNode,
-                              maxLength: widget.maxLength,
-                              maxLines: widget.maxLines,
-                              minLines: widget.minLines,
-                              readOnly: widget.readOnly,
-                              style:
-                                  widget.style ??
-                                  AppTextStyle.regular.copyWith(
-                                    color: _isDarkMode()
-                                        ? AppColors.white
-                                        : AppColors.black,
-                                    fontSize: 14,
-                                  ),
-                              controller: widget.controller,
-                              inputFormatters: widget.formatter,
-                              textInputAction: widget.textInputAction,
-                              onFieldSubmitted: widget.onSubmitted,
-                              validator: (value) {
-                                errorState.value = null;
-                                String? error;
-                                if (widget.validator != null) {
-                                  error = widget.validator!(value!);
-                                }
-
-                                errorState.value = error;
-                                return error;
-                              },
-                              keyboardType: widget.keyboardType,
-                              obscureText: obscure,
-                              enabled: widget.enabled,
-                              onChanged: widget.onChanged,
-                              decoration: InputDecoration(
-                                contentPadding: widget.contentPadding,
-                                errorStyle: const TextStyle(fontSize: 0),
-                                prefixIconConstraints:
-                                    widget.prefixIconConstraints,
-                                suffixIconConstraints:
-                                    widget.suffixIconConstraints ??
-                                    const BoxConstraints(maxHeight: 40),
-                                enabledBorder: InputBorder.none,
-                                errorBorder: InputBorder.none,
-                                focusedErrorBorder: InputBorder.none,
-                                disabledBorder: InputBorder.none,
-                                focusedBorder: InputBorder.none,
-                                prefix: widget.prefix,
-                                prefixIcon: widget.prefixIcon,
-                                suffixIcon: widget.suffixIcon,
-                                isDense: true,
-                                hintText: widget.hint,
-                                hintStyle:
-                                    widget.hintStyle ??
-                                    AppTextStyle.regular.copyWith(
-                                      color:
-                                          widget.hintColor ??
-                                          (_isDarkMode()
-                                              ? const Color(0xff9A9DA3)
-                                              : const Color(0xffB5B5B5)),
-                                      fontSize: 13,
-                                      letterSpacing: -0.2,
-                                    ),
-                                enabled: widget.enabled,
-                              ),
-                            ),
-                          ),
-
-                          widget.bottomIcon ?? const SizedBox.shrink(),
+                          // Gap.h4,
                         ],
-                      ),
+                        SizedBox(
+                          height: widget.height,
+                          child: TextFormField(
+                            textCapitalization: widget.textCapitalization,
+                            focusNode: widget.focusNode,
+                            maxLength: widget.maxLength,
+                            maxLines: widget.maxLines,
+                            minLines: widget.minLines,
+                            readOnly: widget.readOnly,
+                            style:
+                                widget.style ??
+                                AppTextStyle.regular.copyWith(
+                                  color: _isDarkMode()
+                                      ? AppColors.white
+                                      : AppColors.black,
+                                  fontSize: 14,
+                                ),
+                            controller: widget.controller,
+                            inputFormatters: widget.formatter,
+                            textInputAction: widget.textInputAction,
+                            onFieldSubmitted: widget.onSubmitted,
+                            validator: (value) {
+                              errorState.value = null;
+                              String? error;
+                              if (widget.validator != null) {
+                                error = widget.validator!(value!);
+                              }
+
+                              errorState.value = error;
+                              return error;
+                            },
+                            keyboardType: widget.keyboardType,
+                            obscureText: obscure,
+                            enabled: widget.enabled,
+                            onChanged: widget.onChanged,
+                            decoration: InputDecoration(
+                              contentPadding: widget.contentPadding,
+                              errorStyle: const TextStyle(fontSize: 0),
+                              prefixIconConstraints:
+                                  widget.prefixIconConstraints,
+                              suffixIconConstraints:
+                                  widget.suffixIconConstraints ??
+                                  const BoxConstraints(maxHeight: 40),
+                              enabledBorder: InputBorder.none,
+                              errorBorder: InputBorder.none,
+                              focusedErrorBorder: InputBorder.none,
+                              disabledBorder: InputBorder.none,
+                              focusedBorder: InputBorder.none,
+                              prefix: widget.prefix,
+                              prefixIcon: widget.prefixIcon,
+                              suffixIcon: widget.suffixIcon,
+                              isDense: true,
+                              hintText: widget.hint,
+                              hintStyle:
+                                  widget.hintStyle ??
+                                  AppTextStyle.regular.copyWith(
+                                    color:
+                                        widget.hintColor ??
+                                        (_isDarkMode()
+                                            ? const Color(0xff9A9DA3)
+                                            : const Color(0xffB5B5B5)),
+                                    fontSize: 13,
+                                    letterSpacing: -0.2,
+                                  ),
+                              enabled: widget.enabled,
+                            ),
+                          ),
+                        ),
+
+                        widget.bottomIcon ?? const SizedBox.shrink(),
+                      ],
                     ),
                   ),
                   if (errorMessage != null)

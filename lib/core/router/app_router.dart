@@ -1,6 +1,9 @@
 import 'package:dth_v4/core/router/router.dart';
 import 'package:dth_v4/features/app_web_view/app_web_view.dart';
+import 'package:dth_v4/features/authentication/views/create_account_view.dart';
 import 'package:dth_v4/features/authentication/views/get_started_view.dart';
+import 'package:dth_v4/features/authentication/views/login_view.dart';
+import 'package:dth_v4/features/authentication/views/verify_otp_view.dart';
 import 'package:dth_v4/features/home/home.dart';
 import 'package:dth_v4/features/splash/views/splash_view.dart';
 import 'package:flutter/material.dart';
@@ -36,6 +39,23 @@ class AppRouter {
           settings: settings,
           viewToShow: const GetStartedView(),
         );
+
+      case CreateAccountView.path:
+        return _getPageRoute(
+          settings: settings,
+          viewToShow: const CreateAccountView(),
+        );
+
+      case LoginView.path:
+        return _getPageRoute(settings: settings, viewToShow: const LoginView());
+
+      case VerifyOtpView.path:
+        final email = routeArgs[RoutingArgumentKey.email] as String? ?? '';
+        return _getPageRoute(
+          settings: settings,
+          viewToShow: VerifyOtpView(email: email),
+        );
+
       case AppWebView.path:
         return _getPageRoute(
           settings: settings,

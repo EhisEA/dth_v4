@@ -9,6 +9,7 @@ class ImageAssets {
 
 class SvgAssets {
   static const String svgPath = "assets/svgs";
+  static const String backArrow = "$svgPath/arrow-left.svg";
   static const String googleLogo = "$svgPath/auth/google.svg";
   static const String appleLogo = "$svgPath/auth/apple.svg";
 }

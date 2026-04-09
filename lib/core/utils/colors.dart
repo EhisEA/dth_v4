@@ -6,6 +6,9 @@ class AppColors {
   }
 
   static const Color primary = Color(0xFF00AD55);
+
+  /// Darker primary surface (e.g. OTP countdown pill in dark mode).
+  static const Color primaryMedium = Color(0xFF026B3A);
   static const Color black = Color(0xff000000);
   static Color white = const Color(0xffffffff);
   static Color tint15 = const Color(0xff8F8F8F);
