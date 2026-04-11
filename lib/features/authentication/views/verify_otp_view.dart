@@ -1,6 +1,6 @@
 import 'package:dth_v4/core/core.dart';
 import 'package:dth_v4/core/router/router.dart';
-import 'package:dth_v4/data/data.dart';
+import 'package:dth_v4/features/authentication/view_model/verify_otp_view_model.dart';
 import 'package:dth_v4/features/bottomNavBar/bottom_nav_bar.dart';
 import 'package:dth_v4/widgets/widgets.dart';
 import 'package:flutter/material.dart';
@@ -20,102 +20,51 @@ class VerifyOtpView extends ConsumerStatefulWidget {
 }
 
 class _VerifyOtpViewState extends ConsumerState<VerifyOtpView> {
-  static const int _defaultCooldownSeconds = 60;
-
   late final TextEditingController _otpController;
   late final FocusNode _otpFocusNode;
-  final ValueNotifier<bool> canResend = ValueNotifier(false);
-  // Past end times make CountdownTimer call onEnd during build (notifier assert).
-  final ValueNotifier<DateTime> endTime = ValueNotifier(
-    DateTime.now().add(Duration(seconds: _defaultCooldownSeconds)),
-  );
-
-  int resendCount = 0;
-  String _email = '';
 
   bool isDarkMode() => Theme.of(context).brightness == Brightness.dark;
 
   @override
   void initState() {
     super.initState();
-    _email = widget.email;
     _otpController = TextEditingController();
     _otpFocusNode = FocusNode();
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
       final args = ModalRoute.of(context)?.settings.arguments;
-      if (args is Map<String, dynamic>) {
-        final e = args[RoutingArgumentKey.email] as String?;
-        if (e != null && e.isNotEmpty) {
-          setState(() => _email = e);
-        }
-        assignEndTime(fromPhone: true, ttlSeconds: _ttlSecondsFromArgs(args));
-      } else {
-        assignEndTime(fromPhone: true);
-      }
+      ref
+          .read(verifyOtpViewModelProvider(widget.email))
+          .hydrateFromRouteArgs(args is Map<String, dynamic> ? args : null);
       if (mounted) {
         _otpFocusNode.requestFocus();
       }
     });
   }
 
-  int? _ttlSecondsFromArgs(Map<String, dynamic> args) {
-    final ttl = args['ttlSeconds'];
-    if (ttl is int) return ttl;
-    return null;
-  }
-
   @override
   void dispose() {
-    canResend.dispose();
-    endTime.dispose();
     _otpController.dispose();
     _otpFocusNode.dispose();
     super.dispose();
   }
 
-  void assignEndTime({bool fromPhone = false, int? ttlSeconds}) {
-    if (fromPhone) {
-      resendCount = 0;
-    } else {
-      resendCount++;
-    }
-    final seconds = ttlSeconds ?? _defaultCooldownSeconds;
-    endTime.value = DateTime.now().add(Duration(seconds: seconds));
-    canResend.value = false;
-  }
-
-  void onTimerEnd() {
-    canResend.value = true;
-  }
-
-  void onOtpResent() {
-    assignEndTime(ttlSeconds: _defaultCooldownSeconds);
-  }
-
-  Future<void> _handleResendOtp() async {
-    if (_email.isEmpty) return;
+  Future<void> _handleResendOtp(VerifyOtpViewModel vm) async {
     HapticFeedback.lightImpact();
-    await Future<void>.delayed(Duration.zero);
-    onOtpResent();
+    await vm.resendRegistrationOtp();
   }
 
-  void _onOtpVerified() {
-    final email = _email.isNotEmpty ? _email : widget.email;
-    final now = DateTime.now().toIso8601String();
-    final user = UserModel(
-      id: 'local',
-      fullName: '',
-      email: email,
-      emailVerifiedAt: now,
-      createdAt: now,
-      updatedAt: now,
-    );
-    ref.read(userStateProvider).updateUserData(user);
-    MobileNavigationService.instance.navigateAndClearStack(BottomNavBar.path);
+  Future<void> _submitOtp(VerifyOtpViewModel vm, String code) async {
+    final ok = await vm.submitRegistrationOtp(code);
+    if (mounted && ok) {
+      MobileNavigationService.instance.navigateAndClearStack(BottomNavBar.path);
+    }
   }
 
   @override
   Widget build(BuildContext context) {
+    final vm = ref.watch(verifyOtpViewModelProvider(widget.email));
+
     return Scaffold(
       appBar: const DthAppBar(title: ''),
       body: SafeArea(
@@ -148,15 +97,14 @@ class _VerifyOtpViewState extends ConsumerState<VerifyOtpView> {
                 height: 60,
                 title: 'OTP',
                 focusnode: _otpFocusNode,
-                onCompleted: (code) {
-                  debugPrint('OTP completed: $code');
-                  _onOtpVerified();
-                },
+                enabled: !vm.isBaseBusy,
+                onCompleted: (code) => _submitOtp(vm, code),
               ),
               Gap.h16,
               ValueListenableBuilder<bool>(
-                valueListenable: canResend,
+                valueListenable: vm.canResend,
                 builder: (context, allowResend, _) {
+                  final resendLoading = vm.isBaseBusy && allowResend;
                   return Center(
                     child: allowResend
                         ? Row(
@@ -172,11 +120,11 @@ class _VerifyOtpViewState extends ConsumerState<VerifyOtpView> {
                               Gap.w2,
                               GestureDetector(
                                 behavior: HitTestBehavior.opaque,
-                                onTap: () async {
-                                  await _handleResendOtp();
-                                },
+                                onTap: vm.isBaseBusy
+                                    ? null
+                                    : () => _handleResendOtp(vm),
                                 child: AppText.medium(
-                                  'Resend Code',
+                                  resendLoading ? 'Sending…' : 'Resend Code',
                                   fontSize: 12,
                                   color: AppColors.primary,
                                   letterSpacing: -0.4,
@@ -185,7 +133,7 @@ class _VerifyOtpViewState extends ConsumerState<VerifyOtpView> {
                             ],
                           )
                         : ValueListenableBuilder<DateTime>(
-                            valueListenable: endTime,
+                            valueListenable: vm.endTime,
                             builder: (context, value, _) {
                               return AuthCountDownWidget(
                                 endTime: value,
@@ -194,7 +142,15 @@ class _VerifyOtpViewState extends ConsumerState<VerifyOtpView> {
                                   WidgetsBinding.instance.addPostFrameCallback((
                                     _,
                                   ) {
-                                    if (mounted) onTimerEnd();
+                                    if (mounted) {
+                                      ref
+                                          .read(
+                                            verifyOtpViewModelProvider(
+                                              widget.email,
+                                            ),
+                                          )
+                                          .onTimerEnd();
+                                    }
                                   });
                                 },
                                 onResend: true,

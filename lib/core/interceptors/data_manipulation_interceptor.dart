@@ -1,14 +1,18 @@
 import "package:dio/dio.dart";
 import "package:dth_v4/core/core.dart";
 import "package:dth_v4/data/data.dart";
+import "package:dth_v4/features/authentication/views/get_started_view.dart";
 import "package:flutter/foundation.dart";
 import "package:flutter_riverpod/flutter_riverpod.dart";
+import "package:flutter_utils/router/route_lifecycle_observer.dart";
+import "package:flutter_utils/services/navigation/mobile_navigation_service.dart";
 import "package:flutter_utils/utils/app_logger.dart";
 
 class DataManipulationInterceptor extends Interceptor {
   final _log = const AppLogger(DataManipulationInterceptor);
   final Ref _ref;
   final DeviceInfoState _deviceInfoState;
+  static bool _handlingLogout = false;
 
   DataManipulationInterceptor(this._deviceInfoState, {required Ref ref})
     : _ref = ref;
@@ -28,13 +32,12 @@ class DataManipulationInterceptor extends Interceptor {
       // Fetch all device info in parallel
       final results = await Future.wait([
         _deviceInfoState.getDeviceName(),
-        _deviceInfoState.getDeviceIP(),
         _deviceInfoState.getDeviceId(),
       ]);
 
       final deviceName = results[0];
-      final deviceIP = results[1];
-      final deviceId = results[2];
+      final deviceId = results[1];
+      final deviceIP = await _deviceInfoState.getDeviceIP();
 
       // Add device details to request data
       if (options.data is Map<String, dynamic>) {
@@ -84,43 +87,38 @@ class DataManipulationInterceptor extends Interceptor {
         "status: ${err.response?.statusCode}",
         functionName: "error.status",
       );
-    } else {
-      // FirebaseCrashlytics.instance.recordError(
-      //   err,
-      //   err.stackTrace,
-      //   reason:
-      //       "API ${err.requestOptions.method} ${err.requestOptions.uri.path} "
-      //       "— ${err.response?.statusCode}",
-      // );
     }
 
-    // if (err.response?.statusCode == 401) {
-    //   final isOnOnboarding =
-    //       RouteLifecycleObserver
-    //           .routeObserver
-    //           .activeRoutes
-    //           .first
-    //           .settings
-    //           .name ==
-    //       OnboardingView.path;
+    if (err.response?.statusCode == 401) {
+      if (!_handlingLogout) {
+        _handlingLogout = true;
 
-    //   if (!isOnOnboarding) {
-    //     // Logout user: clear cache and navigate to login
-    //     _performLogout();
+        final routes = RouteLifecycleObserver.routeObserver.activeRoutes;
+        final isOnOnboarding =
+            routes.isNotEmpty &&
+            routes.first.settings.name == GetStartedView.path;
 
-    //     MobileNavigationService.instance.navigateAndClearStack(
-    //       OnboardingView.path,
-    //     );
+        if (!isOnOnboarding) {
+          _performLogout();
+          MobileNavigationService.instance.navigateAndClearStack(
+            GetStartedView.path,
+          );
+        } else {
+          _handlingLogout = false;
+        }
+      }
+      return handler.resolve(
+        Response(
+          requestOptions: err.requestOptions,
+          statusCode: err.response?.statusCode ?? 401,
+          data: err.response?.data,
+        ),
+      );
+    }
 
-    //     throw Exception("Unauthenticated");
-    //   }
-    //   // When on onboarding (e.g. login/verify OTP), do not logout; let the
-    //   // error propagate so the view can dismiss loading and show the message.
+    // if (err.response?.data != null) {
+    //   _handleVerificationEvents(err.response!.data);
     // }
-
-    if (err.response?.data != null) {
-      // _handleVerificationEvents(err.response!.data);
-    }
     // checkIfAppUpdateRequired(err.response?.data);
 
     handler.next(err);
@@ -129,30 +127,16 @@ class DataManipulationInterceptor extends Interceptor {
   /// Clears user session data when unauthorized.
   Future<void> _performLogout() async {
     try {
-      // await _ref.read(authRepoProvider).logout();
+      // await _ref.read(authRepositoryProvider).logout();
 
-      // // Clear in-memory state
-      // _ref.read(userStateProvider).logOut();
-      // _ref.read(userPreferencesStateProvider).logOut();
-      // _ref.read(kycStatusStateProvider).logOut();
-      // _ref.read(tradeAssetsStateProvider).logOut();
-      // _ref.read(withdrawalStateProvider).logOut();
-      // _ref.read(reportStateProvider).logOut();
-      // _ref.read(tradingRateStateProvider).logOut();
-      // _ref.read(banksStateProvider).logOut();
-      // _ref.read(transactionStateProvider).logOut();
+      // Clear in-memory state
+      _ref.read(userStateProvider).logOut();
 
       _log.i("User session cleared due to 401 Unauthorized");
     } catch (e) {
       _log.e("Error clearing session: $e");
     }
   }
-
-  // void _handleVerificationEvents(dynamic data) {
-  //   _ref
-  //       .read(verificationEventStateProvider)
-  //       .setEvent((data as Map<String, dynamic>?)?["event"] as String?);
-  // }
 
   // void checkIfAppUpdateRequired(dynamic response) {
   //   final responseMap = response as Map<String, dynamic>?;

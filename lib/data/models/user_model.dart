@@ -17,13 +17,19 @@ class UserModel {
 
   factory UserModel.fromJson(Map<String, dynamic> json) {
     return UserModel(
-      id: json['id'] as String,
-      fullName: json['full_name'] as String,
-      email: json['email'] as String,
-      emailVerifiedAt: json['email_verified_at'] as String,
-      createdAt: json['created_at'] as String,
-      updatedAt: json['updated_at'] as String,
+      id: _stringField(json['id']),
+      fullName: _stringField(json['full_name']),
+      email: _stringField(json['email']),
+      emailVerifiedAt: _stringField(json['email_verified_at']),
+      createdAt: _stringField(json['created_at']),
+      updatedAt: _stringField(json['updated_at']),
     );
+  }
+
+  static String _stringField(Object? value) {
+    if (value == null) return '';
+    if (value is String) return value;
+    return value.toString();
   }
 
   Map<String, dynamic> toJson() {

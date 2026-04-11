@@ -1,5 +1,3 @@
-// ignore_for_file: unused_element_parameter
-
 import "package:another_flushbar/flushbar.dart";
 import "package:flutter/material.dart";
 import "package:flutter_svg/flutter_svg.dart";
@@ -34,7 +32,11 @@ class DthFlushBar {
         context.isDarkMode ? darkFlushBarShadow : lightFlushBarShadow,
       ],
       message: message,
-      messageText: _FlushBarWidget(title: title, message: message, icon: ""),
+      messageText: _FlushBarWidget(
+        title: title,
+        message: message,
+        icon: SvgAssets.verifyActive,
+      ),
     ).show(navigatorKey.currentContext!);
   }
 
@@ -62,7 +64,7 @@ class DthFlushBar {
       messageText: _FlushBarWidget(
         title: title,
         message: message,
-        icon: "",
+        icon: SvgAssets.verifyActive,
         iconColor: Colors.red,
         showDismiss: true,
       ),
@@ -93,7 +95,7 @@ class DthFlushBar {
       messageText: _FlushBarWidget(
         title: title,
         message: message,
-        icon: "",
+        icon: SvgAssets.verifyActive,
         showDismiss: true,
       ),
     ).show(navigatorKey.currentContext!);

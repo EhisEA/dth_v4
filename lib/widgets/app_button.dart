@@ -207,6 +207,8 @@ class AppButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    // Keep normal button chrome while loading (callers often set enabled: false).
+    final showEnabledChrome = enabled || isLoading;
     return AnimatedContainer(
       duration: const Duration(milliseconds: 350),
       width: width ?? (transparent ? null : double.infinity),
@@ -216,7 +218,7 @@ class AppButton extends StatelessWidget {
             ? DecorationImage(
                 image: AssetImage(image!),
                 fit: BoxFit.fill,
-                colorFilter: enabled
+                colorFilter: showEnabledChrome
                     ? null
                     : ColorFilter.mode(Colors.grey, BlendMode.srcIn),
               )
@@ -224,7 +226,7 @@ class AppButton extends StatelessWidget {
         border: Border.all(
           width: borderWidth ?? 1,
           color: onBorder!
-              ? enabled
+              ? showEnabledChrome
                     ? borderColor ?? AppColors.white.withValues(alpha: 0.4)
                     : disableBorderColor ?? Colors.transparent
               : Colors.transparent,
@@ -232,7 +234,7 @@ class AppButton extends StatelessWidget {
         borderRadius: BorderRadius.circular(radius ?? 100),
         color: transparent
             ? Theme.of(context).scaffoldBackgroundColor
-            : enabled
+            : showEnabledChrome
             ? color ?? AppColors.primary
             : disableBGColor ??
                   (isDark ? const Color(0xff022739) : const Color(0xffF2F4F7)),
@@ -246,11 +248,10 @@ class AppButton extends StatelessWidget {
             ? SizedBox(
                 height: 20,
                 width: 20,
-                child: CircularProgressIndicator(
-                  // CircularProgressIndicator.adaptive(
+                child: CircularProgressIndicator.adaptive(
                   strokeWidth: 2,
-                  valueColor: AlwaysStoppedAnimation(
-                    loadingColor ?? Colors.white, // AppColors.primary,
+                  valueColor: AlwaysStoppedAnimation<Color?>(
+                    loadingColor ?? textColor,
                   ),
                 ),
               )

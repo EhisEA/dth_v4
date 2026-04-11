@@ -1,24 +1,26 @@
 import 'package:dth_v4/core/core.dart';
 import 'package:dth_v4/core/router/router.dart';
 import 'package:dth_v4/features/app_web_view/app_web_view.dart';
+import 'package:dth_v4/features/authentication/view_model/create_account_view_model.dart';
 import 'package:dth_v4/features/authentication/views/login_view.dart';
 import 'package:dth_v4/features/authentication/views/verify_otp_view.dart';
 import 'package:dth_v4/widgets/widgets.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_utils/flutter_utils.dart';
 
-class CreateAccountView extends StatefulWidget {
+class CreateAccountView extends ConsumerStatefulWidget {
   const CreateAccountView({super.key});
 
   static const String path = NavigatorRoutes.createAccount;
 
   @override
-  State<CreateAccountView> createState() => _CreateAccountViewState();
+  ConsumerState<CreateAccountView> createState() => _CreateAccountViewState();
 }
 
-class _CreateAccountViewState extends State<CreateAccountView> {
+class _CreateAccountViewState extends ConsumerState<CreateAccountView> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   late final FocusNode _nameFocus;
   late final FocusNode _emailFocus;
@@ -71,18 +73,27 @@ class _CreateAccountViewState extends State<CreateAccountView> {
     );
   }
 
-  void _onCreateAccount() {
+  Future<void> _onCreateAccount() async {
     FocusScope.of(context).unfocus();
     if (!(_formKey.currentState?.validate() ?? false)) return;
     final email = _emailController.text.trim();
+    final fullName = _nameController.text.trim();
+    final model = ref.read(createAccountViewModelProvider);
+    final signature = await model.register(fullName: fullName, email: email);
+    if (signature == null || !mounted) return;
     MobileNavigationService.instance.push(
       VerifyOtpView.path,
-      extra: {RoutingArgumentKey.email: email},
+      extra: {
+        RoutingArgumentKey.email: email,
+        RoutingArgumentKey.fullName: fullName,
+        RoutingArgumentKey.signature: signature,
+      },
     );
   }
 
   @override
   Widget build(BuildContext context) {
+    final model = ref.watch(createAccountViewModelProvider);
     final theme = Theme.of(context);
     final bodyColor = theme.brightness == Brightness.dark
         ? const Color(0xFFD3D3D3)
@@ -169,6 +180,8 @@ class _CreateAccountViewState extends State<CreateAccountView> {
 
                 AppButton.primary(
                   text: 'Create account',
+                  isLoading: model.isBaseBusy,
+                  enabled: !model.isBaseBusy,
                   press: _onCreateAccount,
                 ),
                 Gap.h12,
