@@ -4,6 +4,7 @@ import 'package:dth_v4/features/authentication/views/create_account_view.dart';
 import 'package:dth_v4/features/authentication/views/get_started_view.dart';
 import 'package:dth_v4/features/authentication/views/login_view.dart';
 import 'package:dth_v4/features/authentication/views/verify_otp_view.dart';
+import 'package:dth_v4/features/bottomNavBar/bottom_nav_bar.dart';
 import 'package:dth_v4/features/home/home.dart';
 import 'package:dth_v4/features/splash/views/splash_view.dart';
 import 'package:flutter/material.dart';
@@ -25,6 +26,12 @@ class AppRouter {
         : {};
 
     switch (settings.name) {
+      case MyHomePage.path:
+        return _getPageRoute(
+          settings: settings,
+          viewToShow: const MyHomePage(),
+        );
+
       case HomeView.path:
         return _getPageRoute(settings: settings, viewToShow: const HomeView());
 

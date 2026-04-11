@@ -2,7 +2,7 @@ import 'package:dth_v4/core/core.dart';
 import 'package:dth_v4/core/router/router.dart';
 import 'package:dth_v4/features/app_web_view/app_web_view.dart';
 import 'package:dth_v4/features/authentication/views/create_account_view.dart';
-import 'package:dth_v4/features/home/home.dart';
+import 'package:dth_v4/features/bottomNavBar/bottom_nav_bar.dart';
 import 'package:dth_v4/widgets/widgets.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -121,7 +121,7 @@ class _GetStartedViewState extends State<GetStartedView> {
                 prefixIcon: svgIcon(SvgAssets.googleLogo),
                 press: () {
                   MobileNavigationService.instance.navigateAndClearStack(
-                    HomeView.path,
+                    MyHomePage.path,
                   );
                 },
               ),
@@ -133,7 +133,7 @@ class _GetStartedViewState extends State<GetStartedView> {
                 prefixIcon: svgIcon(SvgAssets.appleLogo),
                 press: () {
                   MobileNavigationService.instance.navigateAndClearStack(
-                    HomeView.path,
+                    MyHomePage.path,
                   );
                 },
               ),
@@ -160,7 +160,7 @@ class _GetStartedViewState extends State<GetStartedView> {
                 ),
                 textAlign: TextAlign.center,
               ),
-              Gap.h16,
+              // Gap.h16,
             ],
           ),
         ),

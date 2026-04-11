@@ -1,12 +1,14 @@
 import 'package:dth_v4/core/core.dart';
 import 'package:dth_v4/core/router/router.dart';
-import 'package:dth_v4/features/home/home.dart';
+import 'package:dth_v4/data/data.dart';
+import 'package:dth_v4/features/bottomNavBar/bottom_nav_bar.dart';
 import 'package:dth_v4/widgets/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_utils/flutter_utils.dart';
 
-class VerifyOtpView extends StatefulWidget {
+class VerifyOtpView extends ConsumerStatefulWidget {
   const VerifyOtpView({super.key, required this.email});
 
   static const String path = NavigatorRoutes.verifyOtp;
@@ -14,16 +16,19 @@ class VerifyOtpView extends StatefulWidget {
   final String email;
 
   @override
-  State<VerifyOtpView> createState() => _VerifyOtpViewState();
+  ConsumerState<VerifyOtpView> createState() => _VerifyOtpViewState();
 }
 
-class _VerifyOtpViewState extends State<VerifyOtpView> {
+class _VerifyOtpViewState extends ConsumerState<VerifyOtpView> {
   static const int _defaultCooldownSeconds = 60;
 
   late final TextEditingController _otpController;
   late final FocusNode _otpFocusNode;
   final ValueNotifier<bool> canResend = ValueNotifier(false);
-  final ValueNotifier<DateTime> endTime = ValueNotifier(DateTime.now());
+  // Past end times make CountdownTimer call onEnd during build (notifier assert).
+  final ValueNotifier<DateTime> endTime = ValueNotifier(
+    DateTime.now().add(Duration(seconds: _defaultCooldownSeconds)),
+  );
 
   int resendCount = 0;
   String _email = '';
@@ -94,12 +99,23 @@ class _VerifyOtpViewState extends State<VerifyOtpView> {
     onOtpResent();
   }
 
+  void _onOtpVerified() {
+    final email = _email.isNotEmpty ? _email : widget.email;
+    final now = DateTime.now().toIso8601String();
+    final user = UserModel(
+      id: 'local',
+      fullName: '',
+      email: email,
+      emailVerifiedAt: now,
+      createdAt: now,
+      updatedAt: now,
+    );
+    ref.read(userStateProvider).updateUserData(user);
+    MobileNavigationService.instance.navigateAndClearStack(MyHomePage.path);
+  }
+
   @override
   Widget build(BuildContext context) {
-    final secondaryTextColor = isDarkMode()
-        ? AppColors.white
-        : const Color(0xff596072);
-
     return Scaffold(
       appBar: const DthAppBar(title: ''),
       body: SafeArea(
@@ -134,9 +150,7 @@ class _VerifyOtpViewState extends State<VerifyOtpView> {
                 focusnode: _otpFocusNode,
                 onCompleted: (code) {
                   debugPrint('OTP completed: $code');
-                  MobileNavigationService.instance.navigateAndClearStack(
-                    HomeView.path,
-                  );
+                  _onOtpVerified();
                 },
               ),
               Gap.h16,
@@ -177,9 +191,11 @@ class _VerifyOtpViewState extends State<VerifyOtpView> {
                                 endTime: value,
                                 isDarkMode: isDarkMode(),
                                 onEnd: () {
-                                  if (mounted) {
-                                    onTimerEnd();
-                                  }
+                                  WidgetsBinding.instance.addPostFrameCallback((
+                                    _,
+                                  ) {
+                                    if (mounted) onTimerEnd();
+                                  });
                                 },
                                 onResend: true,
                               );

@@ -19,6 +19,7 @@ class CreateAccountView extends StatefulWidget {
 }
 
 class _CreateAccountViewState extends State<CreateAccountView> {
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   late final FocusNode _nameFocus;
   late final FocusNode _emailFocus;
   late final TextEditingController _nameController;
@@ -71,8 +72,9 @@ class _CreateAccountViewState extends State<CreateAccountView> {
   }
 
   void _onCreateAccount() {
+    FocusScope.of(context).unfocus();
+    if (!(_formKey.currentState?.validate() ?? false)) return;
     final email = _emailController.text.trim();
-    if (email.isEmpty) return;
     MobileNavigationService.instance.push(
       VerifyOtpView.path,
       extra: {RoutingArgumentKey.email: email},
@@ -116,47 +118,52 @@ class _CreateAccountViewState extends State<CreateAccountView> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Expanded(
-                  child: ListView(
-                    children: [
-                      Gap.h10,
-                      AppText.medium(
-                        'Create account for free',
-                        fontSize: 24,
-                        letterSpacing: -0.4,
-                        color: const Color(0xff08102F),
-                      ),
-                      Gap.h8,
-                      AppText.regular(
-                        'Enter your email to sign up for the most exciting Talent Hunt show in Africa.',
-                        fontSize: 14,
-                        height: 1.4,
-                        color: const Color(0xff474954),
-                      ),
-                      Gap.h24,
-                      AppTextField(
-                        title: 'Full Name',
-                        hint: 'Enter your full name',
-                        controller: _nameController,
-                        focusNode: _nameFocus,
-                        textInputAction: TextInputAction.next,
-                        formatter: [
-                          FilteringTextInputFormatter.singleLineFormatter,
-                        ],
-                      ),
-                      Gap.h16,
-                      AppTextField(
-                        title: 'Email Address',
-                        hint: 'example@email.com',
-                        controller: _emailController,
-                        focusNode: _emailFocus,
-                        keyboardType: TextInputType.emailAddress,
-                        textInputAction: TextInputAction.done,
-                        formatter: [
-                          FilteringTextInputFormatter.singleLineFormatter,
-                        ],
-                      ),
-                      Gap.h28,
-                    ],
+                  child: Form(
+                    key: _formKey,
+                    child: ListView(
+                      children: [
+                        Gap.h10,
+                        AppText.medium(
+                          'Create account for free',
+                          fontSize: 24,
+                          letterSpacing: -0.4,
+                          color: const Color(0xff08102F),
+                        ),
+                        Gap.h8,
+                        AppText.regular(
+                          'Enter your email to sign up for the most exciting Talent Hunt show in Africa.',
+                          fontSize: 14,
+                          height: 1.4,
+                          color: const Color(0xff474954),
+                        ),
+                        Gap.h24,
+                        AppTextField(
+                          title: 'Full Name',
+                          hint: 'Enter your full name',
+                          controller: _nameController,
+                          focusNode: _nameFocus,
+                          validator: Validator.fullname,
+                          textInputAction: TextInputAction.next,
+                          formatter: [
+                            FilteringTextInputFormatter.singleLineFormatter,
+                          ],
+                        ),
+                        Gap.h16,
+                        AppTextField(
+                          title: 'Email Address',
+                          hint: 'example@email.com',
+                          controller: _emailController,
+                          focusNode: _emailFocus,
+                          validator: Validator.email,
+                          keyboardType: TextInputType.emailAddress,
+                          textInputAction: TextInputAction.done,
+                          formatter: [
+                            FilteringTextInputFormatter.singleLineFormatter,
+                          ],
+                        ),
+                        Gap.h28,
+                      ],
+                    ),
                   ),
                 ),
 

@@ -216,13 +216,15 @@ class _AppTextFieldState extends ConsumerState<AppTextField> {
                             textInputAction: widget.textInputAction,
                             onFieldSubmitted: widget.onSubmitted,
                             validator: (value) {
-                              errorState.value = null;
                               String? error;
                               if (widget.validator != null) {
-                                error = widget.validator!(value!);
+                                error = widget.validator!(value ?? '');
                               }
-
-                              errorState.value = error;
+                              final captured = error;
+                              WidgetsBinding.instance.addPostFrameCallback((_) {
+                                if (!mounted) return;
+                                errorState.value = captured;
+                              });
                               return error;
                             },
                             keyboardType: widget.keyboardType,

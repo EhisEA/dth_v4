@@ -1,6 +1,7 @@
 class NavigatorRoutes {
-  static const String home = "/home";
+  static const String bottomNavBar = "/bottom-nav-bar";
   static const String splash = "/splash";
+  static const String home = "/home";
   static const String getStarted = "/get-started";
   static const String webView = "/web-view";
   static const String createAccount = "/create-account";

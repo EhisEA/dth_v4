@@ -49,6 +49,7 @@ dependencies:
   pin_code_fields: ^8.0.1
   flutter_countdown_timer: ^4.1.0
   webview_flutter: ^4.13.1
+  persistent_bottom_nav_bar: ^6.2.1
 
 dev_dependencies:
   flutter_test:
@@ -75,6 +76,7 @@ flutter:
   assets:
     - assets/images/
     - assets/svgs/
+    - assets/svgs/bottomNavBar/
     - assets/svgs/auth/
     - assets/audio/
     - assets/lotties/
