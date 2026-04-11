@@ -51,11 +51,11 @@ class _VerifyOtpViewState extends ConsumerState<VerifyOtpView> {
 
   Future<void> _handleResendOtp(VerifyOtpViewModel vm) async {
     HapticFeedback.lightImpact();
-    await vm.resendRegistrationOtp();
+    await vm.resendOtp();
   }
 
   Future<void> _submitOtp(VerifyOtpViewModel vm, String code) async {
-    final ok = await vm.submitRegistrationOtp(code);
+    final ok = await vm.submitOtp(code);
     if (mounted && ok) {
       MobileNavigationService.instance.navigateAndClearStack(BottomNavBar.path);
     }

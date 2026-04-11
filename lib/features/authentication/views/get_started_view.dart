@@ -97,7 +97,7 @@ class _GetStartedViewState extends State<GetStartedView> {
               Gap.h10,
               Center(
                 child: Image.asset(
-                  ImageAssets.logo,
+                  ImageAssets.logo2,
                   height: 32,
                   fit: BoxFit.contain,
                   errorBuilder: (context, error, stackTrace) => Icon(

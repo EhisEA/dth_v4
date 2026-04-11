@@ -14,4 +14,17 @@ abstract class AuthRepo {
     required String otp,
     required String signature,
   });
+
+  Future<ApiResponse<RegisterInitResult>> login({
+    required String email,
+    required String deviceName,
+  });
+
+  Future<ApiResponse<RegistrationCompleteResult>> verifyLoginOtp({
+    required String otp,
+    required String signature,
+  });
+
+  /// Revokes the session on the server (best effort) and clears local auth state.
+  Future<ApiResponse<void>> logout();
 }

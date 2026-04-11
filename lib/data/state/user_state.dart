@@ -80,6 +80,12 @@ class UserProfileState extends BaseState {
     _user.value = null;
   }
 
+  /// Server revoke (best effort), local cache clear, and in-memory user reset.
+  Future<void> signOut() async {
+    await _authRepository.logout();
+    logOut();
+  }
+
   @override
   void dispose() {
     _debouncer.cancel();

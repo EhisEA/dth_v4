@@ -87,6 +87,7 @@ class _CreateAccountViewState extends ConsumerState<CreateAccountView> {
         RoutingArgumentKey.email: email,
         RoutingArgumentKey.fullName: fullName,
         RoutingArgumentKey.signature: signature,
+        RoutingArgumentKey.otpFlow: OtpFlowArg.register,
       },
     );
   }
