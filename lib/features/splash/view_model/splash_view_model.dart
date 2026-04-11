@@ -1,4 +1,5 @@
 import "package:dth_v4/features/authentication/views/get_started_view.dart";
+import "package:dth_v4/features/bottomNavBar/bottom_nav_bar.dart";
 import "package:flutter_utils/flutter_utils.dart";
 
 class SplashViewModel extends BaseChangeNotifierViewModel {
@@ -17,7 +18,7 @@ class SplashViewModel extends BaseChangeNotifierViewModel {
     final bool isLoggedIn = _localCache.getToken() != null;
 
     if (isLoggedIn) {
-      await _navigationService.replace(GetStartedView.path);
+      await _navigationService.replace(BottomNavBar.path);
     } else {
       await _navigationService.replace(GetStartedView.path);
     }

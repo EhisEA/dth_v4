@@ -55,17 +55,18 @@ const List<_NavEntry> _kNavEntries = [
   ),
 ];
 
-class MyHomePage extends ConsumerStatefulWidget {
+class BottomNavBar extends ConsumerStatefulWidget {
   static const String path = NavigatorRoutes.bottomNavBar;
-  const MyHomePage({super.key});
+  const BottomNavBar({super.key});
 
-  static GlobalKey<MyHomePageState> myHomeKey = GlobalKey<MyHomePageState>();
+  static GlobalKey<BottomNavBarState> bottomNavBarKey =
+      GlobalKey<BottomNavBarState>();
 
   @override
-  ConsumerState<MyHomePage> createState() => MyHomePageState();
+  ConsumerState<BottomNavBar> createState() => BottomNavBarState();
 }
 
-class MyHomePageState extends ConsumerState<MyHomePage> {
+class BottomNavBarState extends ConsumerState<BottomNavBar> {
   List<CustomNavBarScreen> _buildScreens() {
     return [
       const CustomNavBarScreen(screen: HomeView()),

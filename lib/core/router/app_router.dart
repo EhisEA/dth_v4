@@ -26,10 +26,10 @@ class AppRouter {
         : {};
 
     switch (settings.name) {
-      case MyHomePage.path:
+      case BottomNavBar.path:
         return _getPageRoute(
           settings: settings,
-          viewToShow: const MyHomePage(),
+          viewToShow: const BottomNavBar(),
         );
 
       case HomeView.path:

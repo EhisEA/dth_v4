@@ -111,7 +111,7 @@ class _VerifyOtpViewState extends ConsumerState<VerifyOtpView> {
       updatedAt: now,
     );
     ref.read(userStateProvider).updateUserData(user);
-    MobileNavigationService.instance.navigateAndClearStack(MyHomePage.path);
+    MobileNavigationService.instance.navigateAndClearStack(BottomNavBar.path);
   }
 
   @override

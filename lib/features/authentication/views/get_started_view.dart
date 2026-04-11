@@ -121,7 +121,7 @@ class _GetStartedViewState extends State<GetStartedView> {
                 prefixIcon: svgIcon(SvgAssets.googleLogo),
                 press: () {
                   MobileNavigationService.instance.navigateAndClearStack(
-                    MyHomePage.path,
+                    BottomNavBar.path,
                   );
                 },
               ),
@@ -133,7 +133,7 @@ class _GetStartedViewState extends State<GetStartedView> {
                 prefixIcon: svgIcon(SvgAssets.appleLogo),
                 press: () {
                   MobileNavigationService.instance.navigateAndClearStack(
-                    MyHomePage.path,
+                    BottomNavBar.path,
                   );
                 },
               ),

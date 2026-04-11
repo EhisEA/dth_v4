@@ -6,8 +6,16 @@ import "package:dth_v4/flavor/flavor_config.dart";
 class ApiRoute {
   static String get baseUrl => FlavorConfig.instance.baseUrl;
 
-  static String get stagingBaseURL =>
-      const String.fromEnvironment("STAGING_BASE_URL", defaultValue: "");
-  static String get prodBaseURL =>
-      const String.fromEnvironment("PROD_BASE_URL", defaultValue: "");
+  static String get stagingBaseURL => const String.fromEnvironment(
+    "STAGING_BASE_URL",
+    defaultValue: "https://dth5.on-forge.com/api",
+  );
+  static String get prodBaseURL => const String.fromEnvironment(
+    "PROD_BASE_URL",
+    defaultValue: "https://dth5.on-forge.com/api",
+  );
+
+  /////AUTH
+  static String get user => "$baseUrl/auth/user";
+  static String get logout => "$baseUrl/auth/logout";
 }

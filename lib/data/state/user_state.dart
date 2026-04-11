@@ -1,17 +1,16 @@
 import "dart:async";
-
 import "package:dth_v4/core/core.dart";
 import "package:dth_v4/data/data.dart";
-import "package:dth_v4/data/state/state.dart";
+import "package:dth_v4/data/repo/auth/auth.dart";
 import "package:flutter/material.dart";
 import "package:flutter_riverpod/flutter_riverpod.dart";
 import "package:flutter_utils/flutter_utils.dart";
 
 class UserProfileState extends BaseState {
   final LocalCache _localCache;
-  // final ProfileRepo _profileRepository;
+  final AuthRepo _authRepository;
 
-  UserProfileState(this._localCache);
+  UserProfileState(this._localCache, this._authRepository);
 
   final _logger = const AppLogger(UserProfileState);
   final Debouncer _debouncer = Debouncer(milliseconds: 60000);
@@ -25,7 +24,6 @@ class UserProfileState extends BaseState {
 
   void init() {
     unawaited(getUserDetails());
-    unawaited(getUserTradeLevelFromServer());
     _debouncer.cancel();
     _debouncer.runPeriodic(() => updateUserDataFromServer());
   }
@@ -55,50 +53,26 @@ class UserProfileState extends BaseState {
   }
 
   Future<void> getUserDetailsFromServer() async {
-    // try {
-    //   final response = await _profileRepository.getUserData();
-    //   _logger.i(
-    //     "getUserDetailsFromServer: server response: ${response.data?.toJson()}",
-    //   );
+    try {
+      final response = await _authRepository.getUserData();
+      _logger.i(
+        "getUserDetailsFromServer: server response: ${response.data?.toJson()}",
+      );
 
-    //   if (response.data == null) return;
-    //   _user.value = response.data!;
-    //   _logger.i(
-    //     "getUserDetailsFromServer: set _user to server data: ${_user.value?.toJson()}",
-    //   );
-    //   await _localCache.saveUserData(response.data!.toJson());
-    // } catch (e) {
-    //   handleError(e, "getUserDetails");
-    // }
+      if (response.data == null) return;
+      _user.value = response.data!;
+      _logger.i(
+        "getUserDetailsFromServer: set _user to server data: ${_user.value?.toJson()}",
+      );
+      await _localCache.saveUserData(response.data!.toJson());
+    } catch (e) {
+      handleError(e, "getUserDetails");
+    }
   }
 
   void updateUserData(UserModel user) {
     unawaited(_localCache.saveUserData(user.toJson()));
     unawaited(getUserDetails());
-  }
-
-  Future<void> getUserTradeLevel() async {
-    final userData = _localCache.getUserData();
-
-    if (userData == null) return;
-    unawaited(getUserTradeLevelFromServer());
-  }
-
-  Future<void> getUserTradeLevelFromServer() async {
-    // try {
-    //   final response = await _profileRepository.getTradeLevel();
-
-    //   if (response.data == null) return;
-    //   _userTradeLevel.value = response.data!;
-    //   unawaited(
-    //     _localCache.saveToLocalCache(
-    //       key: CacheKeys.userTradeLevel,
-    //       value: _userTradeLevel.value?.toJson(),
-    //     ),
-    //   );
-    // } catch (e) {
-    //   handleError(e, "getUserTradeLevelFromServer");
-    // }
   }
 
   void logOut() {
@@ -117,7 +91,10 @@ class UserProfileState extends BaseState {
 typedef UserState = UserProfileState;
 
 final userProfileStateProvider = Provider((ref) {
-  final state = UserProfileState(ref.read(localCacheProvider));
+  final state = UserProfileState(
+    ref.read(localCacheProvider),
+    ref.read(authRepositoryProvider),
+  );
   ref.onDispose(state.dispose);
   return state;
 });
