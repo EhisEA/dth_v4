@@ -76,8 +76,9 @@ flutter:
   assets:
     - assets/images/
     - assets/svgs/
-    - assets/svgs/bottomNavBar/
     - assets/svgs/auth/
+    - assets/svgs/bottomNavBar/
+    - assets/svgs/home/
     - assets/audio/
     - assets/lotties/
 

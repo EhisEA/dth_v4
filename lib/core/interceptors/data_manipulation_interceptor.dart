@@ -1,6 +1,9 @@
+import "dart:async";
+
 import "package:dio/dio.dart";
 import "package:dth_v4/core/core.dart";
 import "package:dth_v4/data/data.dart";
+import "package:dth_v4/data/repo/auth/auth.dart";
 import "package:dth_v4/features/authentication/views/get_started_view.dart";
 import "package:flutter/foundation.dart";
 import "package:flutter_riverpod/flutter_riverpod.dart";
@@ -99,7 +102,7 @@ class DataManipulationInterceptor extends Interceptor {
             routes.first.settings.name == GetStartedView.path;
 
         if (!isOnOnboarding) {
-          _performLogout();
+          unawaited(_performLogout());
           MobileNavigationService.instance.navigateAndClearStack(
             GetStartedView.path,
           );
@@ -127,14 +130,13 @@ class DataManipulationInterceptor extends Interceptor {
   /// Clears user session data when unauthorized.
   Future<void> _performLogout() async {
     try {
-      // await _ref.read(authRepositoryProvider).logout();
-
-      // Clear in-memory state
+      await _ref.read(authRepositoryProvider).clearLocalAuthSession();
       _ref.read(userStateProvider).logOut();
-
       _log.i("User session cleared due to 401 Unauthorized");
     } catch (e) {
       _log.e("Error clearing session: $e");
+    } finally {
+      _handlingLogout = false;
     }
   }
 

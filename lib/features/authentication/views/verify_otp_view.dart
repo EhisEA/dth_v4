@@ -9,11 +9,22 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_utils/flutter_utils.dart';
 
 class VerifyOtpView extends ConsumerStatefulWidget {
-  const VerifyOtpView({super.key, required this.email});
+  const VerifyOtpView({
+    super.key,
+    required this.email,
+    this.fullName,
+    this.signature,
+    this.otpFlow,
+    this.ttlSeconds,
+  });
 
   static const String path = NavigatorRoutes.verifyOtp;
 
   final String email;
+  final String? fullName;
+  final String? signature;
+  final String? otpFlow;
+  final int? ttlSeconds;
 
   @override
   ConsumerState<VerifyOtpView> createState() => _VerifyOtpViewState();
@@ -32,10 +43,14 @@ class _VerifyOtpViewState extends ConsumerState<VerifyOtpView> {
     _otpFocusNode = FocusNode();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
-      final args = ModalRoute.of(context)?.settings.arguments;
       ref
           .read(verifyOtpViewModelProvider(widget.email))
-          .hydrateFromRouteArgs(args is Map<String, dynamic> ? args : null);
+          .hydrate(
+            fullName: widget.fullName,
+            signature: widget.signature,
+            otpFlow: widget.otpFlow,
+            ttlSeconds: widget.ttlSeconds,
+          );
       if (mounted) {
         _otpFocusNode.requestFocus();
       }
@@ -64,104 +79,104 @@ class _VerifyOtpViewState extends ConsumerState<VerifyOtpView> {
   @override
   Widget build(BuildContext context) {
     final vm = ref.watch(verifyOtpViewModelProvider(widget.email));
-
-    return Scaffold(
-      appBar: const DthAppBar(title: ''),
-      body: SafeArea(
-        top: false,
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Gap.h16,
-              AppText.medium(
-                "Let's verify its you",
-                fontSize: 22,
-                centered: true,
-                color: const Color(0xff08102F),
-              ),
-              Gap.h12,
-              AppText.regular(
-                'Enter the 6-digit code sent to your email to continue',
-                fontSize: 14,
-                height: 1.4,
-                color: const Color(0xff454545),
-                centered: true,
-              ),
-              Gap.h28,
-              PinCodeField(
-                otpController: _otpController,
-                length: 6,
-                width: 60,
-                height: 60,
-                title: 'OTP',
-                focusnode: _otpFocusNode,
-                enabled: !vm.isBaseBusy,
-                onCompleted: (code) => _submitOtp(vm, code),
-              ),
-              Gap.h16,
-              ValueListenableBuilder<bool>(
-                valueListenable: vm.canResend,
-                builder: (context, allowResend, _) {
-                  final resendLoading = vm.isBaseBusy && allowResend;
-                  return Center(
-                    child: allowResend
-                        ? Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              AppText.regular(
-                                "Didn't receive the code?",
-                                color: const Color(0xff6A6A6A),
-                                fontSize: 12,
-                                letterSpacing: -0.4,
-                              ),
-                              Gap.w2,
-                              GestureDetector(
-                                behavior: HitTestBehavior.opaque,
-                                onTap: vm.isBaseBusy
-                                    ? null
-                                    : () => _handleResendOtp(vm),
-                                child: AppText.medium(
-                                  resendLoading ? 'Sending…' : 'Resend Code',
+    return Loader.page(
+      isLoading: vm.isBaseBusy,
+      child: Scaffold(
+        appBar: const DthAppBar(title: ''),
+        body: SafeArea(
+          top: false,
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Gap.h16,
+                AppText.medium(
+                  "Let's verify its you",
+                  fontSize: 22,
+                  centered: true,
+                  color: const Color(0xff08102F),
+                ),
+                Gap.h12,
+                AppText.regular(
+                  'Enter the 6-digit code sent to your email to continue',
+                  fontSize: 14,
+                  height: 1.4,
+                  color: const Color(0xff454545),
+                  centered: true,
+                ),
+                Gap.h28,
+                PinCodeField(
+                  otpController: _otpController,
+                  length: 6,
+                  width: 60,
+                  height: 60,
+                  title: 'OTP',
+                  focusnode: _otpFocusNode,
+                  onCompleted: (code) => _submitOtp(vm, code),
+                ),
+                Gap.h16,
+                ValueListenableBuilder<bool>(
+                  valueListenable: vm.canResend,
+                  builder: (context, allowResend, _) {
+                    final resendLoading = vm.isBaseBusy && allowResend;
+                    return Center(
+                      child: allowResend
+                          ? Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                AppText.regular(
+                                  "Didn't receive the code?",
+                                  color: const Color(0xff6A6A6A),
                                   fontSize: 12,
-                                  color: AppColors.primary,
                                   letterSpacing: -0.4,
                                 ),
-                              ),
-                            ],
-                          )
-                        : ValueListenableBuilder<DateTime>(
-                            valueListenable: vm.endTime,
-                            builder: (context, value, _) {
-                              return AuthCountDownWidget(
-                                endTime: value,
-                                isDarkMode: isDarkMode(),
-                                onEnd: () {
-                                  WidgetsBinding.instance.addPostFrameCallback((
-                                    _,
-                                  ) {
-                                    if (mounted) {
-                                      ref
-                                          .read(
-                                            verifyOtpViewModelProvider(
-                                              widget.email,
-                                            ),
-                                          )
-                                          .onTimerEnd();
-                                    }
-                                  });
-                                },
-                                onResend: true,
-                              );
-                            },
-                          ),
-                  );
-                },
-              ),
-              Gap.h24,
-            ],
+                                Gap.w2,
+                                GestureDetector(
+                                  behavior: HitTestBehavior.opaque,
+                                  onTap: vm.isBaseBusy
+                                      ? null
+                                      : () => _handleResendOtp(vm),
+                                  child: AppText.medium(
+                                    resendLoading ? 'Sending…' : 'Resend Code',
+                                    fontSize: 12,
+                                    color: AppColors.primary,
+                                    letterSpacing: -0.4,
+                                  ),
+                                ),
+                              ],
+                            )
+                          : ValueListenableBuilder<DateTime>(
+                              valueListenable: vm.endTime,
+                              builder: (context, value, _) {
+                                return AuthCountDownWidget(
+                                  endTime: value,
+                                  isDarkMode: isDarkMode(),
+                                  onEnd: () {
+                                    WidgetsBinding.instance
+                                        .addPostFrameCallback((_) {
+                                          if (mounted) {
+                                            ref
+                                                .read(
+                                                  verifyOtpViewModelProvider(
+                                                    widget.email,
+                                                  ),
+                                                )
+                                                .onTimerEnd();
+                                          }
+                                        });
+                                  },
+                                  onResend: true,
+                                );
+                              },
+                            ),
+                    );
+                  },
+                ),
+                Gap.h24,
+              ],
+            ),
           ),
         ),
       ),

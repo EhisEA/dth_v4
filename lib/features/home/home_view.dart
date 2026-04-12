@@ -1,7 +1,7 @@
 import 'package:dth_v4/core/router/router.dart';
+import 'package:dth_v4/features/home/components/home_header.dart';
 import 'package:dth_v4/widgets/widgets.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_utils/flutter_utils.dart';
 
 class HomeView extends StatefulWidget {
@@ -44,41 +44,21 @@ class _HomeViewState extends State<HomeView> {
         body: SafeArea(
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: ListView(
+            child: Column(
               children: [
-                AppText.regular(
-                  'Home',
-                  fontSize: 20,
-                  fontWeight: FontWeight.w600,
+                HomeHeader(onLiveTap: () {}, onNotificationTap: () {}),
+                Expanded(
+                  child: ListView(
+                    children: [
+                      Gap.h32,
+                      AppText.regular(
+                        'Home',
+                        fontSize: 20,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ],
+                  ),
                 ),
-                Gap.h16,
-                AppTextField(
-                  title: 'Email',
-                  hint: 'you@example.com',
-                  controller: _emailController,
-                  focusNode: _emailFocus,
-                  keyboardType: TextInputType.emailAddress,
-                  textInputAction: TextInputAction.next,
-                  formatter: [FilteringTextInputFormatter.singleLineFormatter],
-                ),
-                Gap.h24,
-                PinCodeField(
-                  otpController: _otpController,
-                  length: 6,
-                  title: 'OTP',
-                  onCompleted: (code) {
-                    debugPrint('PIN complete: $code');
-                  },
-                ),
-                Gap.h24,
-                AppButton.primary(text: 'Primary Button'),
-                Gap.h16,
-                AppButton.primary(
-                  text: 'With subtitle',
-                  subtitle: 'Optional line under the title',
-                ),
-                Gap.h16,
-                AppButton.onBorder(text: 'On Border Button'),
               ],
             ),
           ),

@@ -5,7 +5,8 @@ import 'package:dth_v4/features/authentication/views/get_started_view.dart';
 import 'package:dth_v4/features/authentication/views/login_view.dart';
 import 'package:dth_v4/features/authentication/views/verify_otp_view.dart';
 import 'package:dth_v4/features/bottomNavBar/bottom_nav_bar.dart';
-import 'package:dth_v4/features/home/home.dart';
+import 'package:dth_v4/features/home/home_view.dart';
+import 'package:dth_v4/features/search/search_view.dart';
 import 'package:dth_v4/features/splash/views/splash_view.dart';
 import 'package:flutter/material.dart';
 
@@ -32,9 +33,6 @@ class AppRouter {
           viewToShow: const BottomNavBar(),
         );
 
-      case HomeView.path:
-        return _getPageRoute(settings: settings, viewToShow: const HomeView());
-
       case SplashView.path:
         return _getPageRoute(
           settings: settings,
@@ -58,9 +56,27 @@ class AppRouter {
 
       case VerifyOtpView.path:
         final email = routeArgs[RoutingArgumentKey.email] as String? ?? '';
+        final fullName =
+            routeArgs[RoutingArgumentKey.fullName] as String? ?? '';
         return _getPageRoute(
           settings: settings,
-          viewToShow: VerifyOtpView(email: email),
+          viewToShow: VerifyOtpView(
+            email: email,
+            fullName: fullName,
+            signature: routeArgs[RoutingArgumentKey.signature] as String?,
+            otpFlow: routeArgs[RoutingArgumentKey.otpFlow] as String?,
+            ttlSeconds: routeArgs['ttlSeconds'] as int?,
+          ),
+        );
+
+      ////////////////HOME VIEW////////////////////
+      case HomeView.path:
+        return _getPageRoute(settings: settings, viewToShow: const HomeView());
+      ////////////////SEARCH VIEW////////////////////
+      case SearchView.path:
+        return _getPageRoute(
+          settings: settings,
+          viewToShow: const SearchView(),
         );
 
       case AppWebView.path:

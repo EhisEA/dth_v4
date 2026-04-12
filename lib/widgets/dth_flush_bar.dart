@@ -161,10 +161,6 @@ class _FlushBarWidget extends StatelessWidget {
         decoration: BoxDecoration(
           color: context.isDarkMode ? const Color(0xff003A57) : AppColors.white,
           borderRadius: BorderRadius.circular(12),
-          image: DecorationImage(
-            image: AssetImage(context.isDarkMode ? "" : ""),
-            fit: BoxFit.fill,
-          ),
         ),
         child: Row(
           children: [

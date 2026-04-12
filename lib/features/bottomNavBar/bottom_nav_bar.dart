@@ -5,7 +5,8 @@ import "package:dth_v4/core/router/router.dart";
 import "package:dth_v4/data/data.dart";
 import "package:dth_v4/features/bottomNavBar/components/nav_item.dart";
 import "package:dth_v4/features/bottomNavBar/viewmodel/bottom_nav_bar_view_model.dart";
-import "package:dth_v4/features/home/home.dart";
+import "package:dth_v4/features/home/home_view.dart";
+import "package:dth_v4/features/search/search_view.dart";
 import "package:dth_v4/widgets/widgets.dart";
 import "package:flutter/material.dart";
 import "package:flutter/services.dart";
@@ -70,7 +71,7 @@ class BottomNavBarState extends ConsumerState<BottomNavBar> {
   List<CustomNavBarScreen> _buildScreens() {
     return [
       const CustomNavBarScreen(screen: HomeView()),
-      CustomNavBarScreen(screen: _PlaceholderTab(title: _kNavEntries[1].label)),
+      const CustomNavBarScreen(screen: SearchView()),
       CustomNavBarScreen(screen: _PlaceholderTab(title: _kNavEntries[2].label)),
       CustomNavBarScreen(screen: _PlaceholderTab(title: _kNavEntries[3].label)),
       CustomNavBarScreen(screen: _PlaceholderTab(title: _kNavEntries[4].label)),

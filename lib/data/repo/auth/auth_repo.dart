@@ -27,4 +27,7 @@ abstract class AuthRepo {
 
   /// Revokes the session on the server (best effort) and clears local auth state.
   Future<ApiResponse<void>> logout();
+
+  /// Clears token, cached user, and in-memory bearer token without calling the API.
+  Future<void> clearLocalAuthSession();
 }

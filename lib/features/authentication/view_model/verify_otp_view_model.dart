@@ -34,37 +34,23 @@ class VerifyOtpViewModel extends BaseChangeNotifierViewModel {
   String get email => _email;
   String? get registrationSignature => _otpSignature;
 
-  void hydrateFromRouteArgs(Map<String, dynamic>? args) {
+  /// Values are supplied by [AppRouter] via [VerifyOtpView] (single source of truth).
+  void hydrate({
+    String? fullName,
+    String? signature,
+    String? otpFlow,
+    int? ttlSeconds,
+  }) {
     _email = _initialEmail;
-    if (args != null) {
-      final e = args[RoutingArgumentKey.email] as String?;
-      if (e != null && e.isNotEmpty) {
-        _email = e;
-      }
-      final name = args[RoutingArgumentKey.fullName] as String?;
-      if (name != null && name.isNotEmpty) {
-        _fullName = name;
-      }
-      final sig = args[RoutingArgumentKey.signature] as String?;
-      if (sig != null && sig.isNotEmpty) {
-        _otpSignature = sig;
-      }
-      final flow = args[RoutingArgumentKey.otpFlow] as String?;
-      _otpFlow = flow == OtpFlowArg.login
-          ? OtpFlowArg.login
-          : OtpFlowArg.register;
-      assignEndTime(ttlSeconds: _ttlSecondsFromArgs(args));
-    } else {
-      _otpFlow = OtpFlowArg.register;
-      assignEndTime();
-    }
+    _fullName = (fullName != null && fullName.isNotEmpty) ? fullName : '';
+    _otpSignature = (signature != null && signature.isNotEmpty)
+        ? signature
+        : null;
+    _otpFlow = otpFlow == OtpFlowArg.login
+        ? OtpFlowArg.login
+        : OtpFlowArg.register;
+    assignEndTime(ttlSeconds: ttlSeconds);
     notifyListeners();
-  }
-
-  int? _ttlSecondsFromArgs(Map<String, dynamic> args) {
-    final ttl = args['ttlSeconds'];
-    if (ttl is int) return ttl;
-    return null;
   }
 
   void assignEndTime({int? ttlSeconds}) {

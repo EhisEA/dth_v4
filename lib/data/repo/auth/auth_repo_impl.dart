@@ -27,12 +27,12 @@ class AuthRepoImpl implements AuthRepo {
   @override
   Future<ApiResponse<UserModel>> getUserData() async {
     final response = await _networkService.get(ApiRoute.user);
-    return ApiResponse(
-      data: UserModel.fromJson(
-        (response.data as Map<String, dynamic>)["data"] as Map<String, dynamic>,
-      ),
-    );
+    final data = response.data as Map<String, dynamic>;
+    return ApiResponse(data: UserModel.fromJson(data["data"]["user"]));
   }
+
+  @override
+  Future<void> clearLocalAuthSession() => _clearLocalAuthState();
 
   @override
   Future<ApiResponse<RegisterInitResult>> register({
@@ -58,8 +58,7 @@ class AuthRepoImpl implements AuthRepo {
       ApiRoute.registerVerifyOtp,
       data: {"token": otp, "signature": signature},
     );
-    final data =
-        (response.data as Map<String, dynamic>)["data"] as Map<String, dynamic>;
+    final data = (response.data as Map<String, dynamic>)["data"];
     final result = RegistrationCompleteResult.fromJson(data);
 
     await _localCache.saveToken(result.token);

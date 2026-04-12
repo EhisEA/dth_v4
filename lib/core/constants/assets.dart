@@ -25,6 +25,11 @@ class SvgAssets {
   static const String profile = "$svgPath/bottomNavBar/profile.svg";
   static const String profileActive =
       "$svgPath/bottomNavBar/profile_filled.svg";
+
+  /////////////////////HOME//////////////////////
+  static const String live = "$svgPath/home/live.svg";
+  static const String notification = "$svgPath/home/notification.svg";
+  static const String greyLogo = "$svgPath/home/grey_logo.svg";
 }
 
 class LottieAssets {

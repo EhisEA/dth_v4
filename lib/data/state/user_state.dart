@@ -31,13 +31,18 @@ class UserProfileState extends BaseState {
   Future<void> getUserDetails() async {
     try {
       final userData = _localCache.getUserData();
+      final hasToken = _localCache.getToken() != null;
 
-      if (userData == null) return;
-      _user.value = UserModel.fromJson(userData);
-      _logger.i(
-        "getUserDetails: set _user from local cache: ${_user.value?.toJson()}",
-      );
-      await getUserDetailsFromServer();
+      if (userData != null) {
+        _user.value = UserModel.fromJson(userData);
+        _logger.i(
+          "getUserDetails: set _user from local cache: ${_user.value?.toJson()}",
+        );
+      }
+
+      if (userData != null || hasToken) {
+        await getUserDetailsFromServer();
+      }
     } catch (e) {
       handleError(e, "getUserDetails");
     }
@@ -66,6 +71,13 @@ class UserProfileState extends BaseState {
       );
       await _localCache.saveUserData(response.data!.toJson());
     } catch (e) {
+      if (e is ApiFailure &&
+          (e.statusCode == 401 ||
+              e.message.toLowerCase().contains("unauthenticated"))) {
+        await _authRepository.clearLocalAuthSession();
+        logOut();
+        return;
+      }
       handleError(e, "getUserDetails");
     }
   }
