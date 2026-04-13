@@ -30,6 +30,10 @@ class SvgAssets {
   static const String live = "$svgPath/home/live.svg";
   static const String notification = "$svgPath/home/notification.svg";
   static const String greyLogo = "$svgPath/home/grey_logo.svg";
+  static const String blackLogo = "$svgPath/home/black_logo.svg";
+  static const String favoriteBorder = "$svgPath/home/favorite_border.svg";
+  static const String messagesBorder = "$svgPath/home/messages_border.svg";
+  static const String sendBorder = "$svgPath/home/send_border.svg";
 }
 
 class LottieAssets {

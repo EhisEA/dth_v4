@@ -147,7 +147,7 @@ class BottomNavBarState extends ConsumerState<BottomNavBar> {
       elevation: 8,
       shadowColor: Colors.black26,
       child: Padding(
-        padding: EdgeInsets.only(bottom: bottomInset > 0 ? 8 : 12, top: 8),
+        padding: EdgeInsets.only(bottom: bottomInset > 0 ? 4 : 8),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
