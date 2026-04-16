@@ -6,6 +6,7 @@ import 'package:dth_v4/features/authentication/views/login_view.dart';
 import 'package:dth_v4/features/authentication/views/verify_otp_view.dart';
 import 'package:dth_v4/features/bottomNavBar/bottom_nav_bar.dart';
 import 'package:dth_v4/features/home/home_view.dart';
+import 'package:dth_v4/features/stories/views/stories_view.dart';
 import 'package:dth_v4/features/search/search_view.dart';
 import 'package:dth_v4/features/splash/views/splash_view.dart';
 import 'package:flutter/material.dart';
@@ -72,6 +73,13 @@ class AppRouter {
       ////////////////HOME VIEW////////////////////
       case HomeView.path:
         return _getPageRoute(settings: settings, viewToShow: const HomeView());
+      case StoriesView.path:
+        return _getPageRoute(
+          settings: settings,
+          viewToShow: StoriesView(
+            imageUrl: routeArgs[RoutingArgumentKey.imageUrl] as String? ?? "",
+          ),
+        );
       ////////////////SEARCH VIEW////////////////////
       case SearchView.path:
         return _getPageRoute(

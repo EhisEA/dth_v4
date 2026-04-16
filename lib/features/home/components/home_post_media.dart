@@ -1,8 +1,10 @@
 import "dart:ui" show ImageFilter;
 
+import "package:cached_network_image/cached_network_image.dart";
 import "package:dth_v4/core/core.dart";
 import "package:dth_v4/features/home/models/home_feed_models.dart";
 import "package:flutter/material.dart";
+import "package:flutter_svg/svg.dart";
 
 class HomePostMedia extends StatelessWidget {
   const HomePostMedia({super.key, required this.post, this.onVideoTap});
@@ -62,26 +64,37 @@ class _VideoBlock extends StatelessWidget {
             child: Stack(
               fit: StackFit.expand,
               children: [
-                Image.network(
-                  thumbnailUrl,
+                CachedNetworkImage(
+                  imageUrl: thumbnailUrl,
                   fit: BoxFit.cover,
-                  errorBuilder: (_, __, ___) =>
+                  placeholder: (context, url) =>
                       ColoredBox(color: AppColors.baseShimmer(context)),
                 ),
-                const ColoredBox(color: Color(0x33000000)),
+                Container(
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [
+                        Color(0xff121212).withValues(alpha: 0.0),
+                        Color(0xff121212).withValues(alpha: 0.80),
+                      ],
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                    ),
+                  ),
+                ),
                 Center(
                   child: ClipOval(
                     child: BackdropFilter(
-                      filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
+                      filter: ImageFilter.blur(sigmaX: 14, sigmaY: 14),
                       child: Container(
-                        width: 56,
-                        height: 56,
+                        width: 44,
+                        height: 44,
                         alignment: Alignment.center,
-                        color: Colors.black.withValues(alpha: 0.55),
-                        child: const Icon(
-                          Icons.play_arrow_rounded,
-                          size: 40,
-                          color: Colors.white,
+                        color: Colors.black.withValues(alpha: 0.40),
+                        child: SvgPicture.asset(
+                          SvgAssets.play,
+                          height: 24,
+                          width: 24,
                         ),
                       ),
                     ),
@@ -144,7 +157,7 @@ class _ImageGalleryBlock extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Expanded(
-            flex: 2,
+            flex: 3,
             child: ClipRRect(
               borderRadius: BorderRadius.all(r),
               child: _cell(urls[0], context),
@@ -167,7 +180,7 @@ class _ImageGalleryBlock extends StatelessWidget {
                   child: ClipRRect(
                     borderRadius: BorderRadius.all(r),
                     child: extra > 0
-                        ? _cellWithOverlay(urls[2], context, '+$extra')
+                        ? _cellWithOverlay(urls[2], context, '$extra+')
                         : _cell(urls[2], context),
                   ),
                 ),
@@ -191,12 +204,12 @@ class _ImageGalleryBlock extends StatelessWidget {
   }
 
   Widget _cell(String url, BuildContext context) {
-    return Image.network(
-      url,
+    return CachedNetworkImage(
+      imageUrl: url,
       fit: BoxFit.cover,
-      width: double.infinity,
-      height: double.infinity,
-      errorBuilder: (_, __, ___) => ColoredBox(
+      placeholder: (context, url) =>
+          ColoredBox(color: AppColors.baseShimmer(context)),
+      errorWidget: (context, url, error) => ColoredBox(
         color: AppColors.baseShimmer(context),
         child: Icon(Icons.broken_image_outlined, color: AppColors.tint15),
       ),

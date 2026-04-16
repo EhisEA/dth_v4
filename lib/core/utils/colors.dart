@@ -13,19 +13,28 @@ class AppColors {
   static const Color primaryMedium = Color(0xFF026B3A);
 
   // 000000
-  static const Color black = Color(0xff000000);
+  static const Color black = Color(0xff202020);
 
   // FFFFFF
   static Color white = const Color(0xffffffff);
+
+  // D2D2D2
+  static Color tint5 = const Color(0xffD2D2D2);
+
+  // B5B5B5
+  static Color tint10 = const Color(0xffB5B5B5);
 
   // 8F8F8F
   static Color tint15 = const Color(0xff8F8F8F);
 
   // 6A6A6A
-  static Color tint20 = const Color(0xff6A6A6A);
+  static Color blackTint20 = const Color(0xff6A6A6A);
 
   // 454545
   static Color tint25 = const Color(0xff454545);
+
+  // F4F4F4
+  static Color greyTint20 = const Color(0xffF4F4F4);
 
   ///=========================== Bottom Nav ==============================
 

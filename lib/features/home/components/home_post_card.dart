@@ -28,7 +28,7 @@ class HomePostCard extends StatelessWidget {
       children: [
         Row(
           children: [
-            SvgPicture.asset(SvgAssets.greyLogo, height: 28, width: 28),
+            SvgPicture.asset(SvgAssets.primaryLogo, height: 28, width: 28),
             Gap.w12,
             Expanded(
               child: Column(
@@ -41,7 +41,7 @@ class HomePostCard extends StatelessWidget {
                       AppText.regular(
                         "with",
                         fontSize: 10,
-                        color: AppColors.tint20,
+                        color: AppColors.blackTint20,
                       ),
                       Gap.w4,
                       AppText.medium(

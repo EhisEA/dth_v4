@@ -50,6 +50,7 @@ dependencies:
   flutter_countdown_timer: ^4.1.0
   webview_flutter: ^4.13.1
   persistent_bottom_nav_bar: ^6.2.1
+  cached_network_image: ^3.4.1
 
 dev_dependencies:
   flutter_test:
