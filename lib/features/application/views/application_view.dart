@@ -1,9 +1,12 @@
 import 'package:dth_v4/core/core.dart';
 import 'package:dth_v4/core/router/router.dart';
 import 'package:dth_v4/features/application/view_model/application_wizard_notifier.dart';
-import 'package:dth_v4/features/application/views/steps/application_placeholder_step.dart';
+import 'package:dth_v4/features/application/views/application_review_view.dart';
+import 'package:dth_v4/features/application/views/steps/audition_video_step.dart';
+import 'package:dth_v4/features/application/views/steps/bank_details_step.dart';
 import 'package:dth_v4/features/application/views/steps/contact_information_step.dart';
 import 'package:dth_v4/features/application/views/steps/personal_information_step.dart';
+import 'package:dth_v4/features/application/views/steps/talent_showcase_step.dart';
 import 'package:dth_v4/features/application/components/application_segmented_progress.dart';
 import 'package:dth_v4/widgets/text/textstyles.dart';
 import 'package:dth_v4/widgets/widgets.dart';
@@ -64,17 +67,13 @@ class _ApplicationViewState extends ConsumerState<ApplicationView> {
   String _primaryButtonLabel() {
     switch (_currentIndex) {
       case 0:
-        return 'Proceed ';
       case 1:
-        return 'Proceed ';
       case 2:
-        return 'Continue';
       case 3:
-        return 'Continue';
       case 4:
-        return 'Submit application';
+        return 'Proceed';
       default:
-        return 'Continue';
+        return 'Proceed';
     }
   }
 
@@ -83,15 +82,15 @@ class _ApplicationViewState extends ConsumerState<ApplicationView> {
       case 0:
         return '(Contact Information)';
       case 1:
-        return '(Audition Video)';
+        return '(Talent Showcase)';
       case 2:
-        return 'Continue';
+        return '(Audition Video)';
       case 3:
-        return 'Continue';
+        return '(Bank Details)';
       case 4:
-        return 'Submit application';
+        return '(Review)';
       default:
-        return 'Continue';
+        return '';
     }
   }
 
@@ -108,9 +107,21 @@ class _ApplicationViewState extends ConsumerState<ApplicationView> {
         curve: Curves.easeOutCubic,
       );
     } else {
-      await ref.read(applicationWizardProvider.notifier).submitApplication();
+      final draft = ref.read(applicationWizardProvider);
+      final result = await MobileNavigationService.instance.navigateTo(
+        ApplicationReviewView.path,
+        extra: {RoutingArgumentKey.applicationDraft: draft},
+      );
       if (!mounted) return;
-      Navigator.of(context).pop(true);
+      if (result == null) return;
+      if (result == ApplicationReviewView.submitPopResult) {
+        Navigator.of(context).pop(true);
+        return;
+      }
+      if (result is int && result >= 0 && result < _totalSteps) {
+        _pageController.jumpToPage(result);
+        setState(() => _currentIndex = result);
+      }
     }
   }
 
@@ -147,7 +158,7 @@ class _ApplicationViewState extends ConsumerState<ApplicationView> {
                             SvgAssets.backArrow,
                             height: 20,
                             width: 20,
-                            colorFilter: ColorFilter.mode(
+                            colorFilter: const ColorFilter.mode(
                               AppColors.black,
                               BlendMode.srcIn,
                             ),
@@ -187,20 +198,17 @@ class _ApplicationViewState extends ConsumerState<ApplicationView> {
                       formKey: _formKeys[1],
                       onRegisterPersist: (fn) => _registerPersist(1, fn),
                     ),
-                    ApplicationPlaceholderStep(
+                    TalentShowcaseStep(
                       formKey: _formKeys[2],
-                      title: 'Audition Video',
-                      subtitle: 'Upload or record your audition in this step.',
+                      onRegisterPersist: (fn) => _registerPersist(2, fn),
                     ),
-                    ApplicationPlaceholderStep(
+                    AuditionVideoStep(
                       formKey: _formKeys[3],
-                      title: 'Review',
-                      subtitle: 'Confirm your details before submitting.',
+                      onRegisterPersist: (fn) => _registerPersist(3, fn),
                     ),
-                    ApplicationPlaceholderStep(
+                    BankDetailsStep(
                       formKey: _formKeys[4],
-                      title: 'Submit',
-                      subtitle: 'Final confirmation and terms.',
+                      onRegisterPersist: (fn) => _registerPersist(4, fn),
                     ),
                   ],
                 ),

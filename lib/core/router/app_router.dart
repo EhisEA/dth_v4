@@ -1,5 +1,7 @@
 import 'package:dth_v4/core/router/router.dart';
+import 'package:dth_v4/data/models/application_draft.dart';
 import 'package:dth_v4/features/app_web_view/app_web_view.dart';
+import 'package:dth_v4/features/application/views/application_review_view.dart';
 import 'package:dth_v4/features/application/views/application_view.dart';
 import 'package:dth_v4/features/authentication/views/create_account_view.dart';
 import 'package:dth_v4/features/authentication/views/get_started_view.dart';
@@ -103,6 +105,14 @@ class AppRouter {
         return _getPageRoute(
           settings: settings,
           viewToShow: const ApplicationView(),
+        );
+
+      case ApplicationReviewView.path:
+        final reviewDraft =
+            routeArgs[RoutingArgumentKey.applicationDraft] as ApplicationDraft?;
+        return _getPageRoute(
+          settings: settings,
+          viewToShow: ApplicationReviewView(routeDraft: reviewDraft),
         );
 
       default:

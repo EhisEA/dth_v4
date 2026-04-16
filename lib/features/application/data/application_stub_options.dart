@@ -36,4 +36,32 @@ abstract final class ApplicationStubOptions {
     'Enugu hub',
     'Online / Remote',
   ];
+
+  static const List<String> talentCategories = [
+    'Spoken Word',
+    'Music',
+    'Dance',
+    'Comedy',
+    'Acting',
+    'Other',
+  ];
+
+  static const List<String> presentationModes = ['Individual', 'Group'];
+
+  static const List<String> crewSizes = [
+    '2 Persons',
+    '3 Persons',
+    '4 Persons',
+    '5 Persons',
+    '6+ Persons',
+  ];
+
+  static const List<String> banks = [
+    'United Bank for Africa',
+    'Access Bank',
+    'GTBank',
+    'First Bank of Nigeria',
+    'Zenith Bank',
+    'Fidelity Bank',
+  ];
 }

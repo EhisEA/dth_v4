@@ -12,6 +12,17 @@ class ApplicationDraft {
     this.stateOfOrigin = '',
     this.lga = '',
     this.nearestCampus = '',
+    this.stageName = '',
+    this.talentCategory = '',
+    this.talentDescription = '',
+    this.presentationMode = '',
+    this.crewSize = '',
+    this.participantNames = '',
+    this.videoLink = '',
+    this.socialMediaLink = '',
+    this.bankName = '',
+    this.accountNumber = '',
+    this.accountName = '',
   });
 
   final String fullName;
@@ -28,7 +39,25 @@ class ApplicationDraft {
   final String lga;
   final String nearestCampus;
 
+  final String stageName;
+  final String talentCategory;
+  final String talentDescription;
+  /// `Individual` or `Group` (see [ApplicationStubOptions.presentationModes]).
+  final String presentationMode;
+  final String crewSize;
+  final String participantNames;
+
+  final String videoLink;
+  final String socialMediaLink;
+
+  final String bankName;
+  final String accountNumber;
+  final String accountName;
+
   static const ApplicationDraft empty = ApplicationDraft();
+
+  bool get isGroupPresentation =>
+      presentationMode.toLowerCase() == 'group';
 
   ApplicationDraft copyWith({
     String? fullName,
@@ -42,6 +71,17 @@ class ApplicationDraft {
     String? stateOfOrigin,
     String? lga,
     String? nearestCampus,
+    String? stageName,
+    String? talentCategory,
+    String? talentDescription,
+    String? presentationMode,
+    String? crewSize,
+    String? participantNames,
+    String? videoLink,
+    String? socialMediaLink,
+    String? bankName,
+    String? accountNumber,
+    String? accountName,
   }) {
     return ApplicationDraft(
       fullName: fullName ?? this.fullName,
@@ -55,6 +95,17 @@ class ApplicationDraft {
       stateOfOrigin: stateOfOrigin ?? this.stateOfOrigin,
       lga: lga ?? this.lga,
       nearestCampus: nearestCampus ?? this.nearestCampus,
+      stageName: stageName ?? this.stageName,
+      talentCategory: talentCategory ?? this.talentCategory,
+      talentDescription: talentDescription ?? this.talentDescription,
+      presentationMode: presentationMode ?? this.presentationMode,
+      crewSize: crewSize ?? this.crewSize,
+      participantNames: participantNames ?? this.participantNames,
+      videoLink: videoLink ?? this.videoLink,
+      socialMediaLink: socialMediaLink ?? this.socialMediaLink,
+      bankName: bankName ?? this.bankName,
+      accountNumber: accountNumber ?? this.accountNumber,
+      accountName: accountName ?? this.accountName,
     );
   }
 
@@ -72,6 +123,17 @@ class ApplicationDraft {
       'state_of_origin': stateOfOrigin,
       'lga': lga,
       'nearest_campus': nearestCampus,
+      'stage_name': stageName,
+      'talent_category': talentCategory,
+      'talent_description': talentDescription,
+      'presentation_mode': presentationMode,
+      'crew_size': crewSize,
+      'participant_names': participantNames,
+      'video_link': videoLink,
+      'social_media_link': socialMediaLink,
+      'bank_name': bankName,
+      'account_number': accountNumber,
+      'account_name': accountName,
     };
   }
 }

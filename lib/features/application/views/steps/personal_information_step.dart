@@ -107,17 +107,6 @@ class _PersonalInformationStepState
     }
   }
 
-  String? _dobValidator(String _) {
-    final t = _dobController.text.trim();
-    if (t.isEmpty) return 'Please select your date of birth';
-    try {
-      _dobFormat.parseStrict(t);
-      return null;
-    } catch (_) {
-      return 'Use DD-MM-YYYY';
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     super.build(context);
@@ -178,7 +167,7 @@ class _PersonalInformationStepState
                   readOnly: true,
                   enabled: false,
                   titleColor: AppColors.black,
-                  validator: _dobValidator,
+                  validator: Validator.emptyField,
                   textInputAction: TextInputAction.next,
                   suffixIcon: SvgPicture.asset(SvgAssets.calendarEdit),
                   onTap: _pickDob,

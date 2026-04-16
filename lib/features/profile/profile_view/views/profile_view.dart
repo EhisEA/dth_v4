@@ -1,6 +1,7 @@
 import 'package:dth_v4/core/core.dart';
 import 'package:dth_v4/core/router/router.dart';
 import 'package:dth_v4/data/data.dart';
+import 'package:dth_v4/features/app_web_view/app_web_view.dart';
 import 'package:dth_v4/features/application/views/application_view.dart';
 import 'package:dth_v4/features/profile/profile_view/components/application_widget.dart';
 import 'package:dth_v4/features/profile/profile_view/components/contestant_pill.dart';
@@ -104,14 +105,32 @@ class _ProfileViewState extends ConsumerState<ProfileView> {
                         description:
                             "Review the guidelines for using this platform",
                         icon: SvgAssets.terms,
-                        onTap: () {},
+                        onTap: () {
+                          _navigationService.navigateTo(
+                            AppWebView.path,
+                            extra: {
+                              RoutingArgumentKey.title: "Terms & Conditions",
+                              RoutingArgumentKey.initialURl:
+                                  AppLink.termsAndConditions,
+                            },
+                          );
+                        },
                       ),
                       Gap.h28,
                       ProfileTlle(
                         title: "Privacy Policy",
                         description: "See how your data is handled",
                         icon: SvgAssets.privacy,
-                        onTap: () {},
+                        onTap: () {
+                          _navigationService.navigateTo(
+                            AppWebView.path,
+                            extra: {
+                              RoutingArgumentKey.title: "Privacy Policy",
+                              RoutingArgumentKey.initialURl:
+                                  AppLink.privacyPolicy,
+                            },
+                          );
+                        },
                       ),
                       Gap.h28,
                       ProfileTlle(
@@ -140,6 +159,7 @@ class _ProfileViewState extends ConsumerState<ProfileView> {
                         description: "Sign out of your account",
                         icon: SvgAssets.logout,
                         isRed: true,
+                        showRightArrow: false,
                         onTap: () {},
                       ),
                       Gap.h28,

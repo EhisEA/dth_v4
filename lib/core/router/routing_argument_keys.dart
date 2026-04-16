@@ -8,6 +8,8 @@ class RoutingArgumentKey {
 
   /// `"login"` or `"register"` for [VerifyOtpView] / [VerifyOtpViewModel].
   static const String otpFlow = "otpFlow";
+
+  static const String applicationDraft = "applicationDraft";
 }
 
 abstract class OtpFlowArg {

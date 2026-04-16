@@ -39,7 +39,51 @@ class ApplicationWizardNotifier extends Notifier<ApplicationDraft> {
     );
   }
 
-  /// Placeholder for final API call after step 5.
+  void setTalentShowcase({
+    required String stageName,
+    required String talentCategory,
+    required String talentDescription,
+    required String presentationMode,
+    required String crewSize,
+    required String participantNames,
+  }) {
+    state = state.copyWith(
+      stageName: stageName,
+      talentCategory: talentCategory,
+      talentDescription: talentDescription,
+      presentationMode: presentationMode,
+      crewSize: crewSize,
+      participantNames: participantNames,
+    );
+  }
+
+  void setAuditionVideo({
+    required String videoLink,
+    required String socialMediaLink,
+  }) {
+    state = state.copyWith(
+      videoLink: videoLink,
+      socialMediaLink: socialMediaLink,
+    );
+  }
+
+  void setBankDetails({
+    required String bankName,
+    required String accountNumber,
+    required String accountName,
+  }) {
+    state = state.copyWith(
+      bankName: bankName,
+      accountNumber: accountNumber,
+      accountName: accountName,
+    );
+  }
+
+  /// Replaces the whole draft (e.g. when [ApplicationReviewView] opens with route args).
+  void replaceDraft(ApplicationDraft draft) {
+    state = draft;
+  }
+
   Future<void> submitApplication() async {
     // ignore: unused_local_variable
     final _ = state.toSubmissionJson();
