@@ -76,10 +76,13 @@ flutter:
 
   assets:
     - assets/images/
+    - assets/images/profile/
     - assets/svgs/
+    - assets/svgs/application/
     - assets/svgs/auth/
     - assets/svgs/bottomNavBar/
     - assets/svgs/home/
+    - assets/svgs/profile/
     - assets/audio/
     - assets/lotties/
 

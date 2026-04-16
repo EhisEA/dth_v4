@@ -1,5 +1,6 @@
 import 'package:dth_v4/core/router/router.dart';
 import 'package:dth_v4/features/app_web_view/app_web_view.dart';
+import 'package:dth_v4/features/application/views/application_view.dart';
 import 'package:dth_v4/features/authentication/views/create_account_view.dart';
 import 'package:dth_v4/features/authentication/views/get_started_view.dart';
 import 'package:dth_v4/features/authentication/views/login_view.dart';
@@ -40,6 +41,7 @@ class AppRouter {
           viewToShow: const SplashView(),
         );
 
+      ////////////////AUTHVIEW////////////////////
       case GetStartedView.path:
         return _getPageRoute(
           settings: settings,
@@ -87,6 +89,7 @@ class AppRouter {
           viewToShow: const SearchView(),
         );
 
+      ////////////////WEB VIEW////////////////////
       case AppWebView.path:
         return _getPageRoute(
           settings: settings,
@@ -94,6 +97,12 @@ class AppRouter {
             initialURl: routeArgs[RoutingArgumentKey.initialURl],
             title: routeArgs[RoutingArgumentKey.title],
           ),
+        );
+      ////////////////APPLICATION VIEW////////////////////
+      case ApplicationView.path:
+        return _getPageRoute(
+          settings: settings,
+          viewToShow: const ApplicationView(),
         );
 
       default:

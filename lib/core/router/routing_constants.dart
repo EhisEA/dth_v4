@@ -1,12 +1,31 @@
 class NavigatorRoutes {
   static const String bottomNavBar = "/bottom-nav-bar";
+
+  ////////////////SPLASH////////////////////
+  ///
   static const String splash = "/splash";
-  static const String home = "/home";
-  static const String stories = "/stories";
+  ////////////////AUTH////////////////////
+  ///
   static const String getStarted = "/get-started";
   static const String webView = "/web-view";
   static const String createAccount = "/create-account";
   static const String login = "/login";
   static const String verifyOtp = "/verify-otp";
+
+  ////////////////HOME////////////////////
+  ///
+  static const String home = "/home";
+  static const String stories = "/stories";
+
+  ////////////////SEARCH////////////////////
+  ///
   static const String search = "/search";
+
+  ////////////////PROFILE////////////////////
+  ///
+  static const String profile = "/profile";
+
+  ////////////////APPLICATION////////////////////
+  ///
+  static const String application = "/application";
 }

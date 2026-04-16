@@ -12,11 +12,17 @@ class AppColors {
   // 026B3A
   static const Color primaryMedium = Color(0xFF026B3A);
 
-  // 000000
+  // 202020
   static const Color black = Color(0xff202020);
+
+  // 000000
+  static const Color mainBlack = Color(0xff000000);
 
   // FFFFFF
   static Color white = const Color(0xffffffff);
+
+  //57688E
+  static Color dthBlue = const Color(0xFF57688E);
 
   // D2D2D2
   static Color tint5 = const Color(0xffD2D2D2);
@@ -33,8 +39,23 @@ class AppColors {
   // 454545
   static Color tint25 = const Color(0xff454545);
 
+  // F7F7F7
+  static Color greyTint15 = const Color(0xffF7F7F7);
+
   // F4F4F4
   static Color greyTint20 = const Color(0xffF4F4F4);
+
+  // EFEFEF
+  static Color greyTint30 = const Color(0xffEFEFEF);
+
+  // EBEBEB
+  static Color greyTint35 = const Color(0xffEBEBEB);
+
+  // FE5349
+  static Color redTint35 = const Color(0xffFE5349);
+
+  //08102F
+  static Color tertiary60 = const Color(0xff08102F);
 
   ///=========================== Bottom Nav ==============================
 
