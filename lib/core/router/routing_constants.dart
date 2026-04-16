@@ -29,4 +29,8 @@ class NavigatorRoutes {
   ///
   static const String application = "/application";
   static const String applicationReview = "/application-review";
+
+  ////////////////SUBSCRIPTION////////////////////
+  ///
+  static const String subscription = "/subscription";
 }
