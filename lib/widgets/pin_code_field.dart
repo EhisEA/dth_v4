@@ -4,10 +4,9 @@ import "package:dth_v4/core/core.dart";
 import "package:dth_v4/widgets/text/textstyles.dart";
 import "package:flutter/material.dart";
 import "package:flutter/services.dart";
-import "package:flutter_riverpod/flutter_riverpod.dart";
 import "package:pin_code_fields/pin_code_fields.dart";
 
-class PinCodeField extends ConsumerStatefulWidget {
+class PinCodeField extends StatefulWidget {
   const PinCodeField({
     super.key,
     this.height,
@@ -66,13 +65,8 @@ class PinCodeField extends ConsumerStatefulWidget {
   createState() => _PinCodeFieldState();
 }
 
-class _PinCodeFieldState extends ConsumerState<PinCodeField> {
+class _PinCodeFieldState extends State<PinCodeField> {
   String? text;
-  // Determines if the current theme is dark mode
-  bool isDarkMode() {
-    final brightness = ref.watch(themeBrightnessProvider);
-    return brightness == Brightness.dark;
-  }
 
   /// Per-cell horizontal margin from [PinTheme.fieldOuterPadding] (padding wraps each cell).
   double _horizontalGutterPerCell(BuildContext context) {
@@ -139,7 +133,7 @@ class _PinCodeFieldState extends ConsumerState<PinCodeField> {
           keyboardType: TextInputType.number,
           cursorColor: Colors.transparent,
           textStyle: AppTextStyle.medium.copyWith(
-            color: isDarkMode() ? AppColors.white : const Color(0xff001119),
+            color: const Color(0xff001119),
             fontSize: 18,
           ),
 
@@ -147,7 +141,7 @@ class _PinCodeFieldState extends ConsumerState<PinCodeField> {
           autovalidateMode: AutovalidateMode.disabled,
           controller: widget.otpController,
           hintStyle: AppTextStyle.medium.copyWith(
-            color: isDarkMode() ? AppColors.white : const Color(0xffE1E3F4),
+            color: const Color(0xffE1E3F4),
             fontSize: 18,
           ),
           appContext: context,
@@ -180,28 +174,15 @@ class _PinCodeFieldState extends ConsumerState<PinCodeField> {
             fieldWidth: size.width,
             fieldHeight: size.height,
             borderWidth: 0.9,
-            selectedBorderWidth: 1, //1, // 0.9,
-            inactiveBorderWidth: 1, // 1,// 0.9,
-            errorBorderWidth: 1, // 0.9,
-            activeBorderWidth: 1, // 1, // 0.9,
-            disabledBorderWidth: 1, // 1, // 0.9,
-            //////border colors///////
-            inactiveColor:
-                widget.inactiveColor ??
-                (isDarkMode()
-                    ? const Color(0xff022739)
-                    : const Color(0xffEDEDED)),
-            activeColor:
-                widget.activeColor ??
-                (isDarkMode()
-                    ? const Color(0xff022739)
-                    : const Color(0xffEDEDED) // AppColors.primary
-                      ),
-            selectedColor:
-                widget.selectedColor ??
-                (isDarkMode() ? const Color(0xff003A57) : AppColors.primary),
+            selectedBorderWidth: 1,
+            inactiveBorderWidth: 1,
+            errorBorderWidth: 1,
+            activeBorderWidth: 1,
+            disabledBorderWidth: 1,
+            inactiveColor: widget.inactiveColor ?? const Color(0xffEDEDED),
+            activeColor: widget.activeColor ?? const Color(0xffEDEDED),
+            selectedColor: widget.selectedColor ?? AppColors.primary,
             errorBorderColor: Colors.red,
-            //////fill color
             inactiveFillColor:
                 widget.inactiveFillColor ??
                 (widget.isAuth
@@ -217,23 +198,6 @@ class _PinCodeFieldState extends ConsumerState<PinCodeField> {
                 (widget.isAuth
                     ? Theme.of(context).scaffoldBackgroundColor
                     : const Color(0xff003A57)),
-
-            // activeBoxShadow: [
-            //   BoxShadow(color: AppColors.primary, spreadRadius: 1, blurRadius: 0),
-            // ],
-            // inActiveBoxShadow: [
-            //   isDarkMode()
-            //       ? const BoxShadow(
-            //           color: Color(0xff00334C),
-            //           spreadRadius: 1, //1.5,
-            //           blurRadius: 0,
-            //         )
-            //       : const BoxShadow(
-            //           color: Color(0xffE7F7FF),
-            //           spreadRadius: 1.5, //1.5,
-            //           blurRadius: 0,
-            //         ),
-            // ],
           ),
         );
       },

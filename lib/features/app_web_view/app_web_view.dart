@@ -68,11 +68,7 @@ class _AppWebViewState extends ConsumerState<AppWebView> {
             },
             child: Padding(
               padding: const EdgeInsets.only(right: 16.0),
-              child: Icon(
-                Icons.launch,
-                color: context.isDarkMode ? AppColors.white : AppColors.black,
-                size: 18,
-              ),
+              child: Icon(Icons.launch, color: AppColors.black, size: 18),
             ),
           ),
         ],

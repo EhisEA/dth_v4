@@ -3,16 +3,13 @@ import "package:dth_v4/features/splash/views/splash_view.dart";
 import "package:dth_v4/widgets/widgets.dart";
 import "package:flutter/foundation.dart";
 import "package:flutter/material.dart";
-import "package:flutter_riverpod/flutter_riverpod.dart";
 import "package:flutter_utils/flutter_utils.dart";
 
-class MyApp extends ConsumerWidget {
+class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final themeMode = ref.watch(themeModeProvider);
-
+  Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       navigatorObservers: [RouteLifecycleObserver.routeObserver],
@@ -42,8 +39,7 @@ class MyApp extends ConsumerWidget {
         return child;
       },
       theme: AppThemeData.lightTheme,
-      darkTheme: AppThemeData.darkTheme,
-      themeMode: themeMode,
+      themeMode: ThemeMode.light,
       onGenerateRoute: AppRouter.generateRoute,
       home: const SplashView(),
     );

@@ -96,9 +96,7 @@ class _CreateAccountViewState extends ConsumerState<CreateAccountView> {
   Widget build(BuildContext context) {
     final model = ref.watch(createAccountViewModelProvider);
     final theme = Theme.of(context);
-    final bodyColor = theme.brightness == Brightness.dark
-        ? const Color(0xFFD3D3D3)
-        : const Color(0xFF6A6A6A);
+    const bodyColor = Color(0xFF6A6A6A);
     const linkColor = AppColors.primary;
     final baseStyle =
         theme.textTheme.bodySmall?.copyWith(

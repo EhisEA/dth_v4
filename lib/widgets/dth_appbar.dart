@@ -1,10 +1,9 @@
 import "package:dth_v4/core/core.dart";
 import "package:dth_v4/widgets/widgets.dart";
 import "package:flutter/material.dart";
-import "package:flutter_riverpod/flutter_riverpod.dart";
 import "package:flutter_svg/svg.dart";
 
-class DthAppBar extends ConsumerWidget implements PreferredSizeWidget {
+class DthAppBar extends StatelessWidget implements PreferredSizeWidget {
   const DthAppBar({
     super.key,
     this.title,
@@ -25,20 +24,18 @@ class DthAppBar extends ConsumerWidget implements PreferredSizeWidget {
   Size get preferredSize => const Size.fromHeight(kToolbarHeight + 0);
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     return AppBar(
       title: AppText.regular(
         title ?? "",
-        color: context.isDarkMode ? AppColors.white : AppColors.black,
+        color: AppColors.black,
         fontSize: 16,
         fontWeight: FontWeight.w500,
       ),
       centerTitle: true,
       scrolledUnderElevation: 0,
-      backgroundColor:
-          backgroundColor ??
-          (context.isLightMode ? Colors.white : const Color(0xff022739)),
-      elevation: elevation ?? (context.isLightMode ? 0 : null),
+      backgroundColor: backgroundColor ?? Colors.white,
+      elevation: elevation ?? 0,
       actions: actions,
       leading: showBack
           ? GestureDetector(
@@ -56,11 +53,7 @@ class DthAppBar extends ConsumerWidget implements PreferredSizeWidget {
                 width: 40,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  border: Border.all(
-                    color: context.isDarkMode
-                        ? const Color(0xff022739)
-                        : const Color(0xffF8F9FC),
-                  ),
+                  border: Border.all(color: const Color(0xffF8F9FC)),
                 ),
                 child: FittedBox(
                   fit: BoxFit.scaleDown,
@@ -69,7 +62,7 @@ class DthAppBar extends ConsumerWidget implements PreferredSizeWidget {
                     height: 20,
                     width: 20,
                     colorFilter: ColorFilter.mode(
-                      context.isDarkMode ? AppColors.white : AppColors.black,
+                      AppColors.black,
                       BlendMode.srcIn,
                     ),
                   ),

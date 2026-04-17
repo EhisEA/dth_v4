@@ -206,7 +206,6 @@ class AppButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
     // Keep normal button chrome while loading (callers often set enabled: false).
     final showEnabledChrome = enabled || isLoading;
     return AnimatedContainer(
@@ -236,8 +235,7 @@ class AppButton extends StatelessWidget {
             ? Theme.of(context).scaffoldBackgroundColor
             : showEnabledChrome
             ? color ?? AppColors.primary
-            : disableBGColor ??
-                  (isDark ? const Color(0xff022739) : const Color(0xffF2F4F7)),
+            : disableBGColor ?? const Color(0xffF2F4F7),
       ),
       child: TextButton(
         onPressed: () {

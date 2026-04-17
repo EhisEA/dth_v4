@@ -1,13 +1,12 @@
 import "package:dth_v4/data/models/app_textfield_state.dart";
 import "package:flutter/material.dart";
 import "package:flutter/services.dart";
-import "package:flutter_riverpod/flutter_riverpod.dart";
 import "package:flutter_utils/flutter_utils.dart";
 import "package:dth_v4/core/core.dart";
 import "package:dth_v4/widgets/text/app_text.dart";
 import "package:dth_v4/widgets/text/textstyles.dart";
 
-class AppTextField extends ConsumerStatefulWidget {
+class AppTextField extends StatefulWidget {
   final String? hint;
   final String? title;
   final BorderRadius? borderRadius;
@@ -95,10 +94,10 @@ class AppTextField extends ConsumerStatefulWidget {
            ValueNotifier<AppTextFieldState>(AppTextFieldState.defaultValue());
 
   @override
-  ConsumerState<AppTextField> createState() => _AppTextFieldState();
+  State<AppTextField> createState() => _AppTextFieldState();
 }
 
-class _AppTextFieldState extends ConsumerState<AppTextField> {
+class _AppTextFieldState extends State<AppTextField> {
   late bool obscure;
   late ValueNotifier<bool> hasFocus = ValueNotifier<bool>(false);
   late ValueNotifier<String?> errorState = ValueNotifier<String?>(null);
@@ -109,9 +108,6 @@ class _AppTextFieldState extends ConsumerState<AppTextField> {
     widget.focusNode.addListener(() {
       hasFocus.value = widget.focusNode.hasFocus;
     });
-    // widget.controller?.addListener(() {
-    //   setState(() {}); // So that suffixIcon updates when text changes
-    // });
     super.initState();
   }
 
@@ -119,11 +115,6 @@ class _AppTextFieldState extends ConsumerState<AppTextField> {
     setState(() {
       obscure = !obscure;
     });
-  }
-
-  bool _isDarkMode() {
-    final brightness = ref.watch(themeBrightnessProvider);
-    return brightness == Brightness.dark;
   }
 
   @override
@@ -158,11 +149,7 @@ class _AppTextFieldState extends ConsumerState<AppTextField> {
                     decoration: BoxDecoration(
                       borderRadius:
                           widget.borderRadius ?? BorderRadius.circular(12),
-                      color:
-                          widget.fillColor ??
-                          (_isDarkMode()
-                              ? Theme.of(context).scaffoldBackgroundColor
-                              : AppColors.white),
+                      color: widget.fillColor ?? AppColors.white,
                       border: Border.all(
                         color: widget.showBorder
                             ? hasFocus
@@ -170,11 +157,7 @@ class _AppTextFieldState extends ConsumerState<AppTextField> {
                                         ? AppColors.primary
                                         : Colors.red)
                                   : (widget.inActiveBorderColor ??
-                                        (_isDarkMode()
-                                            ? Theme.of(
-                                                context,
-                                              ).scaffoldBackgroundColor
-                                            : const Color(0xffEDEDED)))
+                                        const Color(0xffEDEDED))
                             : Colors.transparent,
                       ),
                     ),
@@ -186,13 +169,8 @@ class _AppTextFieldState extends ConsumerState<AppTextField> {
                             widget.title!,
                             fontSize: widget.titleSize ?? 10,
                             letterSpacing: -0.2,
-                            color:
-                                widget.titleColor ??
-                                (_isDarkMode()
-                                    ? AppColors.white
-                                    : AppColors.tint15),
+                            color: widget.titleColor ?? AppColors.tint15,
                           ),
-                          // Gap.h4,
                         ],
                         SizedBox(
                           height: widget.height,
@@ -206,9 +184,7 @@ class _AppTextFieldState extends ConsumerState<AppTextField> {
                             style:
                                 widget.style ??
                                 AppTextStyle.regular.copyWith(
-                                  color: _isDarkMode()
-                                      ? AppColors.white
-                                      : AppColors.black,
+                                  color: AppColors.black,
                                   fontSize: 14,
                                 ),
                             controller: widget.controller,
@@ -254,9 +230,7 @@ class _AppTextFieldState extends ConsumerState<AppTextField> {
                                   AppTextStyle.regular.copyWith(
                                     color:
                                         widget.hintColor ??
-                                        (_isDarkMode()
-                                            ? const Color(0xff9A9DA3)
-                                            : const Color(0xffB5B5B5)),
+                                        const Color(0xffB5B5B5),
                                     fontSize: 13,
                                     letterSpacing: -0.2,
                                   ),

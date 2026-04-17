@@ -1,14 +1,13 @@
 import "package:dth_v4/core/core.dart";
 import "package:dth_v4/widgets/text/app_text.dart";
 import "package:flutter/material.dart";
-import "package:flutter_riverpod/flutter_riverpod.dart";
 import "package:flutter_svg/flutter_svg.dart";
 import "package:flutter_utils/flutter_utils.dart";
 
 typedef AppDropdownOption<T> = ({T value, String label});
 
 /// Select field that matches [AppTextField] chrome; opens a bottom sheet picker.
-class AppDropdownFormField<T> extends ConsumerStatefulWidget {
+class AppDropdownFormField<T> extends StatefulWidget {
   const AppDropdownFormField({
     super.key,
     required this.title,
@@ -33,12 +32,11 @@ class AppDropdownFormField<T> extends ConsumerStatefulWidget {
   final bool enabled;
 
   @override
-  ConsumerState<AppDropdownFormField<T>> createState() =>
+  State<AppDropdownFormField<T>> createState() =>
       _AppDropdownFormFieldState<T>();
 }
 
-class _AppDropdownFormFieldState<T>
-    extends ConsumerState<AppDropdownFormField<T>> {
+class _AppDropdownFormFieldState<T> extends State<AppDropdownFormField<T>> {
   late final FocusNode _focusNode;
 
   @override
@@ -52,10 +50,6 @@ class _AppDropdownFormFieldState<T>
   void dispose() {
     _focusNode.dispose();
     super.dispose();
-  }
-
-  bool _isDarkMode() {
-    return ref.watch(themeBrightnessProvider) == Brightness.dark;
   }
 
   String _labelFor(T? value, FormFieldState<T> field) {
@@ -89,7 +83,7 @@ class _AppDropdownFormFieldState<T>
                   child: AppText.medium(
                     widget.title,
                     fontSize: 16,
-                    color: _isDarkMode() ? AppColors.white : AppColors.black,
+                    color: AppColors.black,
                   ),
                 ),
                 for (final o in widget.options)
@@ -97,7 +91,7 @@ class _AppDropdownFormFieldState<T>
                     title: AppText.regular(
                       o.label,
                       fontSize: 15,
-                      color: _isDarkMode() ? AppColors.white : AppColors.black,
+                      color: AppColors.black,
                     ),
                     onTap: () => Navigator.of(ctx).pop(o.value),
                   ),
@@ -133,9 +127,7 @@ class _AppDropdownFormFieldState<T>
             ? Colors.red
             : (_focusNode.hasFocus
                   ? AppColors.primary
-                  : (_isDarkMode()
-                        ? Theme.of(context).scaffoldBackgroundColor
-                        : const Color(0xffEDEDED)));
+                  : const Color(0xffEDEDED));
 
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -153,9 +145,7 @@ class _AppDropdownFormFieldState<T>
                   width: double.infinity,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(12),
-                    color: _isDarkMode()
-                        ? Theme.of(context).scaffoldBackgroundColor
-                        : AppColors.white,
+                    color: AppColors.white,
                     border: Border.all(color: borderColor),
                   ),
                   child: Column(
@@ -176,12 +166,8 @@ class _AppDropdownFormFieldState<T>
                               fontSize: 14,
                               letterSpacing: -0.2,
                               color: display.isEmpty
-                                  ? (_isDarkMode()
-                                        ? const Color(0xff9A9DA3)
-                                        : const Color(0xffB5B5B5))
-                                  : (_isDarkMode()
-                                        ? AppColors.white
-                                        : AppColors.black),
+                                  ? const Color(0xffB5B5B5)
+                                  : AppColors.black,
                             ),
                           ),
                           SvgPicture.asset(
@@ -189,9 +175,7 @@ class _AppDropdownFormFieldState<T>
                             height: 18,
                             width: 18,
                             colorFilter: ColorFilter.mode(
-                              _isDarkMode()
-                                  ? AppColors.white
-                                  : AppColors.tint15,
+                              AppColors.tint15,
                               BlendMode.srcIn,
                             ),
                           ),

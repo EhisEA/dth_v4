@@ -1,4 +1,3 @@
-import "package:dth_v4/core/core.dart";
 import "package:dth_v4/widgets/text/app_text.dart";
 import "package:flutter/material.dart";
 import "package:flutter_countdown_timer/index.dart";
@@ -10,25 +9,20 @@ class AuthCountDownWidget extends StatelessWidget {
     required this.endTime,
     this.onEnd,
     required this.onResend,
-    required this.isDarkMode,
   });
 
   final DateTime endTime;
   final void Function()? onEnd;
   final bool onResend;
-  final bool isDarkMode;
 
   @override
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 7, horizontal: 9),
       decoration: BoxDecoration(
-        color: isDarkMode ? AppColors.primaryMedium : const Color(0xffFAFAFA),
+        color: const Color(0xffFAFAFA),
         borderRadius: BorderRadius.circular(48),
-        border: Border.all(
-          width: 0.8,
-          color: isDarkMode ? AppColors.primaryMedium : const Color(0xffECEEF3),
-        ),
+        border: Border.all(width: 0.8, color: const Color(0xffECEEF3)),
       ),
       child: CountdownTimer(
         endTime: endTime.millisecondsSinceEpoch,
@@ -39,7 +33,7 @@ class AuthCountDownWidget extends StatelessWidget {
               "00 : 00",
               centered: true,
               fontSize: 11,
-              color: isDarkMode ? AppColors.white : const Color(0xff2E3748),
+              color: const Color(0xff2E3748),
               letterSpacing: 0.4,
             );
           }
@@ -51,7 +45,7 @@ class AuthCountDownWidget extends StatelessWidget {
             " $minutes  : $seconds ",
             centered: true,
             fontSize: 11,
-            color: isDarkMode ? AppColors.white : const Color(0xff2E3748),
+            color: const Color(0xff2E3748),
             letterSpacing: 0.4,
           );
         },
@@ -59,7 +53,7 @@ class AuthCountDownWidget extends StatelessWidget {
           "00 : 00",
           centered: true,
           fontSize: 11,
-          color: isDarkMode ? AppColors.white : const Color(0xff2E3748),
+          color: const Color(0xff2E3748),
           letterSpacing: 0.4,
         ),
       ),

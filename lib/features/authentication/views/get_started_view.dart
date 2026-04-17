@@ -62,9 +62,7 @@ class _GetStartedViewState extends State<GetStartedView> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final bodyColor = theme.brightness == Brightness.dark
-        ? const Color(0xFFD3D3D3)
-        : const Color(0xFF6A6A6A);
+    const bodyColor = Color(0xFF6A6A6A);
     const linkColor = AppColors.primary;
     final baseStyle =
         theme.textTheme.bodySmall?.copyWith(

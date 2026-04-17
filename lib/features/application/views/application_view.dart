@@ -227,9 +227,7 @@ class _ApplicationViewState extends ConsumerState<ApplicationView> {
                   TextSpan(
                     style: AppTextStyle.regular.copyWith(
                       fontSize: 11,
-                      color: context.isDarkMode
-                          ? AppColors.tint10
-                          : AppColors.blackTint20,
+                      color: AppColors.blackTint20,
                     ),
                     children: [
                       TextSpan(

@@ -17,7 +17,6 @@ class DthFlushBar {
     Duration? duration,
     FlushbarPosition? position = FlushbarPosition.TOP,
   }) {
-    final context = navigatorKey.currentContext!;
     Flushbar<dynamic>(
       flushbarPosition: position ?? FlushbarPosition.TOP,
       duration: duration ?? const Duration(seconds: 5),
@@ -28,9 +27,7 @@ class DthFlushBar {
       margin: const EdgeInsets.all(16),
       borderRadius: BorderRadius.circular(16),
       padding: EdgeInsets.zero,
-      boxShadows: [
-        context.isDarkMode ? darkFlushBarShadow : lightFlushBarShadow,
-      ],
+      boxShadows: [lightFlushBarShadow],
       message: message,
       messageText: _FlushBarWidget(
         title: title,
@@ -46,7 +43,6 @@ class DthFlushBar {
     Duration? duration,
     FlushbarPosition? position = FlushbarPosition.TOP,
   }) {
-    final context = navigatorKey.currentContext!;
     Flushbar<dynamic>(
       flushbarPosition: position ?? FlushbarPosition.TOP,
       duration: duration ?? const Duration(seconds: 5),
@@ -57,9 +53,7 @@ class DthFlushBar {
       margin: const EdgeInsets.all(16),
       borderRadius: BorderRadius.circular(16),
       padding: EdgeInsets.zero,
-      boxShadows: [
-        context.isDarkMode ? darkFlushBarShadow : lightFlushBarShadow,
-      ],
+      boxShadows: [lightFlushBarShadow],
       message: message,
       messageText: _FlushBarWidget(
         title: title,
@@ -77,7 +71,6 @@ class DthFlushBar {
     Duration? duration,
     FlushbarPosition? position = FlushbarPosition.TOP,
   }) {
-    final context = navigatorKey.currentContext!;
     Flushbar<dynamic>(
       flushbarPosition: position ?? FlushbarPosition.TOP,
       duration: duration ?? const Duration(seconds: 5),
@@ -88,9 +81,7 @@ class DthFlushBar {
       margin: const EdgeInsets.all(16),
       borderRadius: BorderRadius.circular(16),
       padding: EdgeInsets.zero,
-      boxShadows: [
-        context.isDarkMode ? darkFlushBarShadow : lightFlushBarShadow,
-      ],
+      boxShadows: [lightFlushBarShadow],
       message: message,
       messageText: _FlushBarWidget(
         title: title,
@@ -118,12 +109,6 @@ class _FlushBarLayerState extends State<FlushBarLayer> {
   }
 }
 
-BoxShadow get darkFlushBarShadow => BoxShadow(
-  color: const Color(0xff001A29).withValues(alpha: 0.32),
-  blurRadius: 52,
-  offset: const Offset(0, 8),
-  spreadRadius: 0,
-);
 BoxShadow get lightFlushBarShadow => BoxShadow(
   color: const Color(0xff354A68).withValues(alpha: 0.14),
   blurRadius: 48,
@@ -145,7 +130,6 @@ class _FlushBarWidget extends StatelessWidget {
   final String title;
   final bool? showDismiss;
 
-  // final String? bg;
   @override
   Widget build(BuildContext context) {
     return SizedBox(
@@ -159,7 +143,7 @@ class _FlushBarWidget extends StatelessWidget {
           bottom: 12,
         ),
         decoration: BoxDecoration(
-          color: context.isDarkMode ? const Color(0xff003A57) : AppColors.white,
+          color: AppColors.white,
           borderRadius: BorderRadius.circular(12),
         ),
         child: Row(
@@ -169,10 +153,7 @@ class _FlushBarWidget extends StatelessWidget {
               height: 24,
               width: 24,
               colorFilter: ColorFilter.mode(
-                iconColor ??
-                    (context.isDarkMode
-                        ? AppColors.primary
-                        : AppColors.primary),
+                iconColor ?? AppColors.primary,
                 BlendMode.srcIn,
               ),
             ),
@@ -187,17 +168,13 @@ class _FlushBarWidget extends StatelessWidget {
                   children: [
                     AppText.medium(
                       title,
-                      color: context.isDarkMode
-                          ? AppColors.white
-                          : AppColors.primary,
+                      color: AppColors.primary,
                       fontSize: 12,
                     ),
                     Gap.h4,
                     AppText.regular(
                       message,
-                      color: context.isDarkMode
-                          ? const Color(0xffC9CBCF)
-                          : const Color(0xff666666),
+                      color: const Color(0xff666666),
                       fontSize: 10,
                       maxLines: 5,
                     ),

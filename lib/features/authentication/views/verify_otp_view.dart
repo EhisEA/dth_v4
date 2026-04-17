@@ -34,8 +34,6 @@ class _VerifyOtpViewState extends ConsumerState<VerifyOtpView> {
   late final TextEditingController _otpController;
   late final FocusNode _otpFocusNode;
 
-  bool isDarkMode() => Theme.of(context).brightness == Brightness.dark;
-
   @override
   void initState() {
     super.initState();
@@ -152,7 +150,6 @@ class _VerifyOtpViewState extends ConsumerState<VerifyOtpView> {
                               builder: (context, value, _) {
                                 return AuthCountDownWidget(
                                   endTime: value,
-                                  isDarkMode: isDarkMode(),
                                   onEnd: () {
                                     WidgetsBinding.instance
                                         .addPostFrameCallback((_) {

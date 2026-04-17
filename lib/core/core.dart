@@ -6,5 +6,3 @@ export "constants/constants.dart";
 export "utils/utils.dart";
 export "extension/extension.dart";
 export "enums/enums.dart";
-export "theme/theme_provider.dart";
-export "theme/theme_view_model.dart";
