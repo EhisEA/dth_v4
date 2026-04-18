@@ -9,6 +9,7 @@ import "package:dth_v4/features/home/home_view.dart";
 import "package:dth_v4/features/profile/profile_view/views/profile_view.dart";
 import "package:dth_v4/features/search/search_view.dart";
 import "package:dth_v4/features/subscription/views/subscription_view.dart";
+import "package:dth_v4/features/tickets/tickets.dart";
 import "package:dth_v4/widgets/widgets.dart";
 import "package:flutter/material.dart";
 import "package:flutter/services.dart";
@@ -42,15 +43,16 @@ const List<_NavEntry> _kNavEntries = [
     assetActive: SvgAssets.searchActive,
   ),
   _NavEntry(
-    label: 'Verify',
-    assetInactive: SvgAssets.verify,
-    assetActive: SvgAssets.verifyActive,
-  ),
-  _NavEntry(
     label: 'Tickets',
     assetInactive: SvgAssets.ticket,
     assetActive: SvgAssets.ticketActive,
   ),
+  _NavEntry(
+    label: 'Subscription',
+    assetInactive: SvgAssets.verify,
+    assetActive: SvgAssets.verifyActive,
+  ),
+
   _NavEntry(
     label: 'Profile',
     assetInactive: SvgAssets.profile,
@@ -74,8 +76,8 @@ class BottomNavBarState extends ConsumerState<BottomNavBar> {
     return [
       CustomNavBarScreen(screen: HomeView()),
       CustomNavBarScreen(screen: SearchView()),
+      CustomNavBarScreen(screen: TicketView()),
       CustomNavBarScreen(screen: SubscriptionView()),
-      CustomNavBarScreen(screen: _PlaceholderTab(title: _kNavEntries[3].label)),
       CustomNavBarScreen(screen: ProfileView()),
     ];
   }
@@ -196,15 +198,5 @@ class BottomNavBarState extends ConsumerState<BottomNavBar> {
         );
       },
     );
-  }
-}
-
-class _PlaceholderTab extends StatelessWidget {
-  const _PlaceholderTab({required this.title});
-  final String title;
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(body: Center(child: AppText.medium(title, fontSize: 18)));
   }
 }

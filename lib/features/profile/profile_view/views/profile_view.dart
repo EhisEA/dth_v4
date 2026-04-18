@@ -81,7 +81,25 @@ class _ProfileViewState extends ConsumerState<ProfileView> {
                         description: "Update your profile information",
                         icon: SvgAssets.personal,
                         showRightArrow: false,
+                        widget: user != null && !user.isPhoneVerified
+                            ? Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 8,
+                                  vertical: 6,
+                                ),
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(8),
+                                  color: const Color(0xffFFF2F1),
+                                ),
+                                child: AppText.regular(
+                                  "Need Attention",
+                                  fontSize: 10,
+                                  color: AppColors.redTint35,
+                                ),
+                              )
+                            : null,
                         onTap: () {
+                          if (user == null) return;
                           _navigationService.navigateTo(
                             PersonalInfomationView.path,
                             extra: {RoutingArgumentKey.user: user},

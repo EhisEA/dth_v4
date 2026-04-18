@@ -32,6 +32,64 @@ String composeInternationalPhone({
   return "$dial$digits";
 }
 
+String _digitsOnly(String s) => s.replaceAll(RegExp(r"\D"), "");
+
+/// Removes [country]’s dial prefix from [storedPhone] when it is full
+/// international form (e.g. `+2349020971619` → `9020971619`).
+String nationalDigitsWithoutDialCode({
+  required String storedPhone,
+  required DthCountry? country,
+}) {
+  final all = _digitsOnly(storedPhone);
+  if (country == null) return all;
+  final dial = _digitsOnly(country.dialCode);
+  if (dial.isEmpty) return all;
+  if (all.startsWith(dial) && all.length > dial.length) {
+    return all.substring(dial.length);
+  }
+  return all;
+}
+
+/// Nigerian numbers sometimes include a trunk `0` after the country code.
+String _normalizeNationalTrunk(String national, DthCountry? country) {
+  if (country?.isoCode != "NG") return national;
+  if (national.length == 11 && national.startsWith("0")) {
+    return national.substring(1);
+  }
+  return national;
+}
+
+/// Spaces for display in the national field (dial code is shown separately).
+String formatNationalPhoneDisplay(String nationalDigits) {
+  final d = _digitsOnly(nationalDigits);
+  if (d.isEmpty) return "";
+  if (d.length == 10) {
+    return "${d.substring(0, 3)} ${d.substring(3, 6)} ${d.substring(6)}";
+  }
+  if (d.length == 9) {
+    return "${d.substring(0, 3)} ${d.substring(3, 6)} ${d.substring(6)}";
+  }
+  final buf = StringBuffer();
+  for (var i = 0; i < d.length; i++) {
+    if (i != 0 && i % 3 == 0) buf.write(" ");
+    buf.write(d[i]);
+  }
+  return buf.toString();
+}
+
+/// Read-only field text: strip stored international prefix, normalize, space.
+String displayNationalPhoneInField({
+  required String storedPhone,
+  required DthCountry? country,
+}) {
+  var national = nationalDigitsWithoutDialCode(
+    storedPhone: storedPhone,
+    country: country,
+  );
+  national = _normalizeNationalTrunk(national, country);
+  return formatNationalPhoneDisplay(national);
+}
+
 class PhoneNumberCountryInput extends StatefulWidget {
   const PhoneNumberCountryInput({
     super.key,
@@ -109,9 +167,13 @@ class _PhoneNumberCountryInputState extends State<PhoneNumberCountryInput> {
     );
 
     if (widget.controller == null) {
-      _ownedController = TextEditingController(
-        text: widget.initialNationalDigits ?? "",
-      );
+      final initial = widget.readOnly
+          ? displayNationalPhoneInField(
+              storedPhone: widget.initialNationalDigits ?? "",
+              country: widget.displayCountry,
+            )
+          : (widget.initialNationalDigits ?? "");
+      _ownedController = TextEditingController(text: initial);
     }
     if (widget.focusNode == null) {
       _ownedFocus = FocusNode();
@@ -135,6 +197,24 @@ class _PhoneNumberCountryInputState extends State<PhoneNumberCountryInput> {
     final has = _effectiveFocus.hasFocus;
     if (_focused != has) {
       setState(() => _focused = has);
+    }
+  }
+
+  @override
+  void didUpdateWidget(covariant PhoneNumberCountryInput oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (!widget.readOnly || widget.controller != null) return;
+    final sameSource =
+        oldWidget.initialNationalDigits == widget.initialNationalDigits &&
+        oldWidget.displayCountry?.isoCode == widget.displayCountry?.isoCode &&
+        oldWidget.displayCountry?.dialCode == widget.displayCountry?.dialCode;
+    if (sameSource) return;
+    final next = displayNationalPhoneInField(
+      storedPhone: widget.initialNationalDigits ?? "",
+      country: widget.displayCountry,
+    );
+    if (_ownedController != null && _ownedController!.text != next) {
+      _ownedController!.text = next;
     }
   }
 

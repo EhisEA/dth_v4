@@ -6,9 +6,16 @@ class ImageAssets {
   static const String imagePath = "assets/images";
   static const String logo = "$imagePath/logo.png";
   static const String logo2 = "$imagePath/logo2.png";
+
   /////////////////////PROFILE//////////////////////
+  ///
   static const String user = "$imagePath/profile/user.png";
   static const String profileBg = "$imagePath/profile/profile_bg.png";
+
+  /////////////////////SUBSCRIPTION//////////////////////
+  static const String subscriptionBg =
+      "$imagePath/subscription/subscription_bg.png";
+  static const String phoneBg = "$imagePath/subscription/phone_bg.png";
 }
 
 class SvgAssets {
@@ -66,6 +73,10 @@ class SvgAssets {
   static const String support = "$svgPath/application/support.svg";
   static const String edit = "$svgPath/application/edit.svg";
   static const String calendarEdit = "$svgPath/application/calendar-edit.svg";
+
+  /////////////////////SUBSCRIPTION//////////////////////
+  ///
+  static const String check = "$svgPath/subscription/check.svg";
 }
 
 class LottieAssets {

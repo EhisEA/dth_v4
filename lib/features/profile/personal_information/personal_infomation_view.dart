@@ -77,15 +77,17 @@ class PersonalInfomationView extends ConsumerWidget {
             readOnly: true,
             initialNationalDigits: user.phoneNumber,
             displayCountry: displayCountry,
-            suffix: AppButton.primary(
-              height: 32,
-              width: 76,
-              text: "Verify Now",
-              radius: 30,
-              fontSize: 11,
-              fontWeight: FontWeight.w400,
-              press: () {},
-            ),
+            suffix: user.isPhoneVerified
+                ? null
+                : AppButton.primary(
+                    height: 32,
+                    width: 76,
+                    text: "Verify Now",
+                    radius: 30,
+                    fontSize: 11,
+                    fontWeight: FontWeight.w400,
+                    press: () {},
+                  ),
           ),
         ],
       ),

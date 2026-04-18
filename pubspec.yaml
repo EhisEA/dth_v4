@@ -53,6 +53,7 @@ dependencies:
   cached_network_image: ^3.4.1
   firebase_core: ^4.7.0
   firebase_messaging: ^16.2.0
+  carousel_slider: ^5.1.2
 
 dev_dependencies:
   flutter_test:
@@ -79,12 +80,14 @@ flutter:
   assets:
     - assets/images/
     - assets/images/profile/
+    - assets/images/subscription/
     - assets/svgs/
     - assets/svgs/application/
     - assets/svgs/auth/
     - assets/svgs/bottomNavBar/
     - assets/svgs/home/
     - assets/svgs/profile/
+    - assets/svgs/subscription/
     - assets/audio/
     - assets/lotties/
 
@@ -105,3 +108,18 @@ flutter:
           weight: 700
         - asset: assets/fonts/hanken-grotesk/HankenGrotesk-Black.ttf
           weight: 900
+          
+    - family: Matter
+      fonts:
+        - asset: assets/fonts/Matter/Matter-Light.ttf
+          weight: 300
+        - asset: assets/fonts/Matter/Matter-Regular.ttf
+          weight: 400
+        - asset: assets/fonts/Matter/Matter-Medium.ttf
+          weight: 500
+        - asset: assets/fonts/Matter/Matter-SemiBold.ttf
+          weight: 600
+        - asset: assets/fonts/Matter/Matter-Bold.ttf
+          weight: 700
+        - asset: assets/fonts/Matter/Matter-Heavy.ttf
+          weight: 800
