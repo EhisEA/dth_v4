@@ -3,10 +3,7 @@ import 'package:dth_v4/core/router/router.dart';
 import 'package:dth_v4/data/data.dart';
 import 'package:dth_v4/features/app_web_view/app_web_view.dart';
 import 'package:dth_v4/features/application/views/application_view.dart';
-import 'package:dth_v4/features/profile/profile_view/components/application_widget.dart';
-import 'package:dth_v4/features/profile/profile_view/components/contestant_pill.dart';
-import 'package:dth_v4/features/profile/profile_view/components/profile_tlle.dart';
-import 'package:dth_v4/features/profile/profile_view/view_model/profile_view_model.dart';
+import 'package:dth_v4/features/profile/profile.dart';
 import 'package:dth_v4/widgets/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -84,7 +81,12 @@ class _ProfileViewState extends ConsumerState<ProfileView> {
                         description: "Update your profile information",
                         icon: SvgAssets.personal,
                         showRightArrow: false,
-                        onTap: () {},
+                        onTap: () {
+                          _navigationService.navigateTo(
+                            PersonalInfomationView.path,
+                            extra: {RoutingArgumentKey.user: user},
+                          );
+                        },
                       ),
                       Gap.h28,
                       ProfileTlle(

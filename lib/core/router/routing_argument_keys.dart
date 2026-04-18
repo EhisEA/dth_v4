@@ -10,6 +10,7 @@ class RoutingArgumentKey {
   static const String otpFlow = "otpFlow";
 
   static const String applicationDraft = "applicationDraft";
+  static const String user = "user";
 }
 
 abstract class OtpFlowArg {

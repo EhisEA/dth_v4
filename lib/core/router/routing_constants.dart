@@ -24,6 +24,7 @@ class NavigatorRoutes {
   ////////////////PROFILE////////////////////
   ///
   static const String profile = "/profile";
+  static const String personalInformation = "/personal-information";
 
   ////////////////APPLICATION////////////////////
   ///

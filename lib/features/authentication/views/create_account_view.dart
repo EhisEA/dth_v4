@@ -221,7 +221,6 @@ class _CreateAccountViewState extends ConsumerState<CreateAccountView> {
                         Gap.h16,
                         PhoneNumberCountryInput(
                           title: 'Phone Number',
-                          hint: '702 3456 789',
                           controller: _phoneController,
                           focusNode: _phoneFocus,
                           displayCountry: _selectedCountry,
