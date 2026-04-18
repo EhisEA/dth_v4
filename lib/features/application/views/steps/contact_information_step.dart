@@ -1,6 +1,7 @@
 import "package:dth_v4/core/core.dart";
-import "package:dth_v4/features/application/data/application_stub_options.dart";
-import "package:dth_v4/features/application/view_model/application_wizard_notifier.dart";
+import "package:dth_v4/data/models/application_process_models.dart";
+import "package:dth_v4/data/models/application_wizard_inputs.dart";
+import "package:dth_v4/features/application/view_model/application_view_model.dart";
 import "package:dth_v4/widgets/widgets.dart";
 import "package:flutter/material.dart";
 import "package:flutter_riverpod/flutter_riverpod.dart";
@@ -11,10 +12,12 @@ class ContactInformationStep extends ConsumerStatefulWidget {
     super.key,
     required this.formKey,
     required this.onRegisterPersist,
+    required this.applicationProcess,
   });
 
   final GlobalKey<FormState> formKey;
   final void Function(void Function() persist) onRegisterPersist;
+  final ApplicationProcess applicationProcess;
 
   @override
   ConsumerState<ContactInformationStep> createState() =>
@@ -52,41 +55,45 @@ class _ContactInformationStepState extends ConsumerState<ContactInformationStep>
 
   void _persist() {
     ref
-        .read(applicationWizardProvider.notifier)
+        .read(applicationViewModelProvider)
         .setContact(
-          residentialAddress: _addressController.text.trim(),
-          stateOfResidence: _stateOfResidence ?? '',
-          cityOfResidence: _cityOfResidence ?? '',
-          stateOfOrigin: _stateOfOrigin ?? '',
-          lga: _lga ?? '',
-          nearestCampus: _nearestCampus ?? '',
+          ContactInformationInput(
+            residentialAddress: _addressController.text.trim(),
+            stateOfResidence: _stateOfResidence ?? '',
+            cityOfResidence: _cityOfResidence ?? '',
+            stateOfOrigin: _stateOfOrigin ?? '',
+            lga: _lga ?? '',
+            nearestCampus: _nearestCampus ?? '',
+          ),
         );
   }
 
   List<AppDropdownOption<String>> _stateOptions() {
     return [
-      for (final s in ApplicationStubOptions.nigerianStates)
-        (value: s, label: s),
+      for (final location in widget.applicationProcess.locations)
+        (value: location.state, label: location.state),
     ];
   }
 
+  /// City/town uses LGAs for the selected state of residence (API has no separate cities list).
   List<AppDropdownOption<String>> _cityOptions() {
     if (_stateOfResidence == null) return [];
-    final list = ApplicationStubOptions.citiesByState[_stateOfResidence!];
-    if (list == null) return [];
-    return [for (final c in list) (value: c, label: c)];
+    final location = widget.applicationProcess.locationForState(_stateOfResidence!);
+    if (location == null) return [];
+    return [for (final c in location.lgas) (value: c, label: c)];
   }
 
   List<AppDropdownOption<String>> _lgaOptions() {
     if (_stateOfOrigin == null) return [];
-    final list = ApplicationStubOptions.lgasByState[_stateOfOrigin!];
-    if (list == null) return [];
-    return [for (final l in list) (value: l, label: l)];
+    final location = widget.applicationProcess.locationForState(_stateOfOrigin!);
+    if (location == null) return [];
+    return [for (final l in location.lgas) (value: l, label: l)];
   }
 
   List<AppDropdownOption<String>> _campusOptions() {
     return [
-      for (final c in ApplicationStubOptions.campuses) (value: c, label: c),
+      for (final location in widget.applicationProcess.locations)
+        (value: location.state, label: location.state),
     ];
   }
 

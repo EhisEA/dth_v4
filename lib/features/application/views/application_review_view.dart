@@ -2,7 +2,7 @@ import 'package:dth_v4/core/core.dart';
 import 'package:dth_v4/core/router/router.dart';
 import 'package:dth_v4/data/models/application_draft.dart';
 import 'package:dth_v4/features/application/components/review_section_card.dart';
-import 'package:dth_v4/features/application/view_model/application_wizard_notifier.dart';
+import 'package:dth_v4/features/application/view_model/application_view_model.dart';
 import 'package:dth_v4/widgets/text/textstyles.dart';
 import 'package:dth_v4/widgets/widgets.dart';
 import 'package:flutter/material.dart';
@@ -15,7 +15,7 @@ import 'package:flutter_utils/flutter_utils.dart';
 class ApplicationReviewView extends ConsumerStatefulWidget {
   const ApplicationReviewView({super.key, this.routeDraft});
 
-  /// When non-null (from route [RoutingArgumentKey.applicationDraft]), hydrates the wizard draft notifier so the UI matches the passed model.
+  /// When non-null (from route [RoutingArgumentKey.applicationDraft]), hydrates [ApplicationViewModel] so the UI matches the passed model.
   final ApplicationDraft? routeDraft;
 
   static const String path = NavigatorRoutes.applicationReview;
@@ -119,15 +119,17 @@ class _ApplicationReviewViewState extends ConsumerState<ApplicationReviewView> {
     if (d != null) {
       Future.microtask(() {
         if (!mounted) return;
-        ref.read(applicationWizardProvider.notifier).replaceDraft(d);
+        ref.read(applicationViewModelProvider).replaceDraft(d);
       });
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final draft = ref.watch(applicationWizardProvider);
-
+    // final draft = ref.watch(
+    //   applicationViewModelProvider.select((vm) => vm.draft),
+    // );
+    final draft = ref.watch(applicationViewModelProvider).draft;
     return GestureDetector(
       onTap: () => FocusScope.of(context).unfocus(),
       child: Scaffold(
@@ -233,14 +235,19 @@ class _ApplicationReviewViewState extends ConsumerState<ApplicationReviewView> {
                     text: 'Submit',
                     press: () async {
                       FocusScope.of(context).unfocus();
-                      await ref
-                          .read(applicationWizardProvider.notifier)
-                          .submitApplication();
-                      if (context.mounted) {
-                        Navigator.of(
-                          context,
-                        ).pop(ApplicationReviewView.submitPopResult);
+                      final vm = ref.read(applicationViewModelProvider);
+                      final body = vm.requestFromDraft(
+                        draft,
+                        isFinalStep: true,
+                      );
+                      final result = await vm.submitApplication(body);
+                      if (!context.mounted || result == null) {
+                        return;
                       }
+                      ref.read(applicationViewModelProvider).reset();
+                      Navigator.of(
+                        context,
+                      ).pop(ApplicationReviewView.submitPopResult);
                     },
                   ),
                 ),

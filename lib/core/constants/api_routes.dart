@@ -22,4 +22,8 @@ class ApiRoute {
   static String get registerVerifyOtp => "$baseUrl/auth/register/verify-otp";
   static String get login => "$baseUrl/auth/login";
   static String get loginVerifyOtp => "$baseUrl/auth/login/verify-otp";
+
+  ////APPLICATION
+  static String get application => "$baseUrl/application";
+  static String get applicationProcess => "$baseUrl/application/process";
 }

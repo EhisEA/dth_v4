@@ -42,7 +42,8 @@ class ApplicationDraft {
   final String stageName;
   final String talentCategory;
   final String talentDescription;
-  /// `Individual` or `Group` (see [ApplicationStubOptions.presentationModes]).
+
+  /// `Individual` or `Group` (matches API `presentation_modes` values).
   final String presentationMode;
   final String crewSize;
   final String participantNames;
@@ -56,8 +57,7 @@ class ApplicationDraft {
 
   static const ApplicationDraft empty = ApplicationDraft();
 
-  bool get isGroupPresentation =>
-      presentationMode.toLowerCase() == 'group';
+  bool get isGroupPresentation => presentationMode.toLowerCase() == 'group';
 
   ApplicationDraft copyWith({
     String? fullName,

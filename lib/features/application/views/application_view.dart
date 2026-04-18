@@ -1,6 +1,7 @@
 import 'package:dth_v4/core/core.dart';
 import 'package:dth_v4/core/router/router.dart';
-import 'package:dth_v4/features/application/view_model/application_wizard_notifier.dart';
+import 'package:dth_v4/data/models/application_process_models.dart';
+import 'package:dth_v4/features/application/view_model/application_view_model.dart';
 import 'package:dth_v4/features/application/views/application_review_view.dart';
 import 'package:dth_v4/features/application/views/steps/audition_video_step.dart';
 import 'package:dth_v4/features/application/views/steps/bank_details_step.dart';
@@ -35,11 +36,32 @@ class _ApplicationViewState extends ConsumerState<ApplicationView> {
   final List<void Function()?> _persistFns = List.filled(_totalSteps, null);
 
   int _currentIndex = 0;
+  bool _processLoading = true;
+  bool _processError = false;
 
   @override
   void initState() {
     super.initState();
     _pageController = PageController(initialPage: 0);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _loadApplicationProcess();
+    });
+  }
+
+  Future<void> _loadApplicationProcess() async {
+    if (!mounted) return;
+    setState(() {
+      _processLoading = true;
+      _processError = false;
+    });
+    final result = await ref
+        .read(applicationViewModelProvider)
+        .fetchApplicationProcess();
+    if (!mounted) return;
+    setState(() {
+      _processLoading = false;
+      _processError = result == null;
+    });
   }
 
   @override
@@ -62,6 +84,33 @@ class _ApplicationViewState extends ConsumerState<ApplicationView> {
         curve: Curves.easeOutCubic,
       );
     }
+  }
+
+  Widget _circleBackButton({required VoidCallback onTap}) {
+    return GestureDetector(
+      onTap: onTap,
+      behavior: HitTestBehavior.opaque,
+      child: Container(
+        height: 36,
+        width: 36,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          border: Border.all(color: AppColors.greyTint15),
+        ),
+        child: FittedBox(
+          fit: BoxFit.scaleDown,
+          child: SvgPicture.asset(
+            SvgAssets.backArrow,
+            height: 20,
+            width: 20,
+            colorFilter: const ColorFilter.mode(
+              AppColors.black,
+              BlendMode.srcIn,
+            ),
+          ),
+        ),
+      ),
+    );
   }
 
   String _primaryButtonLabel() {
@@ -107,7 +156,7 @@ class _ApplicationViewState extends ConsumerState<ApplicationView> {
         curve: Curves.easeOutCubic,
       );
     } else {
-      final draft = ref.read(applicationWizardProvider);
+      final draft = ref.read(applicationViewModelProvider).draft;
       final result = await MobileNavigationService.instance.navigateTo(
         ApplicationReviewView.path,
         extra: {RoutingArgumentKey.applicationDraft: draft},
@@ -127,6 +176,138 @@ class _ApplicationViewState extends ConsumerState<ApplicationView> {
 
   @override
   Widget build(BuildContext context) {
+    if (_processLoading) {
+      return GestureDetector(
+        onTap: () => FocusScope.of(context).unfocus(),
+        child: Scaffold(
+          backgroundColor: AppColors.white,
+          body: SafeArea(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 20,
+                    vertical: 10,
+                  ),
+                  child: Row(
+                    children: [
+                      _circleBackButton(
+                        onTap: () {
+                          HapticFeedback.lightImpact();
+                          Navigator.of(context).pop();
+                        },
+                      ),
+                    ],
+                  ),
+                ),
+                const Expanded(
+                  child: Center(child: CircularProgressIndicator()),
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+    }
+
+    if (_processError) {
+      return GestureDetector(
+        onTap: () => FocusScope.of(context).unfocus(),
+        child: Scaffold(
+          backgroundColor: AppColors.white,
+          body: SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 10),
+                    child: Row(
+                      children: [
+                        _circleBackButton(
+                          onTap: () {
+                            HapticFeedback.lightImpact();
+                            Navigator.of(context).pop();
+                          },
+                        ),
+                      ],
+                    ),
+                  ),
+                  const Spacer(),
+                  AppText.medium(
+                    'Could not load application',
+                    fontSize: 20,
+                    color: AppColors.tertiary60,
+                  ),
+                  Gap.h12,
+                  AppText.regular(
+                    'Check your connection and try again.',
+                    fontSize: 14,
+                    height: 1.4,
+                    color: AppColors.blackTint20,
+                  ),
+                  Gap.h24,
+                  AppButton.primary(
+                    text: 'Retry',
+                    press: _loadApplicationProcess,
+                  ),
+                  const Spacer(),
+                ],
+              ),
+            ),
+          ),
+        ),
+      );
+    }
+
+    final ApplicationProcess? process =
+        ref.watch(applicationViewModelProvider).applicationProcess;
+    if (process == null) {
+      return GestureDetector(
+        onTap: () => FocusScope.of(context).unfocus(),
+        child: Scaffold(
+          backgroundColor: AppColors.white,
+          body: SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 10),
+                    child: Row(
+                      children: [
+                        _circleBackButton(
+                          onTap: () {
+                            HapticFeedback.lightImpact();
+                            Navigator.of(context).pop();
+                          },
+                        ),
+                      ],
+                    ),
+                  ),
+                  const Spacer(),
+                  AppText.medium(
+                    'Something went wrong',
+                    fontSize: 20,
+                    color: AppColors.tertiary60,
+                  ),
+                  Gap.h24,
+                  AppButton.primary(
+                    text: 'Retry',
+                    press: _loadApplicationProcess,
+                  ),
+                  const Spacer(),
+                ],
+              ),
+            ),
+          ),
+        ),
+      );
+    }
+
     return GestureDetector(
       onTap: () => FocusScope.of(context).unfocus(),
       child: Scaffold(
@@ -193,14 +374,17 @@ class _ApplicationViewState extends ConsumerState<ApplicationView> {
                     PersonalInformationStep(
                       formKey: _formKeys[0],
                       onRegisterPersist: (fn) => _registerPersist(0, fn),
+                      applicationProcess: process,
                     ),
                     ContactInformationStep(
                       formKey: _formKeys[1],
                       onRegisterPersist: (fn) => _registerPersist(1, fn),
+                      applicationProcess: process,
                     ),
                     TalentShowcaseStep(
                       formKey: _formKeys[2],
                       onRegisterPersist: (fn) => _registerPersist(2, fn),
+                      applicationProcess: process,
                     ),
                     AuditionVideoStep(
                       formKey: _formKeys[3],
@@ -209,6 +393,7 @@ class _ApplicationViewState extends ConsumerState<ApplicationView> {
                     BankDetailsStep(
                       formKey: _formKeys[4],
                       onRegisterPersist: (fn) => _registerPersist(4, fn),
+                      applicationProcess: process,
                     ),
                   ],
                 ),

@@ -1,6 +1,13 @@
-/// Stub lists until API/static JSON assets exist.
+/// Stub lists for local development / design-time reference only.
+///
+/// Application UI should use [ApplicationViewModel.fetchApplicationProcess] and
+/// [ApplicationProcess] instead of importing this library.
 abstract final class ApplicationStubOptions {
-  static const List<String> genders = ['Male', 'Female', 'Prefer not to say'];
+  static const List<String> genders = [
+    'Male',
+    'Female',
+    'Prefer not to say',
+  ];
 
   static const List<String> nigerianStates = [
     'Lagos',
@@ -45,6 +52,12 @@ abstract final class ApplicationStubOptions {
     'Acting',
     'Other',
   ];
+
+  /// 1-based index aligned with stub list order (legacy); use API talent categories in production.
+  static int talentCategoryIdForLabel(String label) {
+    final i = talentCategories.indexOf(label.trim());
+    return i >= 0 ? i + 1 : 1;
+  }
 
   static const List<String> presentationModes = ['Individual', 'Group'];
 
