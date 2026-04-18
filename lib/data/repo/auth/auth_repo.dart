@@ -7,12 +7,15 @@ abstract class AuthRepo {
   Future<ApiResponse<RegisterInitResult>> register({
     required String fullName,
     required String email,
+    required String isoCode,
+    required String phone,
     required String deviceName,
   });
 
   Future<ApiResponse<RegistrationCompleteResult>> verifyRegisterOtp({
     required String otp,
     required String signature,
+    required String fcmToken,
   });
 
   Future<ApiResponse<RegisterInitResult>> login({
@@ -20,9 +23,20 @@ abstract class AuthRepo {
     required String deviceName,
   });
 
+  Future<ApiResponse<RegisterInitResult>> resendRegisterOtp({
+    required String email,
+    required String deviceName,
+  });
+
+  Future<ApiResponse<RegisterInitResult>> resendLoginOtp({
+    required String email,
+    required String deviceName,
+  });
+
   Future<ApiResponse<RegistrationCompleteResult>> verifyLoginOtp({
     required String otp,
     required String signature,
+    required String fcmToken,
   });
 
   /// Revokes the session on the server (best effort) and clears local auth state.

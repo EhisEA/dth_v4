@@ -1,5 +1,6 @@
 import 'package:dth_v4/core/core.dart';
 import 'package:dth_v4/core/router/router.dart';
+import 'package:dth_v4/data/data.dart';
 import 'package:dth_v4/features/app_web_view/app_web_view.dart';
 import 'package:dth_v4/features/authentication/view_model/create_account_view_model.dart';
 import 'package:dth_v4/features/authentication/views/login_view.dart';
@@ -24,18 +25,23 @@ class _CreateAccountViewState extends ConsumerState<CreateAccountView> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   late final FocusNode _nameFocus;
   late final FocusNode _emailFocus;
+  late final FocusNode _phoneFocus;
   late final TextEditingController _nameController;
   late final TextEditingController _emailController;
+  late final TextEditingController _phoneController;
   late final TapGestureRecognizer _termsTap;
   late final TapGestureRecognizer _privacyTap;
+  DthCountry? _selectedCountry;
 
   @override
   void initState() {
     super.initState();
     _nameFocus = FocusNode();
     _emailFocus = FocusNode();
+    _phoneFocus = FocusNode();
     _nameController = TextEditingController();
     _emailController = TextEditingController();
+    _phoneController = TextEditingController();
     _termsTap = TapGestureRecognizer()..onTap = _onTermsPressed;
     _privacyTap = TapGestureRecognizer()..onTap = _onPrivacyPressed;
   }
@@ -44,8 +50,10 @@ class _CreateAccountViewState extends ConsumerState<CreateAccountView> {
   void dispose() {
     _nameFocus.dispose();
     _emailFocus.dispose();
+    _phoneFocus.dispose();
     _nameController.dispose();
     _emailController.dispose();
+    _phoneController.dispose();
     _termsTap.dispose();
     _privacyTap.dispose();
     super.dispose();
@@ -76,16 +84,32 @@ class _CreateAccountViewState extends ConsumerState<CreateAccountView> {
   Future<void> _onCreateAccount() async {
     FocusScope.of(context).unfocus();
     if (!(_formKey.currentState?.validate() ?? false)) return;
+    final country = _selectedCountry;
+    if (country == null) {
+      DthFlushBar.instance.showError(
+        title: 'Phone',
+        message: 'Select a country and enter your phone number.',
+      );
+      return;
+    }
     final email = _emailController.text.trim();
     final fullName = _nameController.text.trim();
+    final phone = composeInternationalPhone(
+      country: country,
+      nationalInput: _phoneController.text.trim(),
+    );
     final model = ref.read(createAccountViewModelProvider);
-    final signature = await model.register(fullName: fullName, email: email);
+    final signature = await model.register(
+      fullName: fullName,
+      email: email,
+      isoCode: country.isoCode,
+      phone: phone,
+    );
     if (signature == null || !mounted) return;
     MobileNavigationService.instance.push(
       VerifyOtpView.path,
       extra: {
         RoutingArgumentKey.email: email,
-        RoutingArgumentKey.fullName: fullName,
         RoutingArgumentKey.signature: signature,
         RoutingArgumentKey.otpFlow: OtpFlowArg.register,
       },
@@ -94,6 +118,25 @@ class _CreateAccountViewState extends ConsumerState<CreateAccountView> {
 
   @override
   Widget build(BuildContext context) {
+    ref.listen<AsyncValue<List<DthCountry>>>(countriesListProvider, (_, next) {
+      next.whenData((list) {
+        if (!mounted || _selectedCountry != null) return;
+        DthCountry? pick;
+        for (final c in list) {
+          if (c.isoCode == 'NG') {
+            pick = c;
+            break;
+          }
+        }
+        pick ??= list.isNotEmpty ? list.first : null;
+        if (pick != null) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (mounted) setState(() => _selectedCountry = pick);
+          });
+        }
+      });
+    });
+
     final model = ref.watch(createAccountViewModelProvider);
     final theme = Theme.of(context);
     const bodyColor = Color(0xFF6A6A6A);
@@ -154,6 +197,8 @@ class _CreateAccountViewState extends ConsumerState<CreateAccountView> {
                           focusNode: _nameFocus,
                           validator: Validator.fullname,
                           textInputAction: TextInputAction.next,
+                          onSubmitted: (_) =>
+                              FocusScope.of(context).requestFocus(_emailFocus),
                           formatter: [
                             FilteringTextInputFormatter.singleLineFormatter,
                           ],
@@ -166,10 +211,32 @@ class _CreateAccountViewState extends ConsumerState<CreateAccountView> {
                           focusNode: _emailFocus,
                           validator: Validator.email,
                           keyboardType: TextInputType.emailAddress,
-                          textInputAction: TextInputAction.done,
+                          textInputAction: TextInputAction.next,
+                          onSubmitted: (_) =>
+                              FocusScope.of(context).requestFocus(_phoneFocus),
                           formatter: [
                             FilteringTextInputFormatter.singleLineFormatter,
                           ],
+                        ),
+                        Gap.h16,
+                        PhoneNumberCountryInput(
+                          title: 'Phone Number',
+                          hint: '702 3456 789',
+                          controller: _phoneController,
+                          focusNode: _phoneFocus,
+                          displayCountry: _selectedCountry,
+                          textInputAction: TextInputAction.done,
+                          onCountryTap: () {
+                            showCountryPickerBottomSheet(
+                              context,
+                              initialCountry: _selectedCountry,
+                              onSelected: (c) =>
+                                  setState(() => _selectedCountry = c),
+                            );
+                          },
+                          onSubmitted: (_) => FocusScope.of(context).unfocus(),
+                          validator: (v) =>
+                              validateNationalPhone(v, _selectedCountry),
                         ),
                         Gap.h28,
                       ],

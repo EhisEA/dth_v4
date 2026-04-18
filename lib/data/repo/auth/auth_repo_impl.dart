@@ -38,11 +38,19 @@ class AuthRepoImpl implements AuthRepo {
   Future<ApiResponse<RegisterInitResult>> register({
     required String fullName,
     required String email,
+    required String isoCode,
+    required String phone,
     required String deviceName,
   }) async {
     final response = await _networkService.post(
       ApiRoute.register,
-      data: {"full_name": fullName, "email": email, "device_name": deviceName},
+      data: {
+        "full_name": fullName,
+        "email": email,
+        "iso_code": isoCode,
+        "phone": phone,
+        "device_name": deviceName,
+      },
     );
     final data =
         (response.data as Map<String, dynamic>)["data"] as Map<String, dynamic>;
@@ -53,10 +61,11 @@ class AuthRepoImpl implements AuthRepo {
   Future<ApiResponse<RegistrationCompleteResult>> verifyRegisterOtp({
     required String otp,
     required String signature,
+    required String fcmToken,
   }) async {
     final response = await _networkService.post(
       ApiRoute.registerVerifyOtp,
-      data: {"token": otp, "signature": signature},
+      data: {"token": otp, "signature": signature, "fcm_token": fcmToken},
     );
     final data = (response.data as Map<String, dynamic>)["data"];
     final result = RegistrationCompleteResult.fromJson(data);
@@ -83,13 +92,42 @@ class AuthRepoImpl implements AuthRepo {
   }
 
   @override
+  Future<ApiResponse<RegisterInitResult>> resendRegisterOtp({
+    required String email,
+    required String deviceName,
+  }) async {
+    final response = await _networkService.post(
+      ApiRoute.registerResendOtp,
+      data: {"email": email, "device_name": deviceName},
+    );
+    final data =
+        (response.data as Map<String, dynamic>)["data"] as Map<String, dynamic>;
+    return ApiResponse(data: RegisterInitResult.fromJson(data));
+  }
+
+  @override
+  Future<ApiResponse<RegisterInitResult>> resendLoginOtp({
+    required String email,
+    required String deviceName,
+  }) async {
+    final response = await _networkService.post(
+      ApiRoute.loginResendOtp,
+      data: {"email": email, "device_name": deviceName},
+    );
+    final data =
+        (response.data as Map<String, dynamic>)["data"] as Map<String, dynamic>;
+    return ApiResponse(data: RegisterInitResult.fromJson(data));
+  }
+
+  @override
   Future<ApiResponse<RegistrationCompleteResult>> verifyLoginOtp({
     required String otp,
     required String signature,
+    required String fcmToken,
   }) async {
     final response = await _networkService.post(
       ApiRoute.loginVerifyOtp,
-      data: {"token": otp, "signature": signature},
+      data: {"token": otp, "signature": signature, "fcm_token": fcmToken},
     );
     final data =
         (response.data as Map<String, dynamic>)["data"] as Map<String, dynamic>;

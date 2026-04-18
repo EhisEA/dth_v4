@@ -51,6 +51,8 @@ dependencies:
   webview_flutter: ^4.13.1
   persistent_bottom_nav_bar: ^6.2.1
   cached_network_image: ^3.4.1
+  firebase_core: ^4.7.0
+  firebase_messaging: ^16.2.0
 
 dev_dependencies:
   flutter_test:

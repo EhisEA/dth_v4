@@ -24,3 +24,4 @@ class SplashViewModel extends BaseChangeNotifierViewModel {
     }
   }
 }
+t

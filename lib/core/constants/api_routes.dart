@@ -20,6 +20,9 @@ class ApiRoute {
   static String get logout => "$baseUrl/auth/logout";
   static String get register => "$baseUrl/auth/register";
   static String get registerVerifyOtp => "$baseUrl/auth/register/verify-otp";
+  static String get registerResendOtp => "$baseUrl/auth/register/resend-otp";
   static String get login => "$baseUrl/auth/login";
   static String get loginVerifyOtp => "$baseUrl/auth/login/verify-otp";
+  static String get loginResendOtp => "$baseUrl/auth/login/resend-otp";
+  static String get countries => "$baseUrl/countries";
 }

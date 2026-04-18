@@ -12,12 +12,16 @@ class CreateAccountViewModel extends BaseChangeNotifierViewModel {
   Future<String?> register({
     required String fullName,
     required String email,
+    required String isoCode,
+    required String phone,
   }) async {
     try {
       changeBaseState(const ViewModelState.busy());
       final response = await _authRepository.register(
         fullName: fullName,
         email: email,
+        isoCode: isoCode,
+        phone: phone,
         deviceName: await deviceInfoState.getDeviceName(),
       );
       changeBaseState(const ViewModelState.idle());

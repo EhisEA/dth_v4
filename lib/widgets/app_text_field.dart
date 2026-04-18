@@ -169,7 +169,7 @@ class _AppTextFieldState extends State<AppTextField> {
                             widget.title!,
                             fontSize: widget.titleSize ?? 10,
                             letterSpacing: -0.2,
-                            color: widget.titleColor ?? AppColors.tint15,
+                            color: widget.titleColor ?? AppColors.black,
                           ),
                         ],
                         SizedBox(
