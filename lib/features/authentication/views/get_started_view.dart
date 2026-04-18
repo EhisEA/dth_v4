@@ -3,6 +3,7 @@ import 'package:dth_v4/core/router/router.dart';
 import 'package:dth_v4/features/app_web_view/app_web_view.dart';
 import 'package:dth_v4/features/authentication/views/create_account_view.dart';
 import 'package:dth_v4/features/bottomNavBar/bottom_nav_bar.dart';
+import 'package:dth_v4/widgets/text/text.dart';
 import 'package:dth_v4/widgets/widgets.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -71,14 +72,12 @@ class _GetStartedViewState extends State<GetStartedView> {
           height: 1.45,
         ) ??
         TextStyle(color: bodyColor, fontSize: 12, height: 1.45);
-    final linkStyle = baseStyle.copyWith(
+    final linkStyle = AppTextStyle.regular.copyWith(
       color: linkColor,
-      fontWeight: FontWeight.w400,
       fontSize: 12,
     );
-    final blackStyle = baseStyle.copyWith(
+    final blackStyle = AppTextStyle.regular.copyWith(
       color: AppColors.black,
-      fontWeight: FontWeight.w400,
       fontSize: 12,
     );
 

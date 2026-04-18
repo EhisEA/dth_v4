@@ -2,6 +2,8 @@ import "package:dth_v4/core/core.dart";
 import "package:dth_v4/data/models/application_process_models.dart";
 import "package:dth_v4/data/models/application_wizard_inputs.dart";
 import "package:dth_v4/features/application/view_model/application_view_model.dart";
+import "package:dth_v4/data/data.dart";
+import "package:dth_v4/features/application/data/application_stub_options.dart";
 import "package:dth_v4/widgets/widgets.dart";
 import "package:flutter/material.dart";
 import "package:flutter/services.dart";
@@ -42,6 +44,7 @@ class _PersonalInformationStepState
   late final TextEditingController _dobController;
   late final TextEditingController _phoneController;
   String? _gender;
+  DthCountry? _selectedCountry;
 
   static final _dobFormat = DateFormat('dd-MM-yyyy');
 
@@ -73,6 +76,11 @@ class _PersonalInformationStepState
   }
 
   void _persist() {
+    final national = _phoneController.text.trim();
+    final phone = composeInternationalPhone(
+      country: _selectedCountry,
+      nationalInput: national,
+    );
     ref
         .read(applicationViewModelProvider)
         .setPersonal(
@@ -81,7 +89,7 @@ class _PersonalInformationStepState
             email: _emailController.text.trim(),
             dateOfBirthDisplay: _dobController.text.trim(),
             gender: _gender ?? '',
-            phoneNumber: _phoneController.text.trim(),
+            phoneNumber: phone,
           ),
         );
   }
@@ -115,6 +123,24 @@ class _PersonalInformationStepState
   @override
   Widget build(BuildContext context) {
     super.build(context);
+    ref.listen<AsyncValue<List<DthCountry>>>(countriesListProvider, (_, next) {
+      next.whenData((list) {
+        if (!mounted || _selectedCountry != null) return;
+        DthCountry? pick;
+        for (final c in list) {
+          if (c.isoCode == 'NG') {
+            pick = c;
+            break;
+          }
+        }
+        pick ??= list.isNotEmpty ? list.first : null;
+        if (pick != null) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (mounted) setState(() => _selectedCountry = pick);
+          });
+        }
+      });
+    });
     final genderOptions = [
       for (final gender in widget.applicationProcess.genderOptions)
         (value: gender.label, label: gender.label),
@@ -192,16 +218,22 @@ class _PersonalInformationStepState
           ),
 
           Gap.h16,
-          AppTextField(
+          PhoneNumberCountryInput(
             title: 'Phone Number',
             hint: 'Enter phone number',
             controller: _phoneController,
             focusNode: _phoneFocus,
-            validator: Validator.phone,
-            titleColor: AppColors.black,
-            keyboardType: TextInputType.phone,
+            displayCountry: _selectedCountry,
             textInputAction: TextInputAction.done,
-            formatter: [FilteringTextInputFormatter.singleLineFormatter],
+            onCountryTap: () {
+              showCountryPickerBottomSheet(
+                context,
+                initialCountry: _selectedCountry,
+                onSelected: (c) => setState(() => _selectedCountry = c),
+              );
+            },
+            onSubmitted: (_) => FocusScope.of(context).unfocus(),
+            validator: (v) => validateNationalPhone(v, _selectedCountry),
           ),
           Gap.h32,
         ],

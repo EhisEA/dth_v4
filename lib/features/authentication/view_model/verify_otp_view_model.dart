@@ -1,3 +1,4 @@
+import 'package:dth_v4/core/core.dart';
 import 'package:dth_v4/core/router/routing_argument_keys.dart';
 import 'package:dth_v4/data/data.dart';
 import 'package:dth_v4/data/repo/auth/auth.dart';
@@ -27,22 +28,16 @@ class VerifyOtpViewModel extends BaseChangeNotifierViewModel {
   final ValueNotifier<DateTime> endTime;
 
   String _email = '';
-  String _fullName = '';
   String? _otpSignature;
   String _otpFlow = OtpFlowArg.register;
 
   String get email => _email;
   String? get registrationSignature => _otpSignature;
 
-  /// Values are supplied by [AppRouter] via [VerifyOtpView] (single source of truth).
-  void hydrate({
-    String? fullName,
-    String? signature,
-    String? otpFlow,
-    int? ttlSeconds,
-  }) {
-    _email = _initialEmail;
-    _fullName = (fullName != null && fullName.isNotEmpty) ? fullName : '';
+  bool get _isLoginFlow => _otpFlow == OtpFlowArg.login;
+
+  void hydrate({String? signature, String? otpFlow, int? ttlSeconds}) {
+    _email = _initialEmail.trim();
     _otpSignature = (signature != null && signature.isNotEmpty)
         ? signature
         : null;
@@ -67,56 +62,61 @@ class VerifyOtpViewModel extends BaseChangeNotifierViewModel {
     assignEndTime(ttlSeconds: _defaultCooldownSeconds);
   }
 
-  /// Re-sends OTP for the current flow (login or registration).
+  String? _resendPreconditionMessage() {
+    if (_email.isEmpty) {
+      return 'Missing email. Go back and start again.';
+    }
+    if (_otpSignature == null || _otpSignature!.isEmpty) {
+      if (_isLoginFlow) {
+        return 'Start sign-in again from the login screen.';
+      }
+      return 'Go back and complete sign-up to request a new code.';
+    }
+    return null;
+  }
+
+  Future<String?> resendRegistrationOtp() async {
+    final deviceName = await deviceInfoState.getDeviceName();
+    final response = await _authRepo.resendRegisterOtp(
+      email: _email,
+      deviceName: deviceName,
+    );
+    return response.data?.signature;
+  }
+
+  Future<String?> resendLoginOtp() async {
+    final deviceName = await deviceInfoState.getDeviceName();
+    final response = await _authRepo.resendLoginOtp(
+      email: _email,
+      deviceName: deviceName,
+    );
+    return response.data?.signature;
+  }
+
   Future<void> resendOtp() async {
-    if (_email.isEmpty) return;
     if (isBaseBusy) return;
 
-    if (_otpFlow == OtpFlowArg.login) {
-      if (_otpSignature == null || _otpSignature!.isEmpty) {
-        DthFlushBar.instance.showError(
-          title: 'Resend code',
-          message: 'Start sign-in again from the login screen.',
-        );
-        return;
-      }
-    } else {
-      if (_fullName.isEmpty || _otpSignature == null) {
-        DthFlushBar.instance.showError(
-          title: 'Resend code',
-          message: 'Resend is only available during email sign-up.',
-        );
-        return;
-      }
+    final block = _resendPreconditionMessage();
+    if (block != null) {
+      DthFlushBar.instance.showError(title: 'Resend code', message: block);
+      return;
     }
 
     try {
       changeBaseState(const ViewModelState.busy());
-      if (_otpFlow == OtpFlowArg.login) {
-        final response = await _authRepo.login(
-          email: _email,
-          deviceName: await deviceInfoState.getDeviceName(),
-        );
-        changeBaseState(const ViewModelState.idle());
-        final signature = response.data?.signature;
-        if (signature != null && signature.isNotEmpty) {
-          _otpSignature = signature;
-          onOtpResentCooldown();
-          notifyListeners();
-        }
-      } else {
-        final response = await _authRepo.register(
-          fullName: _fullName,
-          email: _email,
-          deviceName: await deviceInfoState.getDeviceName(),
-        );
-        changeBaseState(const ViewModelState.idle());
-        final signature = response.data?.signature;
-        if (signature != null && signature.isNotEmpty) {
-          _otpSignature = signature;
-          onOtpResentCooldown();
-          notifyListeners();
-        }
+      final newSignature = _isLoginFlow
+          ? await resendLoginOtp()
+          : await resendRegistrationOtp();
+      changeBaseState(const ViewModelState.idle());
+      DthFlushBar.instance.showSuccess(
+        title: 'Success',
+        message: 'Code resent successfully',
+      );
+
+      if (newSignature != null && newSignature.isNotEmpty) {
+        _otpSignature = newSignature;
+        onOtpResentCooldown();
+        notifyListeners();
       }
     } on ApiFailure catch (e) {
       changeBaseState(ViewModelState.error(e));
@@ -124,7 +124,6 @@ class VerifyOtpViewModel extends BaseChangeNotifierViewModel {
     }
   }
 
-  /// Verifies OTP, persists session on success. Returns `true` if navigation should run.
   Future<bool> submitOtp(String code) async {
     if (isBaseBusy) return false;
     final sig = _otpSignature;
@@ -137,11 +136,21 @@ class VerifyOtpViewModel extends BaseChangeNotifierViewModel {
       return false;
     }
     try {
+      final fcmToken = await PushNotificationService.getToken();
+
       changeBaseState(const ViewModelState.busy());
-      if (_otpFlow == OtpFlowArg.login) {
-        await _authRepo.verifyLoginOtp(otp: code, signature: sig);
+      if (_isLoginFlow) {
+        await _authRepo.verifyLoginOtp(
+          otp: code,
+          signature: sig,
+          fcmToken: fcmToken ?? "",
+        );
       } else {
-        await _authRepo.verifyRegisterOtp(otp: code, signature: sig);
+        await _authRepo.verifyRegisterOtp(
+          otp: code,
+          signature: sig,
+          fcmToken: fcmToken ?? "",
+        );
       }
       await _userState.getUserDetails();
       changeBaseState(const ViewModelState.idle());

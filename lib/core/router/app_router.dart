@@ -61,13 +61,10 @@ class AppRouter {
 
       case VerifyOtpView.path:
         final email = routeArgs[RoutingArgumentKey.email] as String? ?? '';
-        final fullName =
-            routeArgs[RoutingArgumentKey.fullName] as String? ?? '';
         return _getPageRoute(
           settings: settings,
           viewToShow: VerifyOtpView(
             email: email,
-            fullName: fullName,
             signature: routeArgs[RoutingArgumentKey.signature] as String?,
             otpFlow: routeArgs[RoutingArgumentKey.otpFlow] as String?,
             ttlSeconds: routeArgs['ttlSeconds'] as int?,

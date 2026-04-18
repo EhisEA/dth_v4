@@ -12,7 +12,6 @@ class VerifyOtpView extends ConsumerStatefulWidget {
   const VerifyOtpView({
     super.key,
     required this.email,
-    this.fullName,
     this.signature,
     this.otpFlow,
     this.ttlSeconds,
@@ -21,7 +20,6 @@ class VerifyOtpView extends ConsumerStatefulWidget {
   static const String path = NavigatorRoutes.verifyOtp;
 
   final String email;
-  final String? fullName;
   final String? signature;
   final String? otpFlow;
   final int? ttlSeconds;
@@ -44,7 +42,6 @@ class _VerifyOtpViewState extends ConsumerState<VerifyOtpView> {
       ref
           .read(verifyOtpViewModelProvider(widget.email))
           .hydrate(
-            fullName: widget.fullName,
             signature: widget.signature,
             otpFlow: widget.otpFlow,
             ttlSeconds: widget.ttlSeconds,
