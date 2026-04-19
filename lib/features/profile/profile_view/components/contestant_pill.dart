@@ -23,9 +23,13 @@ class ContestantPill extends StatelessWidget {
     final role = user?.participationRole ?? ParticipationRole.user;
     switch (role) {
       case ParticipationRole.contestant:
-        return _dualPills(label: "CONTESTANT", uid: user?.uid ?? "");
+        final u = user;
+        if (u == null) return _singlePill("BASIC PLAN");
+        return _dualPills(label: "CONTESTANT", user: u);
       case ParticipationRole.applicant:
-        return _dualPills(label: "APPLICANT", uid: user?.uid ?? "");
+        final u = user;
+        if (u == null) return _singlePill("BASIC PLAN");
+        return _dualPills(label: "APPLICANT", user: u);
       case ParticipationRole.user:
       case ParticipationRole.unknown:
         return _singlePill("BASIC PLAN");
@@ -43,7 +47,7 @@ class ContestantPill extends StatelessWidget {
     );
   }
 
-  Widget _dualPills({required String label, required String uid}) {
+  Widget _dualPills({required String label, required UserModel user}) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       mainAxisSize: MainAxisSize.min,
@@ -57,7 +61,7 @@ class ContestantPill extends StatelessWidget {
           ),
         ),
         Gap.w8,
-        _IdPill(uid: uid),
+        _IdPill(user: user),
       ],
     );
   }
@@ -83,9 +87,9 @@ class _PillShell extends StatelessWidget {
 }
 
 class _IdPill extends StatelessWidget {
-  const _IdPill({required this.uid});
+  const _IdPill({required this.user});
 
-  final String uid;
+  final UserModel user;
 
   String _displayUid(String raw) {
     if (raw.isEmpty) return "—";
@@ -96,14 +100,17 @@ class _IdPill extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final uid = user.participationType.id ?? "";
     final display = _displayUid(uid);
     return Material(
       color: Colors.transparent,
       child: InkWell(
-        onTap: uid.isEmpty
+        onTap: user.participationType.id == null
             ? null
             : () {
-                Clipboard.setData(ClipboardData(text: uid));
+                Clipboard.setData(
+                  ClipboardData(text: user.participationType.id ?? ""),
+                );
                 HapticFeedback.lightImpact();
               },
         borderRadius: BorderRadius.circular(100),
