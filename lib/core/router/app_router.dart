@@ -1,5 +1,5 @@
 import 'package:dth_v4/core/router/router.dart';
-import 'package:dth_v4/data/models/application_draft.dart';
+import 'package:dth_v4/data/data.dart';
 import 'package:dth_v4/features/app_web_view/app_web_view.dart';
 import 'package:dth_v4/features/application/views/application_review_view.dart';
 import 'package:dth_v4/features/application/views/application_view.dart';
@@ -9,9 +9,11 @@ import 'package:dth_v4/features/authentication/views/login_view.dart';
 import 'package:dth_v4/features/authentication/views/verify_otp_view.dart';
 import 'package:dth_v4/features/bottomNavBar/bottom_nav_bar.dart';
 import 'package:dth_v4/features/home/home_view.dart';
+import 'package:dth_v4/features/profile/personal_information/personal_infomation_view.dart';
 import 'package:dth_v4/features/stories/views/stories_view.dart';
 import 'package:dth_v4/features/search/search_view.dart';
 import 'package:dth_v4/features/splash/views/splash_view.dart';
+import 'package:dth_v4/features/subscription/subscription.dart';
 import 'package:flutter/material.dart';
 
 class AppRouter {
@@ -110,6 +112,23 @@ class AppRouter {
         return _getPageRoute(
           settings: settings,
           viewToShow: ApplicationReviewView(routeDraft: reviewDraft),
+        );
+
+      ////////////////PERSONAL INFORMATION VIEW////////////////////
+      case PersonalInfomationView.path:
+        final user = routeArgs[RoutingArgumentKey.user] as UserModel;
+        return _getPageRoute(
+          settings: settings,
+          viewToShow: PersonalInfomationView(user: user),
+        );
+
+      ////////////////SUBSCRIPTION VIEW////////////////////
+      case ConfirmationView.path:
+        final confirmationSuccess =
+            routeArgs[RoutingArgumentKey.confirmationSuccess] as bool? ?? true;
+        return _getPageRoute(
+          settings: settings,
+          viewToShow: ConfirmationView(isSuccess: confirmationSuccess),
         );
 
       default:

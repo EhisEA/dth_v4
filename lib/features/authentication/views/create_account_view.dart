@@ -164,6 +164,7 @@ class _CreateAccountViewState extends ConsumerState<CreateAccountView> {
         FocusScope.of(context).unfocus();
       },
       child: Scaffold(
+        backgroundColor: AppColors.scaffold,
         body: SafeArea(
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -221,7 +222,6 @@ class _CreateAccountViewState extends ConsumerState<CreateAccountView> {
                         Gap.h16,
                         PhoneNumberCountryInput(
                           title: 'Phone Number',
-                          hint: '702 3456 789',
                           controller: _phoneController,
                           focusNode: _phoneFocus,
                           displayCountry: _selectedCountry,

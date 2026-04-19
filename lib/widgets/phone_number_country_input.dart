@@ -32,31 +32,104 @@ String composeInternationalPhone({
   return "$dial$digits";
 }
 
+String _digitsOnly(String s) => s.replaceAll(RegExp(r"\D"), "");
+
+/// Removes [country]’s dial prefix from [storedPhone] when it is full
+/// international form (e.g. `+2349020971619` → `9020971619`).
+String nationalDigitsWithoutDialCode({
+  required String storedPhone,
+  required DthCountry? country,
+}) {
+  final all = _digitsOnly(storedPhone);
+  if (country == null) return all;
+  final dial = _digitsOnly(country.dialCode);
+  if (dial.isEmpty) return all;
+  if (all.startsWith(dial) && all.length > dial.length) {
+    return all.substring(dial.length);
+  }
+  return all;
+}
+
+/// Nigerian numbers sometimes include a trunk `0` after the country code.
+String _normalizeNationalTrunk(String national, DthCountry? country) {
+  if (country?.isoCode != "NG") return national;
+  if (national.length == 11 && national.startsWith("0")) {
+    return national.substring(1);
+  }
+  return national;
+}
+
+/// Spaces for display in the national field (dial code is shown separately).
+String formatNationalPhoneDisplay(String nationalDigits) {
+  final d = _digitsOnly(nationalDigits);
+  if (d.isEmpty) return "";
+  if (d.length == 10) {
+    return "${d.substring(0, 3)} ${d.substring(3, 6)} ${d.substring(6)}";
+  }
+  if (d.length == 9) {
+    return "${d.substring(0, 3)} ${d.substring(3, 6)} ${d.substring(6)}";
+  }
+  final buf = StringBuffer();
+  for (var i = 0; i < d.length; i++) {
+    if (i != 0 && i % 3 == 0) buf.write(" ");
+    buf.write(d[i]);
+  }
+  return buf.toString();
+}
+
+/// Read-only field text: strip stored international prefix, normalize, space.
+String displayNationalPhoneInField({
+  required String storedPhone,
+  required DthCountry? country,
+}) {
+  var national = nationalDigitsWithoutDialCode(
+    storedPhone: storedPhone,
+    country: country,
+  );
+  national = _normalizeNationalTrunk(national, country);
+  return formatNationalPhoneDisplay(national);
+}
+
 class PhoneNumberCountryInput extends StatefulWidget {
   const PhoneNumberCountryInput({
     super.key,
-    required this.controller,
-    required this.focusNode,
-    required this.displayCountry,
-    required this.textInputAction,
-    required this.onCountryTap,
-    required this.onSubmitted,
+    this.controller,
+    this.focusNode,
+    this.displayCountry,
+    this.textInputAction,
+    this.onCountryTap,
+    this.onSubmitted,
     this.title = "Phone Number",
     this.hint = "702 3456 789",
     this.validator,
     this.formatter,
+    this.readOnly = false,
+    this.suffix,
+    this.initialNationalDigits,
   });
 
-  final TextEditingController controller;
-  final FocusNode focusNode;
+  /// When null in editable mode, assert fails. When [readOnly] is true, either
+  /// pass a [controller] or [initialNationalDigits] (an internal controller is created).
+  final TextEditingController? controller;
+
+  /// When null, an internal [FocusNode] is created and disposed by this widget.
+  final FocusNode? focusNode;
+
   final DthCountry? displayCountry;
-  final TextInputAction textInputAction;
-  final VoidCallback onCountryTap;
-  final ValueChanged<String> onSubmitted;
+  final TextInputAction? textInputAction;
+  final VoidCallback? onCountryTap;
+  final ValueChanged<String>? onSubmitted;
   final String title;
   final String hint;
   final String? Function(String value)? validator;
   final List<TextInputFormatter>? formatter;
+  final bool readOnly;
+
+  /// Shown at the end of the input row (e.g. “Verify Now”).
+  final Widget? suffix;
+
+  /// Used only when [controller] is null and [readOnly] is true.
+  final String? initialNationalDigits;
 
   @override
   State<PhoneNumberCountryInput> createState() =>
@@ -67,46 +140,96 @@ class _PhoneNumberCountryInputState extends State<PhoneNumberCountryInput> {
   String? _errorText;
   bool _focused = false;
 
+  TextEditingController? _ownedController;
+  FocusNode? _ownedFocus;
+
   static const _radius = 12.0;
   static const _borderIdle = Color(0xffEDEDED);
   static const _hintColor = Color(0xffB5B5B5);
 
+  TextEditingController get _effectiveController =>
+      widget.controller ?? _ownedController!;
+
+  FocusNode get _effectiveFocus => widget.focusNode ?? _ownedFocus!;
+
   @override
   void initState() {
     super.initState();
-    widget.focusNode.addListener(_onFocusChanged);
-  }
+    assert(
+      widget.readOnly || widget.controller != null,
+      "Editable PhoneNumberCountryInput requires a controller.",
+    );
+    assert(
+      !widget.readOnly ||
+          widget.controller != null ||
+          widget.initialNationalDigits != null,
+      "Read-only PhoneNumberCountryInput needs a controller or initialNationalDigits.",
+    );
 
-  @override
-  void didUpdateWidget(covariant PhoneNumberCountryInput oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (oldWidget.focusNode != widget.focusNode) {
-      oldWidget.focusNode.removeListener(_onFocusChanged);
-      widget.focusNode.addListener(_onFocusChanged);
+    if (widget.controller == null) {
+      final initial = widget.readOnly
+          ? displayNationalPhoneInField(
+              storedPhone: widget.initialNationalDigits ?? "",
+              country: widget.displayCountry,
+            )
+          : (widget.initialNationalDigits ?? "");
+      _ownedController = TextEditingController(text: initial);
     }
+    if (widget.focusNode == null) {
+      _ownedFocus = FocusNode();
+    }
+    _effectiveFocus.addListener(_onFocusChanged);
   }
 
   @override
   void dispose() {
-    widget.focusNode.removeListener(_onFocusChanged);
+    _effectiveFocus.removeListener(_onFocusChanged);
+    if (widget.focusNode == null) {
+      _ownedFocus?.dispose();
+    }
+    if (widget.controller == null) {
+      _ownedController?.dispose();
+    }
     super.dispose();
   }
 
   void _onFocusChanged() {
-    final has = widget.focusNode.hasFocus;
+    final has = _effectiveFocus.hasFocus;
     if (_focused != has) {
       setState(() => _focused = has);
     }
   }
 
+  @override
+  void didUpdateWidget(covariant PhoneNumberCountryInput oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (!widget.readOnly || widget.controller != null) return;
+    final sameSource =
+        oldWidget.initialNationalDigits == widget.initialNationalDigits &&
+        oldWidget.displayCountry?.isoCode == widget.displayCountry?.isoCode &&
+        oldWidget.displayCountry?.dialCode == widget.displayCountry?.dialCode;
+    if (sameSource) return;
+    final next = displayNationalPhoneInField(
+      storedPhone: widget.initialNationalDigits ?? "",
+      country: widget.displayCountry,
+    );
+    if (_ownedController != null && _ownedController!.text != next) {
+      _ownedController!.text = next;
+    }
+  }
+
   Color _borderColor() {
     if (_errorText != null) return Colors.red;
+    if (widget.readOnly) return _borderIdle;
     if (_focused) return AppColors.primary;
     return _borderIdle;
   }
 
   @override
   Widget build(BuildContext context) {
+    final textAction = widget.textInputAction ?? TextInputAction.done;
+    final showChevron = !widget.readOnly || widget.onCountryTap != null;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -125,7 +248,7 @@ class _PhoneNumberCountryInputState extends State<PhoneNumberCountryInput> {
                 widget.title,
                 fontSize: 10,
                 letterSpacing: -0.2,
-                color: AppColors.black,
+                color: AppColors.tint15,
               ),
               Row(
                 crossAxisAlignment: CrossAxisAlignment.center,
@@ -133,7 +256,9 @@ class _PhoneNumberCountryInputState extends State<PhoneNumberCountryInput> {
                   Material(
                     color: Colors.transparent,
                     child: InkWell(
-                      onTap: widget.onCountryTap,
+                      onTap: widget.readOnly
+                          ? widget.onCountryTap
+                          : (widget.onCountryTap ?? () {}),
                       borderRadius: BorderRadius.circular(8),
                       child: Padding(
                         padding: const EdgeInsets.symmetric(
@@ -157,22 +282,24 @@ class _PhoneNumberCountryInputState extends State<PhoneNumberCountryInput> {
                                   color: AppColors.greyTint30,
                                 ),
                               ),
-                            Gap.w4,
+                            Gap.w6,
                             AppText.regular(
                               widget.displayCountry?.dialCode ?? "",
                               fontSize: 14,
                               color: AppColors.black,
                             ),
-                            Gap.w4,
-                            SvgPicture.asset(
-                              SvgAssets.downArrow,
-                              width: 12,
-                              height: 12,
-                              colorFilter: ColorFilter.mode(
-                                AppColors.blackTint20,
-                                BlendMode.srcIn,
+                            if (showChevron) ...[
+                              Gap.w4,
+                              SvgPicture.asset(
+                                SvgAssets.downArrow,
+                                width: 12,
+                                height: 12,
+                                colorFilter: ColorFilter.mode(
+                                  AppColors.blackTint20,
+                                  BlendMode.srcIn,
+                                ),
                               ),
-                            ),
+                            ],
                           ],
                         ),
                       ),
@@ -181,19 +308,21 @@ class _PhoneNumberCountryInputState extends State<PhoneNumberCountryInput> {
                   Gap.w8,
                   Expanded(
                     child: TextFormField(
-                      controller: widget.controller,
-                      focusNode: widget.focusNode,
+                      controller: _effectiveController,
+                      focusNode: _effectiveFocus,
+                      readOnly: widget.readOnly,
                       keyboardType: TextInputType.phone,
-                      textInputAction: widget.textInputAction,
-                      onFieldSubmitted: widget.onSubmitted,
+                      textInputAction: textAction,
+                      onFieldSubmitted: widget.onSubmitted ?? (_) {},
                       style: AppTextStyle.regular.copyWith(
                         fontSize: 14,
                         color: AppColors.black,
                       ),
                       cursorColor: AppColors.primary,
-                      inputFormatters:
-                          widget.formatter ??
-                          [FilteringTextInputFormatter.digitsOnly],
+                      inputFormatters: widget.readOnly
+                          ? const []
+                          : (widget.formatter ??
+                                [FilteringTextInputFormatter.digitsOnly]),
                       decoration: InputDecoration(
                         isDense: true,
                         border: InputBorder.none,
@@ -211,28 +340,31 @@ class _PhoneNumberCountryInputState extends State<PhoneNumberCountryInput> {
                         contentPadding: EdgeInsets.zero,
                         errorStyle: const TextStyle(height: 0, fontSize: 0),
                       ),
-                      validator: (value) {
-                        String? err;
-                        if (widget.validator != null) {
-                          err = widget.validator!(value ?? "");
-                        }
-                        WidgetsBinding.instance.addPostFrameCallback((_) {
-                          if (!mounted) return;
-                          final next = err;
-                          if (_errorText != next) {
-                            setState(() => _errorText = next);
-                          }
-                        });
-                        return err;
-                      },
+                      validator: widget.readOnly
+                          ? null
+                          : (value) {
+                              String? err;
+                              if (widget.validator != null) {
+                                err = widget.validator!(value ?? "");
+                              }
+                              WidgetsBinding.instance.addPostFrameCallback((_) {
+                                if (!mounted) return;
+                                final next = err;
+                                if (_errorText != next) {
+                                  setState(() => _errorText = next);
+                                }
+                              });
+                              return err;
+                            },
                     ),
                   ),
+                  if (widget.suffix != null) ...[Gap.w8, widget.suffix!],
                 ],
               ),
             ],
           ),
         ),
-        if (_errorText != null && _errorText!.isNotEmpty)
+        if (!widget.readOnly && _errorText != null && _errorText!.isNotEmpty)
           Padding(
             padding: const EdgeInsets.only(left: 4, top: 6),
             child: AppText.regular(

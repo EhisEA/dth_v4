@@ -16,6 +16,9 @@ class AppColors {
   // FFFFFF
   static Color white = const Color(0xffffffff);
 
+  // FCFCFC
+  static Color scaffold = const Color(0xffFCFCFC);
+
   //57688E
   static Color dthBlue = const Color(0xFF57688E);
 
@@ -51,6 +54,12 @@ class AppColors {
 
   //08102F
   static Color tertiary60 = const Color(0xff08102F);
+
+  //284FEB
+  static Color secondaryBlue = const Color(0xff284FEB);
+
+  //F2A257
+  static Color secondaryOrange = const Color(0xffF2A257);
 
   ///=========================== Bottom Nav ==============================
 

@@ -78,6 +78,7 @@ class _VerifyOtpViewState extends ConsumerState<VerifyOtpView> {
       isLoading: vm.isBaseBusy,
       child: Scaffold(
         appBar: const DthAppBar(title: ''),
+        backgroundColor: AppColors.scaffold,
         body: SafeArea(
           top: false,
           child: SingleChildScrollView(

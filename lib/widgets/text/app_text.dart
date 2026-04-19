@@ -182,6 +182,105 @@ class AppText extends StatelessWidget {
     this.fontStyle,
   }) : baseStyle = AppTextStyle.black;
 
+  const AppText.matterLight(
+    this.text, {
+    super.key,
+    this.multiText = true,
+    this.overflow = TextOverflow.ellipsis,
+    this.color,
+    this.maxLines,
+    this.centered = false,
+    this.shadows,
+    this.textAlign,
+    this.wordSpacing,
+    this.decoration,
+    this.decorationColor,
+    this.height,
+    this.letterSpacing,
+    this.fontSize,
+    this.fontWeight,
+    this.fontStyle,
+  }) : baseStyle = AppTextStyle.matterLight;
+
+  const AppText.matterRegular(
+    this.text, {
+    super.key,
+    this.multiText = true,
+    this.overflow = TextOverflow.ellipsis,
+    this.color,
+    this.maxLines,
+    this.centered = false,
+    this.shadows,
+    this.textAlign,
+    this.wordSpacing,
+    this.decoration,
+    this.decorationColor,
+    this.height,
+    this.letterSpacing,
+    this.fontSize,
+    this.fontWeight,
+    this.fontStyle,
+  }) : baseStyle = AppTextStyle.matterRegular;
+
+  const AppText.matterMedium(
+    this.text, {
+    super.key,
+    this.multiText = true,
+    this.overflow = TextOverflow.ellipsis,
+    this.color,
+    this.maxLines,
+    this.centered = false,
+    this.shadows,
+    this.textAlign,
+    this.wordSpacing,
+    this.decoration,
+    this.decorationColor,
+    this.height,
+    this.letterSpacing,
+    this.fontSize,
+    this.fontWeight,
+    this.fontStyle,
+  }) : baseStyle = AppTextStyle.matterMedium;
+
+  const AppText.matterSemiBold(
+    this.text, {
+    super.key,
+    this.multiText = true,
+    this.overflow = TextOverflow.ellipsis,
+    this.color,
+    this.maxLines,
+    this.centered = false,
+    this.shadows,
+    this.textAlign,
+    this.wordSpacing,
+    this.decoration,
+    this.decorationColor,
+    this.height,
+    this.letterSpacing,
+    this.fontSize,
+    this.fontWeight,
+    this.fontStyle,
+  }) : baseStyle = AppTextStyle.matterSemiBold;
+
+  const AppText.matterBold(
+    this.text, {
+    super.key,
+    this.multiText = true,
+    this.overflow = TextOverflow.ellipsis,
+    this.color,
+    this.maxLines,
+    this.centered = false,
+    this.shadows,
+    this.textAlign,
+    this.wordSpacing,
+    this.decoration,
+    this.decorationColor,
+    this.height,
+    this.letterSpacing,
+    this.fontSize,
+    this.fontWeight,
+    this.fontStyle,
+  }) : baseStyle = AppTextStyle.matterBold;
   @override
   Widget build(BuildContext context) {
     final effectiveStyle = (baseStyle ?? AppTextStyle.regular).copyWith(

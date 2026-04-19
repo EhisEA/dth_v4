@@ -10,6 +10,13 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    Future.wait([
+      PreLoadImage.loadImg(context, ImageAssets.subscriptionBg),
+      PreLoadImage.loadImg(context, ImageAssets.userBg),
+      PreLoadImage.loadImg(context, ImageAssets.contestantBg),
+      PreLoadImage.loadImg(context, ImageAssets.applicantBg),
+    ]);
+
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       navigatorObservers: [RouteLifecycleObserver.routeObserver],

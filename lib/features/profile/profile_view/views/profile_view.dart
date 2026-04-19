@@ -3,10 +3,7 @@ import 'package:dth_v4/core/router/router.dart';
 import 'package:dth_v4/data/data.dart';
 import 'package:dth_v4/features/app_web_view/app_web_view.dart';
 import 'package:dth_v4/features/application/views/application_view.dart';
-import 'package:dth_v4/features/profile/profile_view/components/application_widget.dart';
-import 'package:dth_v4/features/profile/profile_view/components/contestant_pill.dart';
-import 'package:dth_v4/features/profile/profile_view/components/profile_tlle.dart';
-import 'package:dth_v4/features/profile/profile_view/view_model/profile_view_model.dart';
+import 'package:dth_v4/features/profile/profile.dart';
 import 'package:dth_v4/widgets/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -15,6 +12,18 @@ import 'package:flutter_utils/flutter_utils.dart';
 final profileViewModel = ChangeNotifierProvider(
   (ref) => ProfileViewModel(ref.read(userProfileStateProvider)),
 );
+
+String _profileBackgroundForRole(ParticipationRole role) {
+  switch (role) {
+    case ParticipationRole.contestant:
+      return ImageAssets.contestantBg;
+    case ParticipationRole.applicant:
+      return ImageAssets.applicantBg;
+    case ParticipationRole.user:
+    case ParticipationRole.unknown:
+      return ImageAssets.userBg;
+  }
+}
 
 class ProfileView extends ConsumerStatefulWidget {
   const ProfileView({super.key});
@@ -30,19 +39,20 @@ class _ProfileViewState extends ConsumerState<ProfileView> {
   @override
   Widget build(BuildContext context) {
     final userState = ref.watch(userStateProvider);
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      decoration: BoxDecoration(
-        image: DecorationImage(
-          image: AssetImage(ImageAssets.profileBg),
-          alignment: Alignment.topCenter,
-        ),
-      ),
-      child: SafeArea(
-        child: ValueListenableBuilder(
-          valueListenable: userState.user,
-          builder: (context, user, child) {
-            return Column(
+    return ValueListenableBuilder<UserModel?>(
+      valueListenable: userState.user,
+      builder: (context, user, _) {
+        final role = user?.participationRole ?? ParticipationRole.user;
+        return Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          decoration: BoxDecoration(
+            image: DecorationImage(
+              image: AssetImage(_profileBackgroundForRole(role)),
+              alignment: Alignment.topCenter,
+            ),
+          ),
+          child: SafeArea(
+            child: Column(
               children: [
                 Expanded(
                   child: ListView(
@@ -65,9 +75,11 @@ class _ProfileViewState extends ConsumerState<ProfileView> {
                         color: AppColors.tint15,
                       ),
                       Gap.h16,
-                      Center(child: ContestantPill()),
+                      Center(child: ContestantPill(user: user)),
                       Gap.h32,
                       ApplicationWidget(
+                        participationRole:
+                            user?.participationRole ?? ParticipationRole.user,
                         onTap: () {
                           _navigationService.navigateTo(ApplicationView.path);
                         },
@@ -84,7 +96,30 @@ class _ProfileViewState extends ConsumerState<ProfileView> {
                         description: "Update your profile information",
                         icon: SvgAssets.personal,
                         showRightArrow: false,
-                        onTap: () {},
+                        widget: user != null && !user.isPhoneVerified
+                            ? Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 8,
+                                  vertical: 6,
+                                ),
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(8),
+                                  color: const Color(0xffFFF2F1),
+                                ),
+                                child: AppText.regular(
+                                  "Need Attention",
+                                  fontSize: 10,
+                                  color: AppColors.redTint35,
+                                ),
+                              )
+                            : null,
+                        onTap: () {
+                          if (user == null) return;
+                          _navigationService.navigateTo(
+                            PersonalInfomationView.path,
+                            extra: {RoutingArgumentKey.user: user},
+                          );
+                        },
                       ),
                       Gap.h28,
                       ProfileTlle(
@@ -177,10 +212,10 @@ class _ProfileViewState extends ConsumerState<ProfileView> {
                   ),
                 ),
               ],
-            );
-          },
-        ),
-      ),
+            ),
+          ),
+        );
+      },
     );
   }
 }

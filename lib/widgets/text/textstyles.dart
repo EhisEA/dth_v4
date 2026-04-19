@@ -61,4 +61,52 @@ class AppTextStyle {
     letterSpacing: _ls,
     fontWeight: FontWeight.w900,
   );
+
+  /// Weight 300 — `Matter-Light.ttf`.
+  static const TextStyle matterLight = TextStyle(
+    fontFamily: AppFontFamily.secondary,
+    fontSize: 16,
+    letterSpacing: _ls,
+    fontWeight: FontWeight.w300,
+  );
+
+  /// Weight 400 — `Matter-Regular.ttf`.
+  static const TextStyle matterRegular = TextStyle(
+    fontFamily: AppFontFamily.secondary,
+    fontSize: 16,
+    letterSpacing: _ls,
+    fontWeight: FontWeight.w400,
+  );
+
+  /// Weight 500 — `Matter-Medium.ttf`.
+  static const TextStyle matterMedium = TextStyle(
+    fontFamily: AppFontFamily.secondary,
+    fontSize: 16,
+    letterSpacing: _ls,
+    fontWeight: FontWeight.w500,
+  );
+
+  /// Weight 600 — `Matter-SemiBold.ttf`.
+  static const TextStyle matterSemiBold = TextStyle(
+    fontFamily: AppFontFamily.secondary,
+    fontSize: 16,
+    letterSpacing: _ls,
+    fontWeight: FontWeight.w600,
+  );
+
+  /// Weight 700 — `Matter-Bold.ttf`.
+  static const TextStyle matterBold = TextStyle(
+    fontFamily: AppFontFamily.secondary,
+    fontSize: 16,
+    letterSpacing: _ls,
+    fontWeight: FontWeight.w700,
+  );
+
+  /// Weight 800 — `Matter-Heavy.ttf`.
+  static const TextStyle matterHeavy = TextStyle(
+    fontFamily: AppFontFamily.secondary,
+    fontSize: 16,
+    letterSpacing: _ls,
+    fontWeight: FontWeight.w800,
+  );
 }

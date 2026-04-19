@@ -34,6 +34,7 @@ class AppButton extends StatelessWidget {
     this.subtitleColor,
     this.disableSubtitleColor,
     this.subtitleFontSize,
+    this.fontSize,
   });
   AppButton.primary({
     super.key,
@@ -62,6 +63,7 @@ class AppButton extends StatelessWidget {
     this.subtitleColor,
     this.disableSubtitleColor,
     this.subtitleFontSize,
+    this.fontSize,
   }) : color = AppColors.primary,
        disableBorderColor = disableBorderColor ?? const Color(0xFFDBDBDB),
        disableBGColor =
@@ -97,6 +99,7 @@ class AppButton extends StatelessWidget {
     this.subtitleColor,
     this.disableSubtitleColor,
     this.subtitleFontSize,
+    this.fontSize,
   }) : // color = AppColors.primaryColor .withValues(alpha:0.25),
        disableBorderColor = disableBorderColor ?? const Color(0xFFDBDBDB),
        disableBGColor =
@@ -136,6 +139,7 @@ class AppButton extends StatelessWidget {
     this.subtitleColor,
     this.disableSubtitleColor,
     this.subtitleFontSize,
+    this.fontSize,
   });
   //  borderColor = AppColors.primary;
 
@@ -166,11 +170,12 @@ class AppButton extends StatelessWidget {
   final Color? subtitleColor;
   final Color? disableSubtitleColor;
   final double? subtitleFontSize;
+  final double? fontSize;
 
   Widget _buildLabel() {
     final title = AppText.regular(
       text ?? "",
-      fontSize: isShort ? 16 : 14,
+      fontSize: fontSize ?? (isShort ? 16 : 14),
       fontWeight: fontWeight ?? FontWeight.w400,
       color: enabled ? textColor : disableTextColor ?? AppColors.white,
       centered: true,
@@ -254,10 +259,19 @@ class AppButton extends StatelessWidget {
                 ),
               )
             : Row(
-                mainAxisSize: MainAxisSize.min,
+                mainAxisSize: MainAxisSize.max,
                 children: [
                   if (prefixIcon != null) ...[prefixIcon!, Gap.w8],
-                  widget ?? _buildLabel(),
+                  Expanded(
+                    child: Align(
+                      alignment: Alignment.center,
+                      child: FittedBox(
+                        fit: BoxFit.scaleDown,
+                        alignment: Alignment.center,
+                        child: widget ?? _buildLabel(),
+                      ),
+                    ),
+                  ),
                   if (suffixIcon != null) ...[Gap.w8, suffixIcon!],
                 ],
               ),

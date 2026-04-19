@@ -6,9 +6,21 @@ class ImageAssets {
   static const String imagePath = "assets/images";
   static const String logo = "$imagePath/logo.png";
   static const String logo2 = "$imagePath/logo2.png";
+
   /////////////////////PROFILE//////////////////////
+  ///
   static const String user = "$imagePath/profile/user.png";
-  static const String profileBg = "$imagePath/profile/profile_bg.png";
+  static const String applicant1 = "$imagePath/profile/applicant_1.png";
+  static const String contestant1 = "$imagePath/profile/contestant_1.png";
+  static const String user1 = "$imagePath/profile/user_1.png";
+  static const String contestantBg = "$imagePath/profile/contestant_bg.png";
+  static const String userBg = "$imagePath/profile/user_bg.png";
+  static const String applicantBg = "$imagePath/profile/applicant_bg.png";
+
+  /////////////////////SUBSCRIPTION//////////////////////
+  static const String subscriptionBg =
+      "$imagePath/subscription/subscription_bg.png";
+  static const String phoneBg = "$imagePath/subscription/phone_bg.png";
 }
 
 class SvgAssets {
@@ -66,6 +78,12 @@ class SvgAssets {
   static const String support = "$svgPath/application/support.svg";
   static const String edit = "$svgPath/application/edit.svg";
   static const String calendarEdit = "$svgPath/application/calendar-edit.svg";
+
+  /////////////////////SUBSCRIPTION//////////////////////
+  ///
+  static const String check = "$svgPath/subscription/check.svg";
+  static const String confirmed = "$svgPath/subscription/confirmed.svg";
+  static const String failed = "$svgPath/subscription/failed.svg";
 }
 
 class LottieAssets {

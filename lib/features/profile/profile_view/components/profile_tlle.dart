@@ -14,6 +14,7 @@ class ProfileTlle extends StatelessWidget {
     required this.icon,
     this.isRed = false,
     this.showRightArrow = true,
+    this.widget,
   });
   final String title;
   final String description;
@@ -21,6 +22,7 @@ class ProfileTlle extends StatelessWidget {
   final String icon;
   final bool isRed;
   final bool showRightArrow;
+  final Widget? widget;
 
   @override
   Widget build(BuildContext context) {
@@ -54,6 +56,7 @@ class ProfileTlle extends StatelessWidget {
           ),
 
           if (showRightArrow) SvgPicture.asset(SvgAssets.rightArrow),
+          if (widget != null) widget!,
         ],
       ),
     );

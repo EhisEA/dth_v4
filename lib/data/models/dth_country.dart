@@ -30,4 +30,15 @@ class DthCountry {
     if (value is String) return value;
     return value.toString();
   }
+
+  /// Resolves flag (and dial code) from the cached `/countries` list using only
+  /// [isoCode] from the backend (case-insensitive). Returns null if not found.
+  static DthCountry? findByIso(Iterable<DthCountry> countries, String isoCode) {
+    final u = isoCode.trim().toUpperCase();
+    if (u.isEmpty) return null;
+    for (final c in countries) {
+      if (c.isoCode == u) return c;
+    }
+    return null;
+  }
 }
