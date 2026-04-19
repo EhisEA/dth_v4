@@ -16,6 +16,9 @@ class AppColors {
   // FFFFFF
   static Color white = const Color(0xffffffff);
 
+  // FCFCFC
+  static Color scaffold = const Color(0xffFCFCFC);
+
   //57688E
   static Color dthBlue = const Color(0xFF57688E);
 

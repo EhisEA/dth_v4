@@ -1,45 +1,69 @@
-import "dart:math" as math;
-
 import "package:carousel_slider/carousel_slider.dart";
 import "package:dth_v4/core/core.dart";
-import "package:dth_v4/features/subscription/models/subscription_plan_mock.dart";
+import "package:dth_v4/core/router/router.dart";
+import "package:dth_v4/features/subscription/subscription.dart";
 import "package:dth_v4/widgets/widgets.dart";
 import "package:flutter/material.dart";
+import "package:flutter/services.dart";
 import "package:flutter_svg/svg.dart";
 import "package:flutter_utils/flutter_utils.dart";
 
-/// Rough vertical budget for one plan card (outer padding + white block + perks block).
-double _estimatedPlanCardHeight(SubscriptionPlanMock plan) {
+/// Vertical budget for one plan card (tuned to match layout).
+double _estimatedPlanCardHeight(SubscriptionPlanMock plan, double textScale) {
   const outerPadding = 8.0;
-  const whiteCardBlock = 236.0;
-  const belowCard = 16.0 + 22.0 + 12.0;
-  const bottomPadding = 20.0;
-  const perPerkRow = 54.0;
-  return outerPadding +
+  const whiteCardBlock = 210.0;
+  const belowCard = 16.0 + 18.0 + 2.0;
+  const perPerkRow = 38.0;
+  const safety = 18.0;
+  final raw =
+      outerPadding +
       whiteCardBlock +
       belowCard +
       plan.perks.length * perPerkRow +
-      bottomPadding;
+      safety;
+  return (raw * textScale).clamp(260.0, 900.0);
 }
 
-class SubscriptionPlanCarousel extends StatelessWidget {
-  SubscriptionPlanCarousel({super.key, List<SubscriptionPlanMock>? plans})
-    : plans = plans ?? kMockSubscriptionPlans;
+class SubscriptionPlanCarousel extends StatefulWidget {
+  const SubscriptionPlanCarousel({super.key, this.plans});
 
-  final List<SubscriptionPlanMock> plans;
+  final List<SubscriptionPlanMock>? plans;
+
+  @override
+  State<SubscriptionPlanCarousel> createState() =>
+      _SubscriptionPlanCarouselState();
+}
+
+class _SubscriptionPlanCarouselState extends State<SubscriptionPlanCarousel> {
+  late final List<SubscriptionPlanMock> _plans =
+      widget.plans ?? kMockSubscriptionPlans;
+  int _pageIndex = 0;
 
   @override
   Widget build(BuildContext context) {
     final h = MediaQuery.sizeOf(context).height;
-    final tallest = plans
-        .map(_estimatedPlanCardHeight)
-        .fold(0.0, (a, b) => math.max(a, b));
-    final carouselHeight = tallest.clamp(300.0, h * 0.62);
+    final textScale = MediaQuery.textScalerOf(context).scale(1.0);
+    final carouselHeight = _estimatedPlanCardHeight(
+      _plans[_pageIndex],
+      textScale,
+    ).clamp(260.0, h * 0.58);
 
     return CarouselSlider.builder(
-      itemCount: plans.length,
+      itemCount: _plans.length,
       itemBuilder: (context, index, realIndex) {
-        return SubscriptionPlanCard(plan: plans[index]);
+        return SubscriptionPlanCard(
+          plan: _plans[index],
+          onCTATap: () {
+            MobileNavigationService.instance.push(
+              ConfirmationView.path,
+              extra: {
+                RoutingArgumentKey.confirmationSuccess:
+                    _plans[index].confirmationSimulatesSuccess,
+              },
+            );
+            HapticFeedback.lightImpact();
+          },
+        );
       },
       options: CarouselOptions(
         height: carouselHeight,
@@ -48,15 +72,25 @@ class SubscriptionPlanCarousel extends StatelessWidget {
         enlargeFactor: 0.2,
         padEnds: true,
         enableInfiniteScroll: false,
+        onPageChanged: (index, reason) {
+          if (index != _pageIndex) {
+            setState(() => _pageIndex = index);
+          }
+        },
       ),
     );
   }
 }
 
 class SubscriptionPlanCard extends StatelessWidget {
-  const SubscriptionPlanCard({super.key, required this.plan});
+  const SubscriptionPlanCard({
+    super.key,
+    required this.plan,
+    required this.onCTATap,
+  });
 
   final SubscriptionPlanMock plan;
+  final VoidCallback onCTATap;
 
   @override
   Widget build(BuildContext context) {
@@ -73,6 +107,7 @@ class SubscriptionPlanCard extends StatelessWidget {
         child: SingleChildScrollView(
           physics: const ClampingScrollPhysics(),
           child: Column(
+            mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Container(
@@ -83,6 +118,7 @@ class SubscriptionPlanCard extends StatelessWidget {
                   border: Border.all(color: AppColors.greyTint35),
                 ),
                 child: Column(
+                  mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Container(
@@ -134,7 +170,10 @@ class SubscriptionPlanCard extends StatelessWidget {
                     ),
                     Gap.h16,
                     AppButton.onBorder(
-                      press: () {},
+                      press: () {
+                        onCTATap();
+                        HapticFeedback.lightImpact();
+                      },
                       text: plan.ctaLabel,
                       height: 48,
                     ),

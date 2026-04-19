@@ -22,6 +22,7 @@ class PersonalInfomationView extends ConsumerWidget {
         );
     return Scaffold(
       appBar: DthAppBar(title: "Personal Information"),
+      backgroundColor: AppColors.scaffold,
       body: ListView(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 32),
         children: [

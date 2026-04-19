@@ -12,6 +12,7 @@ class SubscriptionPlanMock {
     required this.periodLabel,
     required this.ctaLabel,
     required this.perks,
+    required this.confirmationSimulatesSuccess,
   });
 
   final String badgeLabel;
@@ -21,6 +22,9 @@ class SubscriptionPlanMock {
   final String periodLabel;
   final String ctaLabel;
   final List<String> perks;
+
+  /// Mock only: drives [ConfirmationView] success vs failure illustration.
+  final bool confirmationSimulatesSuccess;
 }
 
 /// Blue “BEST VALUE”, peach “RECOMMENDED”, neutral Basic — aligned to product mock.
@@ -33,6 +37,7 @@ final kMockSubscriptionPlans = <SubscriptionPlanMock>[
     periodLabel: "/per season",
     ctaLabel: "Upgrade to Premium",
     perks: ["Everything on the Standard Plan", "Access to Live Stream"],
+    confirmationSimulatesSuccess: true,
   ),
   SubscriptionPlanMock(
     badgeLabel: "RECOMMENDED",
@@ -47,5 +52,6 @@ final kMockSubscriptionPlans = <SubscriptionPlanMock>[
       "200 Weekly Vote Credit",
       "3 Points Per Vote",
     ],
+    confirmationSimulatesSuccess: false,
   ),
 ];

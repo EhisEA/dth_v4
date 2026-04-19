@@ -58,6 +58,7 @@ class _LoginViewState extends ConsumerState<LoginView> {
   Widget build(BuildContext context) {
     final model = ref.watch(loginViewModelProvider);
     return Scaffold(
+      backgroundColor: AppColors.scaffold,
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16),

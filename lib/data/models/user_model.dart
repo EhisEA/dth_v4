@@ -115,7 +115,7 @@ class UserModel {
         other.isoCode == isoCode &&
         other.isPhoneVerified == isPhoneVerified &&
         other.participationType.name == participationType.name &&
-        other.participationType.uid == participationType.uid &&
+        other.participationType.id == participationType.id &&
         other.emailVerifiedAt == emailVerifiedAt &&
         other.createdAt == createdAt &&
         other.updatedAt == updatedAt;
@@ -129,7 +129,7 @@ class UserModel {
     isoCode,
     isPhoneVerified,
     participationType.name,
-    participationType.uid,
+    participationType.id,
     emailVerifiedAt,
     createdAt,
     updatedAt,
@@ -163,10 +163,10 @@ enum ParticipationRole {
 }
 
 class ParticipationType {
-  const ParticipationType({required this.name, this.uid});
+  const ParticipationType({required this.name, this.id});
 
   final String name;
-  final String? uid;
+  final String? id;
 
   factory ParticipationType.fromJson(Object? json) {
     if (json is! Map<String, dynamic>) {
@@ -175,11 +175,11 @@ class ParticipationType {
     final m = json;
     return ParticipationType(
       name: _stringField(m['name']),
-      uid: m['uid'] == null ? null : _stringField(m['uid']),
+      id: m['id'] == null ? null : _stringField(m['id']),
     );
   }
 
-  Map<String, dynamic> toJson() => {'name': name, 'uid': uid};
+  Map<String, dynamic> toJson() => {'name': name, 'id': id};
 
   static String _stringField(Object? value) {
     if (value == null) return '';

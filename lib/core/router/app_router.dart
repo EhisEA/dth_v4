@@ -13,6 +13,7 @@ import 'package:dth_v4/features/profile/personal_information/personal_infomation
 import 'package:dth_v4/features/stories/views/stories_view.dart';
 import 'package:dth_v4/features/search/search_view.dart';
 import 'package:dth_v4/features/splash/views/splash_view.dart';
+import 'package:dth_v4/features/subscription/subscription.dart';
 import 'package:flutter/material.dart';
 
 class AppRouter {
@@ -119,6 +120,15 @@ class AppRouter {
         return _getPageRoute(
           settings: settings,
           viewToShow: PersonalInfomationView(user: user),
+        );
+
+      ////////////////SUBSCRIPTION VIEW////////////////////
+      case ConfirmationView.path:
+        final confirmationSuccess =
+            routeArgs[RoutingArgumentKey.confirmationSuccess] as bool? ?? true;
+        return _getPageRoute(
+          settings: settings,
+          viewToShow: ConfirmationView(isSuccess: confirmationSuccess),
         );
 
       default:

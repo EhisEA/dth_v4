@@ -77,6 +77,8 @@ class SvgAssets {
   /////////////////////SUBSCRIPTION//////////////////////
   ///
   static const String check = "$svgPath/subscription/check.svg";
+  static const String confirmed = "$svgPath/subscription/confirmed.svg";
+  static const String failed = "$svgPath/subscription/failed.svg";
 }
 
 class LottieAssets {

@@ -34,4 +34,5 @@ class NavigatorRoutes {
   ////////////////SUBSCRIPTION////////////////////
   ///
   static const String subscription = "/subscription";
+  static const String confirmation = "/confirmation";
 }

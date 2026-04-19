@@ -11,6 +11,9 @@ class RoutingArgumentKey {
 
   static const String applicationDraft = "applicationDraft";
   static const String user = "user";
+
+  /// `bool` — subscription checkout simulation ([ConfirmationView]).
+  static const String confirmationSuccess = "confirmationSuccess";
 }
 
 abstract class OtpFlowArg {

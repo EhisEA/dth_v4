@@ -86,6 +86,7 @@ class _GetStartedViewState extends State<GetStartedView> {
     }
 
     return Scaffold(
+      backgroundColor: AppColors.scaffold,
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16),

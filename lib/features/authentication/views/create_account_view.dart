@@ -164,6 +164,7 @@ class _CreateAccountViewState extends ConsumerState<CreateAccountView> {
         FocusScope.of(context).unfocus();
       },
       child: Scaffold(
+        backgroundColor: AppColors.scaffold,
         body: SafeArea(
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
