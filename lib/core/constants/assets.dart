@@ -10,7 +10,12 @@ class ImageAssets {
   /////////////////////PROFILE//////////////////////
   ///
   static const String user = "$imagePath/profile/user.png";
-  static const String profileBg = "$imagePath/profile/profile_bg.png";
+  static const String applicant1 = "$imagePath/profile/applicant_1.png";
+  static const String contestant1 = "$imagePath/profile/contestant_1.png";
+  static const String user1 = "$imagePath/profile/user_1.png";
+  static const String contestantBg = "$imagePath/profile/contestant_bg.png";
+  static const String userBg = "$imagePath/profile/user_bg.png";
+  static const String applicantBg = "$imagePath/profile/applicant_bg.png";
 
   /////////////////////SUBSCRIPTION//////////////////////
   static const String subscriptionBg =

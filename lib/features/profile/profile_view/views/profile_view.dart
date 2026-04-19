@@ -13,6 +13,18 @@ final profileViewModel = ChangeNotifierProvider(
   (ref) => ProfileViewModel(ref.read(userProfileStateProvider)),
 );
 
+String _profileBackgroundForRole(ParticipationRole role) {
+  switch (role) {
+    case ParticipationRole.contestant:
+      return ImageAssets.contestantBg;
+    case ParticipationRole.applicant:
+      return ImageAssets.applicantBg;
+    case ParticipationRole.user:
+    case ParticipationRole.unknown:
+      return ImageAssets.userBg;
+  }
+}
+
 class ProfileView extends ConsumerStatefulWidget {
   const ProfileView({super.key});
   static const String path = NavigatorRoutes.profile;
@@ -27,19 +39,20 @@ class _ProfileViewState extends ConsumerState<ProfileView> {
   @override
   Widget build(BuildContext context) {
     final userState = ref.watch(userStateProvider);
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      decoration: BoxDecoration(
-        image: DecorationImage(
-          image: AssetImage(ImageAssets.profileBg),
-          alignment: Alignment.topCenter,
-        ),
-      ),
-      child: SafeArea(
-        child: ValueListenableBuilder(
-          valueListenable: userState.user,
-          builder: (context, user, child) {
-            return Column(
+    return ValueListenableBuilder<UserModel?>(
+      valueListenable: userState.user,
+      builder: (context, user, _) {
+        final role = user?.participationRole ?? ParticipationRole.user;
+        return Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          decoration: BoxDecoration(
+            image: DecorationImage(
+              image: AssetImage(_profileBackgroundForRole(role)),
+              alignment: Alignment.topCenter,
+            ),
+          ),
+          child: SafeArea(
+            child: Column(
               children: [
                 Expanded(
                   child: ListView(
@@ -65,6 +78,8 @@ class _ProfileViewState extends ConsumerState<ProfileView> {
                       Center(child: ContestantPill()),
                       Gap.h32,
                       ApplicationWidget(
+                        participationRole:
+                            user?.participationRole ?? ParticipationRole.user,
                         onTap: () {
                           _navigationService.navigateTo(ApplicationView.path);
                         },
@@ -197,10 +212,10 @@ class _ProfileViewState extends ConsumerState<ProfileView> {
                   ),
                 ),
               ],
-            );
-          },
-        ),
-      ),
+            ),
+          ),
+        );
+      },
     );
   }
 }
