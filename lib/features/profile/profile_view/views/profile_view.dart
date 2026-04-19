@@ -75,7 +75,7 @@ class _ProfileViewState extends ConsumerState<ProfileView> {
                         color: AppColors.tint15,
                       ),
                       Gap.h16,
-                      Center(child: ContestantPill()),
+                      Center(child: ContestantPill(user: user)),
                       Gap.h32,
                       ApplicationWidget(
                         participationRole:

@@ -54,7 +54,7 @@ class PersonalInfomationView extends ConsumerWidget {
             color: AppColors.tint15,
           ),
           Gap.h16,
-          Center(child: ContestantPill()),
+          Center(child: ContestantPill(user: user)),
           Gap.h24,
           AppTextField(
             title: "Full Name",
