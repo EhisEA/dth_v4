@@ -16,7 +16,6 @@ class ApiRoute {
   );
 
   /////AUTH
-  static String get user => "$baseUrl/auth/user";
   static String get logout => "$baseUrl/auth/logout";
   static String get register => "$baseUrl/auth/register";
   static String get registerVerifyOtp => "$baseUrl/auth/register/verify-otp";
@@ -25,4 +24,10 @@ class ApiRoute {
   static String get loginVerifyOtp => "$baseUrl/auth/login/verify-otp";
   static String get loginResendOtp => "$baseUrl/auth/login/resend-otp";
   static String get countries => "$baseUrl/countries";
+
+  ///SUBSCRIPTION
+  static String get subscriptionPlans => "$baseUrl/plans";
+
+  ///PROFILE
+  static String get user => "$baseUrl/profile";
 }

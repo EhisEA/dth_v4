@@ -1,0 +1,177 @@
+import 'package:dth_v4/core/core.dart';
+import 'package:dth_v4/core/extension/int_extension.dart';
+import 'package:dth_v4/data/data.dart';
+import 'package:dth_v4/widgets/widgets.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_svg/svg.dart';
+import 'package:flutter_utils/flutter_utils.dart';
+
+class SubscriptionPlanCard extends StatelessWidget {
+  const SubscriptionPlanCard({
+    super.key,
+    required this.plan,
+    required this.onCTATap,
+  });
+
+  final SubscriptionModel plan;
+  final VoidCallback onCTATap;
+
+  @override
+  Widget build(BuildContext context) {
+    final perks = featureLines(plan);
+    final ctaLabel = "Upgrade to ${plan.name}";
+    final priceLabel = plan.amount.toMoneyWholeNumber();
+    final currencySymbol = _currencySymbol(plan);
+
+    return Material(
+      color: Colors.transparent,
+      child: Container(
+        width: double.infinity,
+        padding: EdgeInsets.all(4),
+        decoration: BoxDecoration(
+          color: AppColors.greyTint15,
+          border: Border.all(color: AppColors.greyTint30),
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
+        ),
+        child: SingleChildScrollView(
+          physics: const ClampingScrollPhysics(),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: AppColors.white,
+                  borderRadius: BorderRadius.circular(24),
+                  border: Border.all(color: AppColors.greyTint35),
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    if (plan.tag != null) ...[
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 8,
+                          vertical: 7,
+                        ),
+                        decoration: BoxDecoration(
+                          color: AppColors.secondaryBlue,
+                          borderRadius: BorderRadius.circular(500),
+                        ),
+                        child: AppText.semiBold(
+                          plan.tag.toString().toUpperCase(),
+                          fontSize: 8,
+                          letterSpacing: 0.5,
+                          color: AppColors.white,
+                        ),
+                      ),
+                      Gap.h16,
+                    ],
+                    AppText.regular(
+                      plan.name,
+                      fontSize: 14,
+                      color: AppColors.black,
+                    ),
+                    Gap.h2,
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.baseline,
+                      textBaseline: TextBaseline.alphabetic,
+                      children: [
+                        AppText.matterBold(
+                          currencySymbol,
+                          fontSize: 14,
+                          color: AppColors.mainBlack,
+                          height: 0,
+                        ),
+                        AppText.matterBold(
+                          priceLabel,
+                          fontSize: 26,
+                          color: AppColors.mainBlack,
+                          height: 0,
+                        ),
+                      ],
+                    ),
+                    Gap.h16,
+                    AppButton.onBorder(
+                      press: () {
+                        onCTATap();
+                        HapticFeedback.lightImpact();
+                      },
+                      text: ctaLabel,
+                      height: 48,
+                    ),
+                  ],
+                ),
+              ),
+              Gap.h16,
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                child: AppText.regular(
+                  "What's included",
+                  fontSize: 12,
+                  color: AppColors.tint25,
+                ),
+              ),
+              Gap.h12,
+              ...perks.map(
+                (line) => Padding(
+                  padding: const EdgeInsets.only(
+                    bottom: 10,
+                    left: 16,
+                    right: 16,
+                  ),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      SvgPicture.asset(SvgAssets.check),
+                      Gap.w12,
+                      Expanded(
+                        child: AppText.regular(
+                          line,
+                          fontSize: 13,
+                          color: AppColors.black,
+                          height: 1.35,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+List<String> featureLines(SubscriptionModel plan) {
+  return plan.features
+      .map((e) {
+        if (e is String) return e.trim();
+        if (e is Map) {
+          final m = Map<String, dynamic>.from(e);
+          for (final k in ["title", "name", "label", "description"]) {
+            final v = m[k];
+            if (v != null && v.toString().trim().isNotEmpty) {
+              return v.toString().trim();
+            }
+          }
+        }
+        return e.toString().trim();
+      })
+      .where((s) => s.isNotEmpty)
+      .toList();
+}
+
+String _currencySymbol(SubscriptionModel plan) {
+  switch (plan.currency.toUpperCase()) {
+    case "USD":
+      return "\$";
+    default:
+      return "₦";
+  }
+}

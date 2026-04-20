@@ -17,7 +17,10 @@ import "package:flutter_riverpod/flutter_riverpod.dart";
 import "package:persistent_bottom_nav_bar/persistent_bottom_nav_bar.dart";
 
 final bottomNavBarViewModel = ChangeNotifierProvider.autoDispose(
-  (ref) => BottomNavBarViewModel(ref.read(userStateProvider)),
+  (ref) => BottomNavBarViewModel(
+    ref.read(userStateProvider),
+    ref.read(subscriptionPlansStateProvider),
+  ),
 );
 
 class _NavEntry {
@@ -137,6 +140,7 @@ class BottomNavBarState extends ConsumerState<BottomNavBar> {
     unawaited(
       Future.microtask(() {
         model.userState.getUserDetails();
+        unawaited(model.subscriptionPlansState.fetchPlans());
       }),
     );
     _tabController.addListener(() {
