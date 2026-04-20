@@ -143,7 +143,7 @@ class _PersonalInformationStepState
     });
     final genderOptions = [
       for (final gender in widget.applicationProcess.genderOptions)
-        (value: gender.label, label: gender.label),
+        AppDropdownOption(value: gender.label, label: gender.label),
     ];
     return Form(
       key: widget.formKey,

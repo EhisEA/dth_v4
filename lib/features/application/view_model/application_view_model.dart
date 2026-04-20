@@ -89,9 +89,7 @@ class ApplicationViewModel extends BaseChangeNotifierViewModel {
   }) {
     final categoryId =
         talentCategoryId ??
-        (_applicationProcess?.resolveTalentCategoryId(
-              source.talentCategory,
-            ) ??
+        (_applicationProcess?.resolveTalentCategoryId(source.talentCategory) ??
             1);
     final crewSize =
         source.isGroupPresentation && source.crewSize.trim().isNotEmpty
@@ -146,16 +144,20 @@ class ApplicationViewModel extends BaseChangeNotifierViewModel {
     ApplicationSubmitRequest body,
   ) async {
     try {
-      changeBaseState(const ViewModelState.busy());
+      setState(_submitApplicationKey, const ViewModelState.busy());
       final response = await _applicationRepo.submitApplication(body);
-      changeBaseState(const ViewModelState.idle());
+      setState(_submitApplicationKey, const ViewModelState.idle());
       return response.data;
     } on ApiFailure catch (e) {
-      changeBaseState(ViewModelState.error(e));
+      setState(_submitApplicationKey, ViewModelState.error(e));
       DthFlushBar.instance.showError(message: e.message, title: "Failed");
       return null;
     }
   }
+
+  static final _submitApplicationKey = "submitApplicationKey";
+  ViewModelState get submitApplicationState =>
+      getState(_submitApplicationKey) ?? const ViewModelState.idle();
 }
 
 String _dobToApiFormat(String display) {

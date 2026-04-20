@@ -117,7 +117,8 @@ class _BankDetailsStepState extends ConsumerState<BankDetailsStep>
   Widget build(BuildContext context) {
     super.build(context);
     final bankOptions = [
-      for (final bank in widget.applicationProcess.banks) (value: bank, label: bank),
+      for (final bank in widget.applicationProcess.banks)
+        AppDropdownOption(value: bank, label: bank),
     ];
 
     return Form(

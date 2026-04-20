@@ -15,10 +15,7 @@ class ApplicationTalentCategory {
 
 /// One row from `application_process.locations`.
 class ApplicationProcessLocation {
-  const ApplicationProcessLocation({
-    required this.state,
-    required this.lgas,
-  });
+  const ApplicationProcessLocation({required this.state, required this.lgas});
 
   final String state;
   final List<String> lgas;
@@ -87,9 +84,7 @@ class ApplicationProcess {
           .map((e) => e as String)
           .toList(),
       genderOptions: (json["gender_options"] as List<dynamic>? ?? const [])
-          .map(
-            (e) => ApplicationLabelValue.fromJson(e as Map<String, dynamic>),
-          )
+          .map((e) => ApplicationLabelValue.fromJson(e as Map<String, dynamic>))
           .toList(),
       presentationModes:
           (json["presentation_modes"] as List<dynamic>? ?? const [])
@@ -104,10 +99,10 @@ class ApplicationProcess {
   }
 
   ApplicationProcessLocation? locationForState(String state) {
-    final s = state.trim();
-    for (final loc in locations) {
-      if (loc.state == s) {
-        return loc;
+    final trimmedState = state.trim();
+    for (final location in locations) {
+      if (location.state == trimmedState) {
+        return location;
       }
     }
     return null;
@@ -115,10 +110,10 @@ class ApplicationProcess {
 
   /// Resolves [ApplicationDraft.talentCategory] (category name) to an API id.
   int resolveTalentCategoryId(String categoryName) {
-    final t = categoryName.trim();
-    for (final c in talentCategories) {
-      if (c.name.trim() == t) {
-        return c.id;
+    final trimmedCategoryName = categoryName.trim();
+    for (final category in talentCategories) {
+      if (category.name.trim() == trimmedCategoryName) {
+        return category.id;
       }
     }
     if (talentCategories.isNotEmpty) {

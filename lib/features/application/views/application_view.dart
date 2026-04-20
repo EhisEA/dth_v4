@@ -36,8 +36,6 @@ class _ApplicationViewState extends ConsumerState<ApplicationView> {
   final List<void Function()?> _persistFns = List.filled(_totalSteps, null);
 
   int _currentIndex = 0;
-  bool _processLoading = true;
-  bool _processError = false;
 
   @override
   void initState() {
@@ -49,19 +47,7 @@ class _ApplicationViewState extends ConsumerState<ApplicationView> {
   }
 
   Future<void> _loadApplicationProcess() async {
-    if (!mounted) return;
-    setState(() {
-      _processLoading = true;
-      _processError = false;
-    });
-    final result = await ref
-        .read(applicationViewModelProvider)
-        .fetchApplicationProcess();
-    if (!mounted) return;
-    setState(() {
-      _processLoading = false;
-      _processError = result == null;
-    });
+    await ref.read(applicationViewModelProvider).fetchApplicationProcess();
   }
 
   @override
@@ -143,6 +129,211 @@ class _ApplicationViewState extends ConsumerState<ApplicationView> {
     }
   }
 
+  Widget _buildProcessLoadingScaffold(BuildContext context) {
+    return Scaffold(
+      backgroundColor: AppColors.white,
+      body: SafeArea(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+              child: Row(
+                children: [
+                  _circleBackButton(
+                    onTap: () {
+                      HapticFeedback.lightImpact();
+                      Navigator.of(context).pop();
+                    },
+                  ),
+                ],
+              ),
+            ),
+            const Expanded(child: Center(child: CircularProgressIndicator())),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildProcessErrorScaffold(BuildContext context, Failure failure) {
+    return Scaffold(
+      backgroundColor: AppColors.white,
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 24),
+          child: Column(
+            // crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 10),
+                child: Row(
+                  children: [
+                    _circleBackButton(
+                      onTap: () {
+                        HapticFeedback.lightImpact();
+                        Navigator.of(context).pop();
+                      },
+                    ),
+                  ],
+                ),
+              ),
+              const Spacer(),
+              AppText.medium(
+                'Could not load application',
+                fontSize: 20,
+                color: AppColors.tertiary60,
+              ),
+              Gap.h12,
+              AppText.regular(
+                failure.message,
+                fontSize: 14,
+                height: 1.4,
+                color: AppColors.blackTint20,
+                textAlign: TextAlign.center,
+              ),
+              Gap.h24,
+              AppButton.primary(text: 'Retry', press: _loadApplicationProcess),
+              const Spacer(),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildWizardScaffold(
+    BuildContext context,
+    ApplicationProcess process,
+  ) {
+    return Scaffold(
+      backgroundColor: AppColors.white,
+      body: SafeArea(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+              child: Row(
+                children: [
+                  GestureDetector(
+                    onTap: _onBack,
+                    behavior: HitTestBehavior.opaque,
+                    child: Container(
+                      height: 36,
+                      width: 36,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        border: Border.all(color: AppColors.greyTint15),
+                      ),
+                      child: FittedBox(
+                        fit: BoxFit.scaleDown,
+                        child: SvgPicture.asset(
+                          SvgAssets.backArrow,
+                          height: 20,
+                          width: 20,
+                          colorFilter: const ColorFilter.mode(
+                            AppColors.black,
+                            BlendMode.srcIn,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                  Gap.w24,
+                  Expanded(
+                    child: ApplicationSegmentedProgress(
+                      currentStepIndex: _currentIndex,
+                      totalSteps: _totalSteps,
+                    ),
+                  ),
+                  Gap.w24,
+                  GestureDetector(
+                    onTap: () {
+                      HapticFeedback.lightImpact();
+                    },
+                    child: SvgPicture.asset(SvgAssets.support),
+                  ),
+                ],
+              ),
+            ),
+            Gap.h8,
+            Expanded(
+              child: PageView(
+                controller: _pageController,
+                physics: const NeverScrollableScrollPhysics(),
+                onPageChanged: (i) => setState(() => _currentIndex = i),
+                children: [
+                  PersonalInformationStep(
+                    formKey: _formKeys[0],
+                    onRegisterPersist: (fn) => _registerPersist(0, fn),
+                    applicationProcess: process,
+                  ),
+                  ContactInformationStep(
+                    formKey: _formKeys[1],
+                    onRegisterPersist: (fn) => _registerPersist(1, fn),
+                    applicationProcess: process,
+                  ),
+                  TalentShowcaseStep(
+                    formKey: _formKeys[2],
+                    onRegisterPersist: (fn) => _registerPersist(2, fn),
+                    applicationProcess: process,
+                  ),
+                  AuditionVideoStep(
+                    formKey: _formKeys[3],
+                    onRegisterPersist: (fn) => _registerPersist(3, fn),
+                  ),
+                  BankDetailsStep(
+                    formKey: _formKeys[4],
+                    onRegisterPersist: (fn) => _registerPersist(4, fn),
+                    applicationProcess: process,
+                  ),
+                ],
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+              child: AppButton.primary(
+                text: _primaryButtonLabel(),
+                press: _onProceed,
+                subtitle: _primaryButtonSubtitle(),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 0, 16, 6),
+              child: Text.rich(
+                TextSpan(
+                  style: AppTextStyle.regular.copyWith(
+                    fontSize: 11,
+                    color: AppColors.blackTint20,
+                  ),
+                  children: [
+                    TextSpan(
+                      text: 'Proudly sponsored by ',
+                      style: AppTextStyle.regular.copyWith(
+                        fontSize: 12,
+                        color: AppColors.blackTint20,
+                      ),
+                    ),
+                    TextSpan(
+                      text: 'Vent Africa',
+                      style: AppTextStyle.regular.copyWith(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w600,
+                        color: const Color(0xff009DF9),
+                      ),
+                    ),
+                  ],
+                ),
+                textAlign: TextAlign.center,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   Future<void> _onProceed() async {
     FocusScope.of(context).unfocus();
     final form = _formKeys[_currentIndex].currentState;
@@ -176,268 +367,20 @@ class _ApplicationViewState extends ConsumerState<ApplicationView> {
 
   @override
   Widget build(BuildContext context) {
-    if (_processLoading) {
-      return GestureDetector(
-        onTap: () => FocusScope.of(context).unfocus(),
-        child: Scaffold(
-          backgroundColor: AppColors.white,
-          body: SafeArea(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 20,
-                    vertical: 10,
-                  ),
-                  child: Row(
-                    children: [
-                      _circleBackButton(
-                        onTap: () {
-                          HapticFeedback.lightImpact();
-                          Navigator.of(context).pop();
-                        },
-                      ),
-                    ],
-                  ),
-                ),
-                const Expanded(
-                  child: Center(child: CircularProgressIndicator()),
-                ),
-              ],
-            ),
-          ),
-        ),
-      );
-    }
-
-    if (_processError) {
-      return GestureDetector(
-        onTap: () => FocusScope.of(context).unfocus(),
-        child: Scaffold(
-          backgroundColor: AppColors.white,
-          body: SafeArea(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 10),
-                    child: Row(
-                      children: [
-                        _circleBackButton(
-                          onTap: () {
-                            HapticFeedback.lightImpact();
-                            Navigator.of(context).pop();
-                          },
-                        ),
-                      ],
-                    ),
-                  ),
-                  const Spacer(),
-                  AppText.medium(
-                    'Could not load application',
-                    fontSize: 20,
-                    color: AppColors.tertiary60,
-                  ),
-                  Gap.h12,
-                  AppText.regular(
-                    'Check your connection and try again.',
-                    fontSize: 14,
-                    height: 1.4,
-                    color: AppColors.blackTint20,
-                  ),
-                  Gap.h24,
-                  AppButton.primary(
-                    text: 'Retry',
-                    press: _loadApplicationProcess,
-                  ),
-                  const Spacer(),
-                ],
-              ),
-            ),
-          ),
-        ),
-      );
-    }
-
-    final ApplicationProcess? process =
-        ref.watch(applicationViewModelProvider).applicationProcess;
-    if (process == null) {
-      return GestureDetector(
-        onTap: () => FocusScope.of(context).unfocus(),
-        child: Scaffold(
-          backgroundColor: AppColors.white,
-          body: SafeArea(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 10),
-                    child: Row(
-                      children: [
-                        _circleBackButton(
-                          onTap: () {
-                            HapticFeedback.lightImpact();
-                            Navigator.of(context).pop();
-                          },
-                        ),
-                      ],
-                    ),
-                  ),
-                  const Spacer(),
-                  AppText.medium(
-                    'Something went wrong',
-                    fontSize: 20,
-                    color: AppColors.tertiary60,
-                  ),
-                  Gap.h24,
-                  AppButton.primary(
-                    text: 'Retry',
-                    press: _loadApplicationProcess,
-                  ),
-                  const Spacer(),
-                ],
-              ),
-            ),
-          ),
-        ),
-      );
-    }
-
+    final model = ref.watch(applicationViewModelProvider);
     return GestureDetector(
       onTap: () => FocusScope.of(context).unfocus(),
-      child: Scaffold(
-        backgroundColor: AppColors.white,
-        body: SafeArea(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 20,
-                  vertical: 10,
-                ),
-                child: Row(
-                  children: [
-                    GestureDetector(
-                      onTap: _onBack,
-                      behavior: HitTestBehavior.opaque,
-                      child: Container(
-                        height: 36,
-                        width: 36,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          border: Border.all(color: AppColors.greyTint15),
-                        ),
-                        child: FittedBox(
-                          fit: BoxFit.scaleDown,
-                          child: SvgPicture.asset(
-                            SvgAssets.backArrow,
-                            height: 20,
-                            width: 20,
-                            colorFilter: const ColorFilter.mode(
-                              AppColors.black,
-                              BlendMode.srcIn,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                    Gap.w24,
-                    Expanded(
-                      child: ApplicationSegmentedProgress(
-                        currentStepIndex: _currentIndex,
-                        totalSteps: _totalSteps,
-                      ),
-                    ),
-                    Gap.w24,
-                    GestureDetector(
-                      onTap: () {
-                        HapticFeedback.lightImpact();
-                      },
-                      child: SvgPicture.asset(SvgAssets.support),
-                    ),
-                  ],
-                ),
-              ),
-              Gap.h8,
-              Expanded(
-                child: PageView(
-                  controller: _pageController,
-                  physics: const NeverScrollableScrollPhysics(),
-                  onPageChanged: (i) => setState(() => _currentIndex = i),
-                  children: [
-                    PersonalInformationStep(
-                      formKey: _formKeys[0],
-                      onRegisterPersist: (fn) => _registerPersist(0, fn),
-                      applicationProcess: process,
-                    ),
-                    ContactInformationStep(
-                      formKey: _formKeys[1],
-                      onRegisterPersist: (fn) => _registerPersist(1, fn),
-                      applicationProcess: process,
-                    ),
-                    TalentShowcaseStep(
-                      formKey: _formKeys[2],
-                      onRegisterPersist: (fn) => _registerPersist(2, fn),
-                      applicationProcess: process,
-                    ),
-                    AuditionVideoStep(
-                      formKey: _formKeys[3],
-                      onRegisterPersist: (fn) => _registerPersist(3, fn),
-                    ),
-                    BankDetailsStep(
-                      formKey: _formKeys[4],
-                      onRegisterPersist: (fn) => _registerPersist(4, fn),
-                      applicationProcess: process,
-                    ),
-                  ],
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-                child: AppButton.primary(
-                  text: _primaryButtonLabel(),
-                  press: _onProceed,
-                  subtitle: _primaryButtonSubtitle(),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.fromLTRB(16, 0, 16, 6),
-                child: Text.rich(
-                  TextSpan(
-                    style: AppTextStyle.regular.copyWith(
-                      fontSize: 11,
-                      color: AppColors.blackTint20,
-                    ),
-                    children: [
-                      TextSpan(
-                        text: 'Proudly sponsored by ',
-                        style: AppTextStyle.regular.copyWith(
-                          fontSize: 12,
-                          color: AppColors.blackTint20,
-                        ),
-                      ),
-                      TextSpan(
-                        text: 'Vent Africa',
-                        style: AppTextStyle.regular.copyWith(
-                          fontSize: 12,
-                          fontWeight: FontWeight.w600,
-                          color: const Color(0xff009DF9),
-                        ),
-                      ),
-                    ],
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-              ),
-            ],
-          ),
-        ),
+      child: model.baseState.when(
+        idle: () {
+          final process = model.applicationProcess;
+          if (process == null) {
+            return const SizedBox.shrink();
+          }
+          return _buildWizardScaffold(context, process);
+        },
+        error: (Failure failure) =>
+            _buildProcessErrorScaffold(context, failure),
+        busy: () => _buildProcessLoadingScaffold(context),
       ),
     );
   }

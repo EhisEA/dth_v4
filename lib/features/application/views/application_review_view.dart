@@ -3,6 +3,7 @@ import 'package:dth_v4/core/router/router.dart';
 import 'package:dth_v4/data/models/application_draft.dart';
 import 'package:dth_v4/features/application/components/review_section_card.dart';
 import 'package:dth_v4/features/application/view_model/application_view_model.dart';
+import 'package:dth_v4/features/bottomNavBar/bottom_nav_bar.dart';
 import 'package:dth_v4/widgets/text/textstyles.dart';
 import 'package:dth_v4/widgets/widgets.dart';
 import 'package:flutter/material.dart';
@@ -129,7 +130,7 @@ class _ApplicationReviewViewState extends ConsumerState<ApplicationReviewView> {
     // final draft = ref.watch(
     //   applicationViewModelProvider.select((vm) => vm.draft),
     // );
-    final draft = ref.watch(applicationViewModelProvider).draft;
+    final vm = ref.watch(applicationViewModelProvider);
     return GestureDetector(
       onTap: () => FocusScope.of(context).unfocus(),
       child: Scaffold(
@@ -199,31 +200,31 @@ class _ApplicationReviewViewState extends ConsumerState<ApplicationReviewView> {
                       ReviewSectionCard(
                         title: 'Personal Information',
                         wizardPageIndex: 0,
-                        rows: ApplicationReviewView._personalRows(draft),
+                        rows: ApplicationReviewView._personalRows(vm.draft),
                       ),
                       Gap.h12,
                       ReviewSectionCard(
                         title: 'Contact Information',
                         wizardPageIndex: 1,
-                        rows: ApplicationReviewView._contactRows(draft),
+                        rows: ApplicationReviewView._contactRows(vm.draft),
                       ),
                       Gap.h12,
                       ReviewSectionCard(
                         title: 'Talent Showcase',
                         wizardPageIndex: 2,
-                        rows: ApplicationReviewView._talentRows(draft),
+                        rows: ApplicationReviewView._talentRows(vm.draft),
                       ),
                       Gap.h12,
                       ReviewSectionCard(
                         title: 'Audition Video',
                         wizardPageIndex: 3,
-                        rows: ApplicationReviewView._videoRows(draft),
+                        rows: ApplicationReviewView._videoRows(vm.draft),
                       ),
                       Gap.h12,
                       ReviewSectionCard(
                         title: 'Bank Details',
                         wizardPageIndex: 4,
-                        rows: ApplicationReviewView._bankRows(draft),
+                        rows: ApplicationReviewView._bankRows(vm.draft),
                       ),
                       Gap.h24,
                     ],
@@ -233,11 +234,11 @@ class _ApplicationReviewViewState extends ConsumerState<ApplicationReviewView> {
                   padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
                   child: AppButton.primary(
                     text: 'Submit',
+                    isLoading: vm.submitApplicationState.isBusy,
                     press: () async {
                       FocusScope.of(context).unfocus();
-                      final vm = ref.read(applicationViewModelProvider);
                       final body = vm.requestFromDraft(
-                        draft,
+                        vm.draft,
                         isFinalStep: true,
                       );
                       final result = await vm.submitApplication(body);
@@ -245,6 +246,9 @@ class _ApplicationReviewViewState extends ConsumerState<ApplicationReviewView> {
                         return;
                       }
                       ref.read(applicationViewModelProvider).reset();
+                      // MobileNavigationService.instance.popUntil(
+                      //   BottomNavBar.path,
+                      // );
                       Navigator.of(
                         context,
                       ).pop(ApplicationReviewView.submitPopResult);

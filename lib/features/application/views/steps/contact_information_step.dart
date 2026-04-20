@@ -38,6 +38,9 @@ class _ContactInformationStepState extends ConsumerState<ContactInformationStep>
   String? _lga;
   String? _nearestCampus;
 
+  String? _cityPrerequisiteError;
+  String? _lgaPrerequisiteError;
+
   @override
   void initState() {
     super.initState();
@@ -68,32 +71,47 @@ class _ContactInformationStepState extends ConsumerState<ContactInformationStep>
         );
   }
 
+  /// All states we got from the server (one menu item per state).
   List<AppDropdownOption<String>> _stateOptions() {
     return [
       for (final location in widget.applicationProcess.locations)
-        (value: location.state, label: location.state),
+        AppDropdownOption(value: location.state, label: location.state),
     ];
   }
 
-  /// City/town uses LGAs for the selected state of residence (API has no separate cities list).
+  /// Cities/towns shown here are really LGAs for the state they live in.
+  /// The API does not send a separate city list. No items until they pick that state.
   List<AppDropdownOption<String>> _cityOptions() {
     if (_stateOfResidence == null) return [];
-    final location = widget.applicationProcess.locationForState(_stateOfResidence!);
+    final location = widget.applicationProcess.locationForState(
+      _stateOfResidence!,
+    );
     if (location == null) return [];
-    return [for (final c in location.lgas) (value: c, label: c)];
+    return [
+      for (final lga in location.lgas)
+        AppDropdownOption(value: lga, label: lga),
+    ];
   }
 
+  /// LGAs for their state of origin (same idea as city list, different state field).
+  /// No items until they pick state of origin.
   List<AppDropdownOption<String>> _lgaOptions() {
     if (_stateOfOrigin == null) return [];
-    final location = widget.applicationProcess.locationForState(_stateOfOrigin!);
+    final location = widget.applicationProcess.locationForState(
+      _stateOfOrigin!,
+    );
     if (location == null) return [];
-    return [for (final l in location.lgas) (value: l, label: l)];
+    return [
+      for (final lga in location.lgas)
+        AppDropdownOption(value: lga, label: lga),
+    ];
   }
 
+  /// Campus menu: one option per server location row, using that row's state name.
   List<AppDropdownOption<String>> _campusOptions() {
     return [
-      for (final location in widget.applicationProcess.locations)
-        (value: location.state, label: location.state),
+      for (final campus in widget.applicationProcess.locations)
+        AppDropdownOption(value: campus.state, label: campus.state),
     ];
   }
 
@@ -138,11 +156,13 @@ class _ContactInformationStepState extends ConsumerState<ContactInformationStep>
           AppDropdownFormField<String>(
             title: 'State of Residence',
             hint: 'Select state of residence',
+            search: true,
             options: _stateOptions(),
             onChanged: (v) {
               setState(() {
                 _stateOfResidence = v;
                 _cityOfResidence = null;
+                _cityPrerequisiteError = null;
               });
             },
           ),
@@ -153,9 +173,26 @@ class _ContactInformationStepState extends ConsumerState<ContactInformationStep>
             hint: _stateOfResidence == null
                 ? 'Select state of residence first'
                 : 'Select city of residence',
+            search: true,
             options: cities,
             enabled: _stateOfResidence != null && cities.isNotEmpty,
-            onChanged: (v) => setState(() => _cityOfResidence = v),
+            interactionError: _cityPrerequisiteError,
+            onDisabledTap: () {
+              setState(() {
+                if (_stateOfResidence == null) {
+                  _cityPrerequisiteError =
+                      "Select your state of residence before choosing a city or town.";
+                } else if (cities.isEmpty) {
+                  _cityPrerequisiteError =
+                      "No city or town options are available for the selected state. "
+                      "Choose a different state of residence.";
+                }
+              });
+            },
+            onChanged: (v) => setState(() {
+              _cityOfResidence = v;
+              _cityPrerequisiteError = null;
+            }),
             validator: (v) {
               if (_stateOfResidence == null) return null;
               if (cities.isEmpty) return null;
@@ -173,11 +210,13 @@ class _ContactInformationStepState extends ConsumerState<ContactInformationStep>
                 child: AppDropdownFormField<String>(
                   title: 'State of Origin',
                   hint: 'Select state',
+                  search: true,
                   options: _stateOptions(),
                   onChanged: (v) {
                     setState(() {
                       _stateOfOrigin = v;
                       _lga = null;
+                      _lgaPrerequisiteError = null;
                     });
                   },
                 ),
@@ -190,9 +229,26 @@ class _ContactInformationStepState extends ConsumerState<ContactInformationStep>
                   hint: _stateOfOrigin == null
                       ? 'Select state first'
                       : 'Select LGA',
+                  search: true,
                   options: lgas,
                   enabled: _stateOfOrigin != null && lgas.isNotEmpty,
-                  onChanged: (v) => setState(() => _lga = v),
+                  interactionError: _lgaPrerequisiteError,
+                  onDisabledTap: () {
+                    setState(() {
+                      if (_stateOfOrigin == null) {
+                        _lgaPrerequisiteError =
+                            "Select your state of origin before choosing an LGA.";
+                      } else if (lgas.isEmpty) {
+                        _lgaPrerequisiteError =
+                            "No LGA options are available for the selected state of origin. "
+                            "Choose a different state.";
+                      }
+                    });
+                  },
+                  onChanged: (v) => setState(() {
+                    _lga = v;
+                    _lgaPrerequisiteError = null;
+                  }),
                   validator: (v) {
                     if (_stateOfOrigin == null) return null;
                     if (lgas.isEmpty) return null;
@@ -209,6 +265,7 @@ class _ContactInformationStepState extends ConsumerState<ContactInformationStep>
           AppDropdownFormField<String>(
             title: 'Nearest Campus',
             hint: 'Select the campus nearest to you.',
+            search: true,
             options: _campusOptions(),
             onChanged: (v) => setState(() => _nearestCampus = v),
           ),

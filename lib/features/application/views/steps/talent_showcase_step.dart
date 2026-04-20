@@ -96,14 +96,15 @@ class _TalentShowcaseStepState extends ConsumerState<TalentShowcaseStep>
     super.build(context);
     final categoryOptions = [
       for (final category in widget.applicationProcess.talentCategories)
-        (value: category.name, label: category.name),
+        AppDropdownOption(value: category.name, label: category.name),
     ];
     final modeOptions = [
       for (final mode in widget.applicationProcess.presentationModes)
-        (value: mode.value, label: mode.label),
+        AppDropdownOption(value: mode.value, label: mode.label),
     ];
     final crewOptions = [
-      for (final size in _kCrewSizeOptions) (value: size, label: size),
+      for (final size in _kCrewSizeOptions)
+        AppDropdownOption(value: size, label: size),
     ];
 
     return Form(
