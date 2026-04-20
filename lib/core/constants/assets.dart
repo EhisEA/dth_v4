@@ -62,7 +62,6 @@ class SvgAssets {
 
   /////////////////////PROFILE//////////////////////
   ///
-  static const String apply = "$svgPath/profile/apply.svg";
   static const String copy = "$svgPath/profile/copy.svg";
   static const String delete = "$svgPath/profile/delete.svg";
   static const String learn = "$svgPath/profile/learn.svg";

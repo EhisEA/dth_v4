@@ -1,20 +1,28 @@
+import "dart:async";
+
 import "package:dth_v4/core/core.dart";
 import "package:dth_v4/core/router/router.dart";
+import "package:dth_v4/data/data.dart";
+import "package:dth_v4/features/subscription/components/subscription_widget.dart";
+import "package:dth_v4/widgets/widgets.dart";
 import "package:flutter/material.dart";
-import "package:dth_v4/features/subscription/subscription.dart";
+import "package:flutter_riverpod/flutter_riverpod.dart";
+import "package:flutter_utils/flutter_utils.dart";
 
-class SubscriptionView extends StatefulWidget {
+class SubscriptionView extends ConsumerStatefulWidget {
   const SubscriptionView({super.key});
 
   static const String path = NavigatorRoutes.subscription;
 
   @override
-  State<SubscriptionView> createState() => _SubscriptionViewState();
+  ConsumerState<SubscriptionView> createState() => _SubscriptionViewState();
 }
 
-class _SubscriptionViewState extends State<SubscriptionView> {
+class _SubscriptionViewState extends ConsumerState<SubscriptionView> {
   @override
   Widget build(BuildContext context) {
+    final subscriptionState = ref.watch(subscriptionPlansStateProvider);
+
     return Scaffold(
       body: Container(
         width: double.infinity,
@@ -25,16 +33,71 @@ class _SubscriptionViewState extends State<SubscriptionView> {
             fit: BoxFit.fill,
           ),
         ),
-        child: Stack(
-          alignment: Alignment.bottomCenter,
-          children: [
-            Positioned(
-              left: 0,
-              right: 0,
-              bottom: 0,
-              child: SafeArea(top: false, child: SubscriptionPlanCarousel()),
-            ),
-          ],
+        child: AnimatedBuilder(
+          animation: Listenable.merge([
+            subscriptionState.plans,
+            subscriptionState.fetchFailed,
+          ]),
+          builder: (context, _) {
+            final failed = subscriptionState.fetchFailed.value;
+            final plans = subscriptionState.plans.value;
+
+            if (failed && plans == null) {
+              return Center(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 24),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      AppText.regular(
+                        "Could not load subscription plans.",
+                        fontSize: 14,
+                        color: AppColors.black,
+                        textAlign: TextAlign.center,
+                      ),
+                      Gap.h16,
+                      AppButton.onBorder(
+                        press: () => unawaited(subscriptionState.fetchPlans()),
+                        text: "Retry",
+                        height: 48,
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            }
+            if (plans == null) {
+              return const Center(child: CircularProgressIndicator());
+            }
+            if (plans.isEmpty) {
+              return Center(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 24),
+                  child: AppText.regular(
+                    "No subscription plans are available right now.",
+                    fontSize: 14,
+                    color: AppColors.black,
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+              );
+            }
+
+            return Stack(
+              alignment: Alignment.bottomCenter,
+              children: [
+                Positioned(
+                  left: 0,
+                  right: 0,
+                  bottom: 0,
+                  child: SafeArea(
+                    top: false,
+                    child: SubscriptionPlanCarousel(plans: plans),
+                  ),
+                ),
+              ],
+            );
+          },
         ),
       ),
     );
