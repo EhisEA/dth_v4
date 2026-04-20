@@ -25,6 +25,7 @@ class NavigatorRoutes {
   ///
   static const String profile = "/profile";
   static const String personalInformation = "/personal-information";
+  static const String profilePhoneVerifyOtp = "/profile-phone-verify-otp";
 
   ////////////////APPLICATION////////////////////
   ///

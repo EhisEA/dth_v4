@@ -59,7 +59,12 @@ class _ProfileViewState extends ConsumerState<ProfileView> {
                     padding: EdgeInsets.zero,
                     children: [
                       Gap.h30,
-                      Image.asset(ImageAssets.user, height: 64, width: 64),
+                      Center(
+                        child: ProfileImageWidget(
+                          size: 64,
+                          color: AppColors.white,
+                        ),
+                      ),
                       Gap.h16,
                       AppText.semiBold(
                         user?.fullName ?? "",
@@ -74,8 +79,7 @@ class _ProfileViewState extends ConsumerState<ProfileView> {
                         fontSize: 12,
                         color: AppColors.tint15,
                       ),
-                      Gap.h16,
-                      Center(child: ContestantPill(user: user)),
+                      ContestantPill(user: user),
                       Gap.h32,
                       ApplicationWidget(
                         participationRole:

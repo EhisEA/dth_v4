@@ -83,19 +83,12 @@ class _SubscriptionViewState extends ConsumerState<SubscriptionView> {
               );
             }
 
-            return Stack(
-              alignment: Alignment.bottomCenter,
-              children: [
-                Positioned(
-                  left: 0,
-                  right: 0,
-                  bottom: 0,
-                  child: SafeArea(
-                    top: false,
-                    child: SubscriptionPlanCarousel(plans: plans),
-                  ),
-                ),
-              ],
+            return SafeArea(
+              top: false,
+              child: Align(
+                alignment: Alignment.bottomCenter,
+                child: SubscriptionPlansList(plans: plans),
+              ),
             );
           },
         ),

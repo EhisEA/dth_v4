@@ -9,7 +9,8 @@ import 'package:dth_v4/features/authentication/views/login_view.dart';
 import 'package:dth_v4/features/authentication/views/verify_otp_view.dart';
 import 'package:dth_v4/features/bottomNavBar/bottom_nav_bar.dart';
 import 'package:dth_v4/features/home/home_view.dart';
-import 'package:dth_v4/features/profile/personal_information/personal_infomation_view.dart';
+import 'package:dth_v4/features/profile/personal_information/views/personal_infomation_view.dart';
+import 'package:dth_v4/features/profile/personal_information/views/profile_phone_verify_otp_view.dart';
 import 'package:dth_v4/features/stories/views/stories_view.dart';
 import 'package:dth_v4/features/search/search_view.dart';
 import 'package:dth_v4/features/splash/views/splash_view.dart';
@@ -120,6 +121,12 @@ class AppRouter {
         return _getPageRoute(
           settings: settings,
           viewToShow: PersonalInfomationView(user: user),
+        );
+
+      case ProfilePhoneVerifyOtpView.path:
+        return _getPageRoute(
+          settings: settings,
+          viewToShow: const ProfilePhoneVerifyOtpView(),
         );
 
       ////////////////SUBSCRIPTION VIEW////////////////////

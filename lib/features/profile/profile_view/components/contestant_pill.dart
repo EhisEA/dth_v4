@@ -6,8 +6,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:flutter_utils/flutter_utils.dart';
 
-/// Role badge(s) under the profile name: **BASIC PLAN** (user), or role + id
-/// with copy (applicant / contestant).
 class ContestantPill extends StatelessWidget {
   const ContestantPill({super.key, this.user});
 
@@ -24,26 +22,26 @@ class ContestantPill extends StatelessWidget {
     switch (role) {
       case ParticipationRole.contestant:
         final u = user;
-        if (u == null) return _singlePill("BASIC PLAN");
-        return _dualPills(label: "CONTESTANT", user: u);
+        if (u == null) return const SizedBox.shrink();
+        return _withProfileSpacing(_dualPills(label: "CONTESTANT", user: u));
       case ParticipationRole.applicant:
         final u = user;
-        if (u == null) return _singlePill("BASIC PLAN");
-        return _dualPills(label: "APPLICANT", user: u);
+        if (u == null) return const SizedBox.shrink();
+        return _withProfileSpacing(_dualPills(label: "APPLICANT", user: u));
       case ParticipationRole.user:
       case ParticipationRole.unknown:
-        return _singlePill("BASIC PLAN");
+        return const SizedBox.shrink();
     }
   }
 
-  Widget _singlePill(String label) {
-    return _PillShell(
-      child: AppText.medium(
-        label,
-        fontSize: 10,
-        color: AppColors.mainBlack,
-        letterSpacing: 0.4,
-      ),
+  Widget _withProfileSpacing(Widget pillRow) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Gap.h16,
+        Center(child: pillRow),
+      ],
     );
   }
 
