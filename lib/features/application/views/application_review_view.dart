@@ -3,7 +3,6 @@ import 'package:dth_v4/core/router/router.dart';
 import 'package:dth_v4/data/models/application_draft.dart';
 import 'package:dth_v4/features/application/components/review_section_card.dart';
 import 'package:dth_v4/features/application/view_model/application_view_model.dart';
-import 'package:dth_v4/features/bottomNavBar/bottom_nav_bar.dart';
 import 'package:dth_v4/widgets/text/textstyles.dart';
 import 'package:dth_v4/widgets/widgets.dart';
 import 'package:flutter/material.dart';

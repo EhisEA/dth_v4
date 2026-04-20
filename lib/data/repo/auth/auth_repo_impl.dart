@@ -1,6 +1,5 @@
 import "package:dth_v4/core/core.dart";
 import "package:dth_v4/data/data.dart";
-import "package:dth_v4/data/repo/auth/auth.dart";
 import "package:flutter_riverpod/flutter_riverpod.dart";
 import "package:flutter_utils/flutter_utils.dart";
 

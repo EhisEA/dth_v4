@@ -3,7 +3,6 @@ import "dart:async";
 import "package:dio/dio.dart";
 import "package:dth_v4/core/core.dart";
 import "package:dth_v4/data/data.dart";
-import "package:dth_v4/data/repo/auth/auth.dart";
 import "package:dth_v4/features/authentication/views/get_started_view.dart";
 import "package:flutter/foundation.dart";
 import "package:flutter_riverpod/flutter_riverpod.dart";
