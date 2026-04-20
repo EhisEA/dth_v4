@@ -2,7 +2,8 @@ import 'package:dth_v4/core/core.dart';
 import 'package:dth_v4/core/router/router.dart';
 import 'package:dth_v4/data/models/application_draft.dart';
 import 'package:dth_v4/features/application/components/review_section_card.dart';
-import 'package:dth_v4/features/application/view_model/application_wizard_notifier.dart';
+import 'package:dth_v4/features/application/view_model/application_view_model.dart';
+import 'package:dth_v4/features/bottomNavBar/bottom_nav_bar.dart';
 import 'package:dth_v4/widgets/text/textstyles.dart';
 import 'package:dth_v4/widgets/widgets.dart';
 import 'package:flutter/material.dart';
@@ -15,7 +16,7 @@ import 'package:flutter_utils/flutter_utils.dart';
 class ApplicationReviewView extends ConsumerStatefulWidget {
   const ApplicationReviewView({super.key, this.routeDraft});
 
-  /// When non-null (from route [RoutingArgumentKey.applicationDraft]), hydrates the wizard draft notifier so the UI matches the passed model.
+  /// When non-null (from route [RoutingArgumentKey.applicationDraft]), hydrates [ApplicationViewModel] so the UI matches the passed model.
   final ApplicationDraft? routeDraft;
 
   static const String path = NavigatorRoutes.applicationReview;
@@ -119,15 +120,17 @@ class _ApplicationReviewViewState extends ConsumerState<ApplicationReviewView> {
     if (d != null) {
       Future.microtask(() {
         if (!mounted) return;
-        ref.read(applicationWizardProvider.notifier).replaceDraft(d);
+        ref.read(applicationViewModelProvider).replaceDraft(d);
       });
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final draft = ref.watch(applicationWizardProvider);
-
+    // final draft = ref.watch(
+    //   applicationViewModelProvider.select((vm) => vm.draft),
+    // );
+    final vm = ref.watch(applicationViewModelProvider);
     return GestureDetector(
       onTap: () => FocusScope.of(context).unfocus(),
       child: Scaffold(
@@ -197,31 +200,31 @@ class _ApplicationReviewViewState extends ConsumerState<ApplicationReviewView> {
                       ReviewSectionCard(
                         title: 'Personal Information',
                         wizardPageIndex: 0,
-                        rows: ApplicationReviewView._personalRows(draft),
+                        rows: ApplicationReviewView._personalRows(vm.draft),
                       ),
                       Gap.h12,
                       ReviewSectionCard(
                         title: 'Contact Information',
                         wizardPageIndex: 1,
-                        rows: ApplicationReviewView._contactRows(draft),
+                        rows: ApplicationReviewView._contactRows(vm.draft),
                       ),
                       Gap.h12,
                       ReviewSectionCard(
                         title: 'Talent Showcase',
                         wizardPageIndex: 2,
-                        rows: ApplicationReviewView._talentRows(draft),
+                        rows: ApplicationReviewView._talentRows(vm.draft),
                       ),
                       Gap.h12,
                       ReviewSectionCard(
                         title: 'Audition Video',
                         wizardPageIndex: 3,
-                        rows: ApplicationReviewView._videoRows(draft),
+                        rows: ApplicationReviewView._videoRows(vm.draft),
                       ),
                       Gap.h12,
                       ReviewSectionCard(
                         title: 'Bank Details',
                         wizardPageIndex: 4,
-                        rows: ApplicationReviewView._bankRows(draft),
+                        rows: ApplicationReviewView._bankRows(vm.draft),
                       ),
                       Gap.h24,
                     ],
@@ -231,16 +234,24 @@ class _ApplicationReviewViewState extends ConsumerState<ApplicationReviewView> {
                   padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
                   child: AppButton.primary(
                     text: 'Submit',
+                    isLoading: vm.submitApplicationState.isBusy,
                     press: () async {
                       FocusScope.of(context).unfocus();
-                      await ref
-                          .read(applicationWizardProvider.notifier)
-                          .submitApplication();
-                      if (context.mounted) {
-                        Navigator.of(
-                          context,
-                        ).pop(ApplicationReviewView.submitPopResult);
+                      final body = vm.requestFromDraft(
+                        vm.draft,
+                        isFinalStep: true,
+                      );
+                      final result = await vm.submitApplication(body);
+                      if (!context.mounted || result == null) {
+                        return;
                       }
+                      ref.read(applicationViewModelProvider).reset();
+                      // MobileNavigationService.instance.popUntil(
+                      //   BottomNavBar.path,
+                      // );
+                      Navigator.of(
+                        context,
+                      ).pop(ApplicationReviewView.submitPopResult);
                     },
                   ),
                 ),

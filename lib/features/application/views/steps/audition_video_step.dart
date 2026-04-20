@@ -1,5 +1,6 @@
 import "package:dth_v4/core/core.dart";
-import "package:dth_v4/features/application/view_model/application_wizard_notifier.dart";
+import "package:dth_v4/data/models/application_wizard_inputs.dart";
+import "package:dth_v4/features/application/view_model/application_view_model.dart";
 import "package:dth_v4/widgets/widgets.dart";
 import "package:flutter/material.dart";
 import "package:flutter/services.dart";
@@ -51,10 +52,12 @@ class _AuditionVideoStepState extends ConsumerState<AuditionVideoStep>
 
   void _persist() {
     ref
-        .read(applicationWizardProvider.notifier)
+        .read(applicationViewModelProvider)
         .setAuditionVideo(
-          videoLink: _videoController.text.trim(),
-          socialMediaLink: _socialController.text.trim(),
+          AuditionVideoInput(
+            videoLink: _videoController.text.trim(),
+            socialMediaLink: _socialController.text.trim(),
+          ),
         );
   }
 

@@ -25,6 +25,9 @@ class ApiRoute {
   static String get loginResendOtp => "$baseUrl/auth/login/resend-otp";
   static String get countries => "$baseUrl/countries";
 
+  ////APPLICATION
+  static String get application => "$baseUrl/application";
+  static String get applicationProcess => "$baseUrl/application/process";
   ///SUBSCRIPTION
   static String get subscriptionPlans => "$baseUrl/plans";
 

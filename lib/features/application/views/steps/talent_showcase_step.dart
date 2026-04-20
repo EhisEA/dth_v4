@@ -1,21 +1,32 @@
 import "package:dth_v4/core/core.dart";
-import "package:dth_v4/features/application/data/application_stub_options.dart";
-import "package:dth_v4/features/application/view_model/application_wizard_notifier.dart";
+import "package:dth_v4/data/models/application_process_models.dart";
+import "package:dth_v4/data/models/application_wizard_inputs.dart";
+import "package:dth_v4/features/application/view_model/application_view_model.dart";
 import "package:dth_v4/widgets/widgets.dart";
 import "package:flutter/material.dart";
 import "package:flutter/services.dart";
 import "package:flutter_riverpod/flutter_riverpod.dart";
 import "package:flutter_utils/flutter_utils.dart";
 
+const _kCrewSizeOptions = <String>[
+  "2 Persons",
+  "3 Persons",
+  "4 Persons",
+  "5 Persons",
+  "6+ Persons",
+];
+
 class TalentShowcaseStep extends ConsumerStatefulWidget {
   const TalentShowcaseStep({
     super.key,
     required this.formKey,
     required this.onRegisterPersist,
+    required this.applicationProcess,
   });
 
   final GlobalKey<FormState> formKey;
   final void Function(void Function() persist) onRegisterPersist;
+  final ApplicationProcess applicationProcess;
 
   @override
   ConsumerState<TalentShowcaseStep> createState() => _TalentShowcaseStepState();
@@ -38,8 +49,7 @@ class _TalentShowcaseStepState extends ConsumerState<TalentShowcaseStep>
   String? _crewSize;
 
   bool get _isGroup =>
-      (_presentationMode ?? '').toLowerCase() ==
-      ApplicationStubOptions.presentationModes[1].toLowerCase();
+      (_presentationMode ?? "").toLowerCase() == "group";
 
   @override
   void initState() {
@@ -67,14 +77,17 @@ class _TalentShowcaseStepState extends ConsumerState<TalentShowcaseStep>
   void _persist() {
     final mode = _presentationMode ?? '';
     ref
-        .read(applicationWizardProvider.notifier)
+        .read(applicationViewModelProvider)
         .setTalentShowcase(
-          stageName: _stageController.text.trim(),
-          talentCategory: _category ?? '',
-          talentDescription: _descriptionController.text.trim(),
-          presentationMode: mode,
-          crewSize: _isGroup ? (_crewSize ?? '') : '',
-          participantNames: _isGroup ? _participantsController.text.trim() : '',
+          TalentShowcaseInput(
+            stageName: _stageController.text.trim(),
+            talentCategory: _category ?? '',
+            talentDescription: _descriptionController.text.trim(),
+            presentationMode: mode,
+            crewSize: _isGroup ? (_crewSize ?? '') : '',
+            participantNames:
+                _isGroup ? _participantsController.text.trim() : '',
+          ),
         );
   }
 
@@ -82,15 +95,16 @@ class _TalentShowcaseStepState extends ConsumerState<TalentShowcaseStep>
   Widget build(BuildContext context) {
     super.build(context);
     final categoryOptions = [
-      for (final c in ApplicationStubOptions.talentCategories)
-        (value: c, label: c),
+      for (final category in widget.applicationProcess.talentCategories)
+        AppDropdownOption(value: category.name, label: category.name),
     ];
     final modeOptions = [
-      for (final m in ApplicationStubOptions.presentationModes)
-        (value: m, label: m),
+      for (final mode in widget.applicationProcess.presentationModes)
+        AppDropdownOption(value: mode.value, label: mode.label),
     ];
     final crewOptions = [
-      for (final s in ApplicationStubOptions.crewSizes) (value: s, label: s),
+      for (final size in _kCrewSizeOptions)
+        AppDropdownOption(value: size, label: size),
     ];
 
     return Form(

@@ -1,7 +1,9 @@
 import "package:dth_v4/core/core.dart";
+import "package:dth_v4/data/models/application_process_models.dart";
+import "package:dth_v4/data/models/application_wizard_inputs.dart";
+import "package:dth_v4/features/application/view_model/application_view_model.dart";
 import "package:dth_v4/data/data.dart";
 import "package:dth_v4/features/application/data/application_stub_options.dart";
-import "package:dth_v4/features/application/view_model/application_wizard_notifier.dart";
 import "package:dth_v4/widgets/widgets.dart";
 import "package:flutter/material.dart";
 import "package:flutter/services.dart";
@@ -15,10 +17,12 @@ class PersonalInformationStep extends ConsumerStatefulWidget {
     super.key,
     required this.formKey,
     required this.onRegisterPersist,
+    required this.applicationProcess,
   });
 
   final GlobalKey<FormState> formKey;
   final void Function(void Function() persist) onRegisterPersist;
+  final ApplicationProcess applicationProcess;
 
   @override
   ConsumerState<PersonalInformationStep> createState() =>
@@ -78,13 +82,15 @@ class _PersonalInformationStepState
       nationalInput: national,
     );
     ref
-        .read(applicationWizardProvider.notifier)
+        .read(applicationViewModelProvider)
         .setPersonal(
-          fullName: _nameController.text.trim(),
-          email: _emailController.text.trim(),
-          dateOfBirthDisplay: _dobController.text.trim(),
-          gender: _gender ?? '',
-          phoneNumber: phone,
+          PersonalInformationInput(
+            fullName: _nameController.text.trim(),
+            email: _emailController.text.trim(),
+            dateOfBirthDisplay: _dobController.text.trim(),
+            gender: _gender ?? '',
+            phoneNumber: phone,
+          ),
         );
   }
 
@@ -136,7 +142,8 @@ class _PersonalInformationStepState
       });
     });
     final genderOptions = [
-      for (final g in ApplicationStubOptions.genders) (value: g, label: g),
+      for (final gender in widget.applicationProcess.genderOptions)
+        AppDropdownOption(value: gender.label, label: gender.label),
     ];
     return Form(
       key: widget.formKey,

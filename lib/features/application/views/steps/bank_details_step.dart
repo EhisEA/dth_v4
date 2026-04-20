@@ -1,6 +1,7 @@
 import "package:dth_v4/core/core.dart";
-import "package:dth_v4/features/application/data/application_stub_options.dart";
-import "package:dth_v4/features/application/view_model/application_wizard_notifier.dart";
+import "package:dth_v4/data/models/application_process_models.dart";
+import "package:dth_v4/data/models/application_wizard_inputs.dart";
+import "package:dth_v4/features/application/view_model/application_view_model.dart";
 import "package:dth_v4/widgets/widgets.dart";
 import "package:flutter/material.dart";
 import "package:flutter/services.dart";
@@ -12,10 +13,12 @@ class BankDetailsStep extends ConsumerStatefulWidget {
     super.key,
     required this.formKey,
     required this.onRegisterPersist,
+    required this.applicationProcess,
   });
 
   final GlobalKey<FormState> formKey;
   final void Function(void Function() persist) onRegisterPersist;
+  final ApplicationProcess applicationProcess;
 
   @override
   ConsumerState<BankDetailsStep> createState() => _BankDetailsStepState();
@@ -78,7 +81,7 @@ class _BankDetailsStepState extends ConsumerState<BankDetailsStep>
     if (!mounted || gen != _resolveGeneration) return;
     if (_digitsOnly(_accountNumberController.text) != tenDigits) return;
     _lastResolvedForDigits = tenDigits;
-    final draft = ref.read(applicationWizardProvider);
+    final draft = ref.read(applicationViewModelProvider).draft;
     final holder = draft.fullName.trim().isNotEmpty
         ? draft.fullName.trim()
         : 'Example Doe';
@@ -90,11 +93,13 @@ class _BankDetailsStepState extends ConsumerState<BankDetailsStep>
 
   void _persist() {
     ref
-        .read(applicationWizardProvider.notifier)
+        .read(applicationViewModelProvider)
         .setBankDetails(
-          bankName: _bankName ?? '',
-          accountNumber: _digitsOnly(_accountNumberController.text),
-          accountName: _accountNameController.text.trim(),
+          BankDetailsInput(
+            bankName: _bankName ?? '',
+            accountNumber: _digitsOnly(_accountNumberController.text),
+            accountName: _accountNameController.text.trim(),
+          ),
         );
   }
 
@@ -112,7 +117,8 @@ class _BankDetailsStepState extends ConsumerState<BankDetailsStep>
   Widget build(BuildContext context) {
     super.build(context);
     final bankOptions = [
-      for (final b in ApplicationStubOptions.banks) (value: b, label: b),
+      for (final bank in widget.applicationProcess.banks)
+        AppDropdownOption(value: bank, label: bank),
     ];
 
     return Form(
