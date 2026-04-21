@@ -58,6 +58,7 @@ class SvgAssets {
   static const String play = "$svgPath/home/play.svg";
   static const String message = "$svgPath/home/message.svg";
   static const String send2 = "$svgPath/home/send-2.svg";
+  static const String homeStar = "$svgPath/home/home_star.svg";
   static const String send = "$svgPath/home/send.svg";
 
   /////////////////////PROFILE//////////////////////
