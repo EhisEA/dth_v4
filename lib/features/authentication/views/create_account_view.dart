@@ -286,6 +286,7 @@ class _CreateAccountViewState extends ConsumerState<CreateAccountView> {
                   textAlign: TextAlign.center,
                 ),
                 Gap.h16,
+                Gap.h16,
               ],
             ),
           ),

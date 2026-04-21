@@ -5,6 +5,7 @@ class UserModel {
     required this.email,
     required this.phoneNumber,
     required this.isoCode,
+    required this.avatar,
     required this.isPhoneVerified,
     required this.participationType,
     required this.emailVerifiedAt,
@@ -12,12 +13,12 @@ class UserModel {
     required this.updatedAt,
   });
 
-  /// API field `uid` (replaces legacy `id`).
   final String uid;
   final String fullName;
   final String email;
   final String phoneNumber;
   final String isoCode;
+  final String avatar;
   final bool isPhoneVerified;
   final ParticipationType participationType;
   final String emailVerifiedAt;
@@ -40,6 +41,7 @@ class UserModel {
       email: _stringField(json['email']),
       phoneNumber: _stringField(json['phone']),
       isoCode: _stringField(json['iso_code']),
+      avatar: _stringField(json['avatar']),
       isPhoneVerified: _boolField(json['is_phone_verified']),
       participationType: ParticipationType.fromJson(json['participation_type']),
       emailVerifiedAt: _stringField(json['email_verified_at']),
@@ -71,6 +73,7 @@ class UserModel {
       'email': email,
       'phone': phoneNumber,
       'iso_code': isoCode,
+      'avatar': avatar,
       'is_phone_verified': isPhoneVerified,
       'participation_type': participationType.toJson(),
       'email_verified_at': emailVerifiedAt,
@@ -85,6 +88,7 @@ class UserModel {
     String? email,
     String? phoneNumber,
     String? isoCode,
+    String? avatar,
     bool? isPhoneVerified,
     ParticipationType? participationType,
     String? emailVerifiedAt,
@@ -97,6 +101,7 @@ class UserModel {
       email: email ?? this.email,
       phoneNumber: phoneNumber ?? this.phoneNumber,
       isoCode: isoCode ?? this.isoCode,
+      avatar: avatar ?? this.avatar,
       isPhoneVerified: isPhoneVerified ?? this.isPhoneVerified,
       participationType: participationType ?? this.participationType,
       emailVerifiedAt: emailVerifiedAt ?? this.emailVerifiedAt,
@@ -113,6 +118,7 @@ class UserModel {
         other.email == email &&
         other.phoneNumber == phoneNumber &&
         other.isoCode == isoCode &&
+        other.avatar == avatar &&
         other.isPhoneVerified == isPhoneVerified &&
         other.participationType.name == participationType.name &&
         other.participationType.id == participationType.id &&
@@ -127,6 +133,7 @@ class UserModel {
     email,
     phoneNumber,
     isoCode,
+    avatar,
     isPhoneVerified,
     participationType.name,
     participationType.id,
@@ -137,7 +144,7 @@ class UserModel {
 
   @override
   String toString() {
-    return 'UserModel(uid: $uid, fullName: $fullName, email: $email, phoneNumber: $phoneNumber, isoCode: $isoCode, isPhoneVerified: $isPhoneVerified, participationType: ${participationType.name}, emailVerifiedAt: $emailVerifiedAt, createdAt: $createdAt, updatedAt: $updatedAt)';
+    return 'UserModel(uid: $uid, fullName: $fullName, email: $email, phoneNumber: $phoneNumber, isoCode: $isoCode, avatar: $avatar, isPhoneVerified: $isPhoneVerified, participationType: ${participationType.name}, emailVerifiedAt: $emailVerifiedAt, createdAt: $createdAt, updatedAt: $updatedAt)';
   }
 }
 

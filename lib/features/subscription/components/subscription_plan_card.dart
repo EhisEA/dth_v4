@@ -3,7 +3,6 @@ import "package:dth_v4/core/extension/int_extension.dart";
 import "package:dth_v4/data/data.dart";
 import "package:dth_v4/widgets/widgets.dart";
 import "package:flutter/material.dart";
-import "package:flutter/services.dart";
 import "package:flutter_svg/svg.dart";
 import "package:flutter_utils/flutter_utils.dart";
 
@@ -12,15 +11,18 @@ class SubscriptionPlanCard extends StatelessWidget {
     super.key,
     required this.plan,
     required this.onCTATap,
+    this.isCheckoutBusy = false,
   });
 
   final SubscriptionModel plan;
   final VoidCallback onCTATap;
+  final bool isCheckoutBusy;
 
   @override
   Widget build(BuildContext context) {
     final perks = featureLines(plan);
-    final ctaLabel = "Subscribe to ${plan.name}";
+    final active = plan.isActiveSubscription;
+    final subscribeLabel = "Subscribe to ${plan.name}";
     final priceLabel = plan.amount.toMoneyWholeNumber();
     final currencySymbol = _currencySymbol(plan);
     const periodSuffix = " /per season";
@@ -51,7 +53,7 @@ class SubscriptionPlanCard extends StatelessWidget {
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  if (plan.tag != null) ...[
+                  if (plan.tag != null && plan.tag!.isNotEmpty) ...[
                     Container(
                       padding: const EdgeInsets.symmetric(
                         horizontal: 8,
@@ -62,7 +64,7 @@ class SubscriptionPlanCard extends StatelessWidget {
                         borderRadius: BorderRadius.circular(500),
                       ),
                       child: AppText.semiBold(
-                        plan.tag.toString().toUpperCase(),
+                        plan.tag!.toUpperCase(),
                         fontSize: 8,
                         letterSpacing: 0.5,
                         color: AppColors.white,
@@ -100,14 +102,19 @@ class SubscriptionPlanCard extends StatelessWidget {
                     ],
                   ),
                   Gap.h16,
-                  AppButton.onBorder(
-                    press: () {
-                      onCTATap();
-                      HapticFeedback.lightImpact();
-                    },
-                    text: ctaLabel,
-                    height: 48,
-                  ),
+                  if (active)
+                    AppButton.primary(
+                      press: () {},
+                      text: "Subscribed",
+                      height: 48,
+                      enabled: false,
+                    )
+                  else
+                    AppButton.onBorder(
+                      press: onCTATap,
+                      text: subscribeLabel,
+                      height: 48,
+                    ),
                 ],
               ),
             ),
@@ -149,7 +156,7 @@ class SubscriptionPlanCard extends StatelessWidget {
 }
 
 Color _tagBadgeBackground(SubscriptionModel plan) {
-  final tag = plan.tag?.toString().toLowerCase() ?? "";
+  final tag = plan.tag?.toLowerCase() ?? "";
   if (tag.contains("popular") || tag.contains("recommend")) {
     return AppColors.secondaryOrange;
   }
@@ -160,22 +167,7 @@ Color _tagBadgeBackground(SubscriptionModel plan) {
 }
 
 List<String> featureLines(SubscriptionModel plan) {
-  return plan.features
-      .map((e) {
-        if (e is String) return e.trim();
-        if (e is Map) {
-          final m = Map<String, dynamic>.from(e);
-          for (final k in ["title", "name", "label", "description"]) {
-            final v = m[k];
-            if (v != null && v.toString().trim().isNotEmpty) {
-              return v.toString().trim();
-            }
-          }
-        }
-        return e.toString().trim();
-      })
-      .where((s) => s.isNotEmpty)
-      .toList();
+  return plan.features.map((e) => e.trim()).where((s) => s.isNotEmpty).toList();
 }
 
 String _currencySymbol(SubscriptionModel plan) {

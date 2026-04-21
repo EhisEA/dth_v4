@@ -2,3 +2,4 @@ export "views/subscription_view.dart";
 export "components/subscription_widget.dart";
 export "views/confirmation_view.dart";
 export "components/subscription_plan_card.dart";
+export "view_model/subscription_checkout_view_model.dart";

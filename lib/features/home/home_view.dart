@@ -62,8 +62,7 @@ class HomeView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final bottomInset =
-        MediaQuery.paddingOf(context).bottom + 100; // tab bar + home indicator
+    final bottomInset = MediaQuery.paddingOf(context).bottom + 100;
     return GestureDetector(
       onTap: () => FocusScope.of(context).unfocus(),
       behavior: HitTestBehavior.translucent,
@@ -87,6 +86,7 @@ class HomeView extends StatelessWidget {
                     );
                   },
                 ),
+                Gap.h16,
                 Expanded(
                   child: ListView.separated(
                     padding: EdgeInsets.only(bottom: bottomInset, top: 32),
