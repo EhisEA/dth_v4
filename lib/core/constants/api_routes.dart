@@ -23,6 +23,7 @@ class ApiRoute {
   static String get login => "$baseUrl/auth/login";
   static String get loginVerifyOtp => "$baseUrl/auth/login/verify-otp";
   static String get loginResendOtp => "$baseUrl/auth/login/resend-otp";
+  static String get socialGoogle => "$baseUrl/auth/social/google";
   static String get countries => "$baseUrl/countries";
 
   ////APPLICATION

@@ -1,6 +1,7 @@
 import 'package:dth_v4/core/core.dart';
 import 'package:dth_v4/core/router/router.dart';
 import 'package:dth_v4/features/app_web_view/app_web_view.dart';
+import 'package:dth_v4/features/authentication/view_model/get_started_view_model.dart';
 import 'package:dth_v4/features/authentication/views/create_account_view.dart';
 import 'package:dth_v4/features/bottomNavBar/bottom_nav_bar.dart';
 import 'package:dth_v4/widgets/text/text.dart';
@@ -8,19 +9,20 @@ import 'package:dth_v4/widgets/widgets.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_utils/flutter_utils.dart';
 
-class GetStartedView extends StatefulWidget {
+class GetStartedView extends ConsumerStatefulWidget {
   const GetStartedView({super.key});
 
   static const String path = NavigatorRoutes.getStarted;
 
   @override
-  State<GetStartedView> createState() => _GetStartedViewState();
+  ConsumerState<GetStartedView> createState() => _GetStartedViewState();
 }
 
-class _GetStartedViewState extends State<GetStartedView> {
+class _GetStartedViewState extends ConsumerState<GetStartedView> {
   late final TapGestureRecognizer _termsTap;
   late final TapGestureRecognizer _privacyTap;
 
@@ -60,8 +62,17 @@ class _GetStartedViewState extends State<GetStartedView> {
     );
   }
 
+  Future<void> _onGooglePressed() async {
+    HapticFeedback.lightImpact();
+    final model = ref.read(getStartedViewModelProvider);
+    final success = await model.signInWithGoogle();
+    if (!mounted || !success) return;
+    MobileNavigationService.instance.navigateAndClearStack(BottomNavBar.path);
+  }
+
   @override
   Widget build(BuildContext context) {
+    final model = ref.watch(getStartedViewModelProvider);
     final theme = Theme.of(context);
     const bodyColor = Color(0xFF6A6A6A);
     const linkColor = AppColors.primary;
@@ -108,6 +119,7 @@ class _GetStartedViewState extends State<GetStartedView> {
               const Spacer(),
               AppButton.primary(
                 text: 'Continue with email',
+                enabled: !model.isBaseBusy,
                 press: () {
                   MobileNavigationService.instance.push(CreateAccountView.path);
                 },
@@ -118,11 +130,9 @@ class _GetStartedViewState extends State<GetStartedView> {
                 textColor: AppColors.black,
                 borderColor: AppColors.primary,
                 prefixIcon: svgIcon(SvgAssets.googleLogo),
-                press: () {
-                  MobileNavigationService.instance.navigateAndClearStack(
-                    BottomNavBar.path,
-                  );
-                },
+                isLoading: model.isBaseBusy,
+                enabled: !model.isBaseBusy,
+                press: _onGooglePressed,
               ),
               Gap.h12,
               AppButton.onBorder(
@@ -130,6 +140,7 @@ class _GetStartedViewState extends State<GetStartedView> {
                 textColor: AppColors.black,
                 borderColor: AppColors.primary,
                 prefixIcon: svgIcon(SvgAssets.appleLogo),
+                enabled: !model.isBaseBusy,
                 press: () {
                   MobileNavigationService.instance.navigateAndClearStack(
                     BottomNavBar.path,
