@@ -1,13 +1,17 @@
 import "package:dth_v4/core/core.dart";
-import "package:dth_v4/data/repo/profile/profile_repo.dart";
+import "package:dth_v4/data/data.dart";
 import "package:flutter_riverpod/flutter_riverpod.dart";
 import "package:flutter_utils/flutter_utils.dart";
 
 class ProfileRepoImpl implements ProfileRepo {
-  ProfileRepoImpl({required NetworkService networkService})
-    : _networkService = networkService;
+  ProfileRepoImpl({
+    required NetworkService networkService,
+    required LocalCache localCache,
+  }) : _networkService = networkService,
+       _localCache = localCache;
 
   final NetworkService _networkService;
+  final LocalCache _localCache;
 
   @override
   Future<ApiResponse<String>> sendPhoneOtp({
@@ -38,8 +42,41 @@ class ProfileRepoImpl implements ProfileRepo {
     );
     return const ApiResponse();
   }
+
+  @override
+  Future<ApiResponse<UserModel>> updateProfile({
+    String? fullName,
+    String? phone,
+    String? isoCode,
+    String? avatarFilePath,
+  }) async {
+    final fields = <String, dynamic>{};
+    if (fullName != null) fields["full_name"] = fullName;
+    if (phone != null) fields["phone"] = phone;
+    if (isoCode != null) fields["iso_code"] = isoCode;
+
+    final Map<String, dynamic>? file =
+        (avatarFilePath != null && avatarFilePath.isNotEmpty)
+        ? {"avatar": avatarFilePath}
+        : null;
+
+    final response = await _networkService.putFormData(
+      ApiRoute.profileUpdate,
+      data: fields.isEmpty ? null : fields,
+      file: file,
+    );
+    final data =
+        (response.data as Map<String, dynamic>)["data"]["user"]
+            as Map<String, dynamic>;
+    final result = UserModel.fromJson(data);
+    await _localCache.saveUserData(result.toJson());
+    return ApiResponse(data: result);
+  }
 }
 
 final profileRepositoryProvider = Provider<ProfileRepo>((ref) {
-  return ProfileRepoImpl(networkService: ref.read(networkServiceProvider));
+  return ProfileRepoImpl(
+    networkService: ref.read(networkServiceProvider),
+    localCache: ref.read(localCacheProvider),
+  );
 });

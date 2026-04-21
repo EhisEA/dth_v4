@@ -9,15 +9,58 @@ int _asInt(dynamic v) {
     if (asDouble != null) return asDouble.round();
     return int.tryParse(normalized) ?? 0;
   }
-  // e.g. custom numeric types that are not `num` in Dart
   final parsed = double.tryParse(v.toString().replaceAll(",", ""));
   if (parsed != null) return parsed.round();
   return 0;
 }
 
-List<dynamic> _featuresFromJson(dynamic raw) {
+double? _nullableDouble(dynamic v) {
+  if (v == null) return null;
+  if (v is double) return v;
+  if (v is int) return v.toDouble();
+  if (v is num) return v.toDouble();
+  if (v is String) {
+    final s = v.trim().replaceAll(",", "");
+    if (s.isEmpty) return null;
+    return double.tryParse(s);
+  }
+  return double.tryParse(v.toString().replaceAll(",", ""));
+}
+
+int? _nullableInt(dynamic v) {
+  if (v == null) return null;
+  if (v is int) return v;
+  if (v is num) return v.toInt();
+  if (v is String) {
+    final s = v.trim();
+    if (s.isEmpty) return null;
+    return int.tryParse(s) ?? double.tryParse(s)?.toInt();
+  }
+  return int.tryParse(v.toString());
+}
+
+bool _asBool(dynamic v) {
+  if (v is bool) return v;
+  if (v is num) return v != 0;
+  if (v is String) {
+    final s = v.toLowerCase();
+    return s == "true" || s == "1" || s == "yes";
+  }
+  return false;
+}
+
+String? _nullableString(dynamic v) {
+  if (v == null) return null;
+  final s = v.toString().trim();
+  return s.isEmpty ? null : s;
+}
+
+List<String> _featuresFromJson(dynamic raw) {
   if (raw is! List<dynamic>) return [];
-  return List<dynamic>.from(raw);
+  return raw
+      .map((e) => e?.toString().trim() ?? "")
+      .where((s) => s.isNotEmpty)
+      .toList();
 }
 
 List<String> _permissionsFromJson(dynamic raw) {
@@ -28,21 +71,41 @@ List<String> _permissionsFromJson(dynamic raw) {
       .toList();
 }
 
-class SubscriptionModel {
-  final String uid;
-  final String name;
-  final String slug;
-  final dynamic tag;
-  final int order;
-  final int amount;
-  final String currency;
-  final int amountUsd;
-  final String description;
-  final List<dynamic> features;
-  final List<String> permissions;
-  final Perks perks;
+/// API `perks` object on a plan (e.g. vote caps / weights).
+class PlanPerks {
+  const PlanPerks({
+    this.voteCount,
+    this.voteWeight,
+    this.pollVoteWeight,
+    this.minVote,
+  });
 
-  SubscriptionModel({
+  final int? voteCount;
+  final int? voteWeight;
+  final int? pollVoteWeight;
+  final int? minVote;
+
+  factory PlanPerks.fromJson(dynamic raw) {
+    if (raw is! Map) return const PlanPerks();
+    final m = Map<String, dynamic>.from(raw);
+    return PlanPerks(
+      voteCount: _nullableInt(m["vote_count"]),
+      voteWeight: _nullableInt(m["vote_weight"]),
+      pollVoteWeight: _nullableInt(m["poll_vote_weight"]),
+      minVote: _nullableInt(m["min_vote"]),
+    );
+  }
+
+  Map<String, dynamic> toJson() => {
+    if (voteCount != null) "vote_count": voteCount,
+    if (voteWeight != null) "vote_weight": voteWeight,
+    if (pollVoteWeight != null) "poll_vote_weight": pollVoteWeight,
+    if (minVote != null) "min_vote": minVote,
+  };
+}
+
+class SubscriptionModel {
+  const SubscriptionModel({
     required this.uid,
     required this.name,
     required this.slug,
@@ -55,7 +118,24 @@ class SubscriptionModel {
     required this.features,
     required this.permissions,
     required this.perks,
+    required this.isActiveSubscription,
   });
+
+  final String uid;
+  final String name;
+  final String slug;
+  final String? tag;
+  final int order;
+
+  /// Whole currency units (API may send decimals; stored rounded for display).
+  final int amount;
+  final String currency;
+  final double? amountUsd;
+  final String description;
+  final List<String> features;
+  final List<String> permissions;
+  final PlanPerks perks;
+  final bool isActiveSubscription;
 
   factory SubscriptionModel.fromJson(Map<String, dynamic> json) {
     final perksRaw = json["perks"];
@@ -63,17 +143,16 @@ class SubscriptionModel {
       uid: json["uid"]?.toString() ?? "",
       name: json["name"]?.toString() ?? "",
       slug: json["slug"]?.toString() ?? "",
-      tag: json["tag"],
+      tag: _nullableString(json["tag"]),
       order: _asInt(json["order"]),
       amount: _asInt(json["amount"]),
       currency: json["currency"]?.toString() ?? "",
-      amountUsd: _asInt(json["amount_usd"]),
+      amountUsd: _nullableDouble(json["amount_usd"]),
       description: json["description"]?.toString() ?? "",
       features: _featuresFromJson(json["features"]),
       permissions: _permissionsFromJson(json["permissions"]),
-      perks: perksRaw is Map<String, dynamic>
-          ? Perks.fromJson(Map<String, dynamic>.from(perksRaw))
-          : Perks(priority: false),
+      perks: PlanPerks.fromJson(perksRaw),
+      isActiveSubscription: _asBool(json["is_active_subscription"]),
     );
   }
 
@@ -87,19 +166,9 @@ class SubscriptionModel {
     "currency": currency,
     "amount_usd": amountUsd,
     "description": description,
-    "features": List<dynamic>.from(features.map((x) => x)),
-    "permissions": List<dynamic>.from(permissions.map((x) => x)),
+    "features": features,
+    "permissions": permissions,
     "perks": perks.toJson(),
+    "is_active_subscription": isActiveSubscription,
   };
-}
-
-class Perks {
-  final bool priority;
-
-  Perks({required this.priority});
-
-  factory Perks.fromJson(Map<String, dynamic> json) =>
-      Perks(priority: json["priority"] == true);
-
-  Map<String, dynamic> toJson() => {"priority": priority};
 }

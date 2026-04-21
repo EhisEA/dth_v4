@@ -14,6 +14,8 @@ class RoutingArgumentKey {
 
   /// `bool` — subscription checkout simulation ([ConfirmationView]).
   static const String confirmationSuccess = "confirmationSuccess";
+
+  static const String callbackUrl = "callbackUrl";
 }
 
 abstract class OtpFlowArg {

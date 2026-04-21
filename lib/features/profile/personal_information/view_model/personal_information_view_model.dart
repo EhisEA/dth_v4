@@ -1,21 +1,31 @@
+import "dart:io";
+
+import "package:dth_v4/core/provider.dart";
 import "package:dth_v4/data/data.dart";
 import "package:dth_v4/widgets/widgets.dart";
 import "package:flutter/foundation.dart";
+import "package:flutter/services.dart";
 import "package:flutter_riverpod/flutter_riverpod.dart";
 import "package:flutter_utils/flutter_utils.dart";
+import "package:image_picker/image_picker.dart";
 
 /// Personal information screen + in-app phone verification (send code, OTP entry,
 /// resend timer). Keeps verification state until you finish or start a new send.
 class PersonalInformationViewModel extends BaseChangeNotifierViewModel {
-  PersonalInformationViewModel(this._profileRepo, this._userState)
-    : endTime = ValueNotifier<DateTime>(
+  PersonalInformationViewModel(
+    this._profileRepo,
+    this._userState,
+    this._mediaService,
+  ) : endTime = ValueNotifier<DateTime>(
         DateTime.now().add(const Duration(seconds: _defaultCooldownSeconds)),
       );
 
   static const int _defaultCooldownSeconds = 60;
+  static const int _maxAvatarBytes = 2048 * 1024;
 
   final ProfileRepo _profileRepo;
   final UserProfileState _userState;
+  final MediaService _mediaService;
 
   final ValueNotifier<bool> canResend = ValueNotifier<bool>(false);
   final ValueNotifier<DateTime> endTime;
@@ -176,6 +186,101 @@ class PersonalInformationViewModel extends BaseChangeNotifierViewModel {
     }
   }
 
+  /// Picks an image from the gallery, enforces max size, uploads as `avatar`, refreshes user.
+  ///
+  /// Uses [ImagePicker] directly so we do not depend on [MediaService.getImage]'s
+  /// `Permission.photos` pre-check (fails on iOS when access is "limited", which is
+  /// not treated as [PermissionStatus.granted]).
+  Future<void> pickAndUpdateProfileAvatar(UserModel current) async {
+    if (isBaseBusy) return;
+
+    if (kIsWeb) {
+      DthFlushBar.instance.showError(
+        title: "Photo",
+        message: "Profile photo upload is not available on web.",
+      );
+      return;
+    }
+
+    final XFile? xfile;
+    try {
+      xfile = await ImagePicker().pickImage(
+        source: ImageSource.gallery,
+        requestFullMetadata: false,
+      );
+    } on PlatformException catch (e) {
+      DthFlushBar.instance.showError(
+        title: "Photo access",
+        message: e.message?.isNotEmpty == true
+            ? e.message!
+            : "Allow photo access in Settings to choose a profile picture.",
+      );
+      return;
+    } catch (_) {
+      DthFlushBar.instance.showError(
+        title: "Photo",
+        message: "Could not open the photo library. Please try again.",
+      );
+      return;
+    }
+
+    if (xfile == null) return;
+
+    var path = xfile.path;
+    var length = File(path).lengthSync();
+    if (length > _maxAvatarBytes) {
+      for (
+        var quality = 85;
+        quality >= 40 && length > _maxAvatarBytes;
+        quality -= 15
+      ) {
+        try {
+          final compressed = await _mediaService.compressImage(
+            file: FileResult(path: path),
+            quality: quality,
+          );
+          path = compressed.path;
+          length = File(path).lengthSync();
+        } catch (_) {
+          break;
+        }
+      }
+    }
+
+    if (length > _maxAvatarBytes) {
+      DthFlushBar.instance.showError(
+        title: "Photo too large",
+        message: "Please choose an image under 2 MB.",
+      );
+      return;
+    }
+
+    try {
+      changeBaseState(const ViewModelState.busy());
+      final response = await _profileRepo.updateProfile(
+        fullName: current.fullName,
+        phone: current.phoneNumber,
+        isoCode: current.isoCode,
+        avatarFilePath: path,
+      );
+      final updated = response.data;
+      if (updated != null) {
+        _userState.setUser(updated);
+        DthFlushBar.instance.showSuccess(
+          title: "Profile photo",
+          message: "Your profile photo was updated.",
+        );
+      }
+      changeBaseState(const ViewModelState.idle());
+    } on ApiFailure catch (e) {
+      changeBaseState(ViewModelState.error(e));
+      DthFlushBar.instance.showError(
+        message: e.message,
+        title: "Update failed",
+      );
+    }
+  }
+
   @override
   void dispose() {
     canResend.dispose();
@@ -189,5 +294,6 @@ final personalInformationViewModelProvider =
       return PersonalInformationViewModel(
         ref.read(profileRepositoryProvider),
         ref.read(userStateProvider),
+        ref.read(mediaServiceProvider),
       );
     });
