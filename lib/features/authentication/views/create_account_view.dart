@@ -171,6 +171,7 @@ class _CreateAccountViewState extends ConsumerState<CreateAccountView> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                Gap.h14,
                 Expanded(
                   child: Form(
                     key: _formKey,

@@ -92,7 +92,7 @@ class _GetStartedViewState extends State<GetStartedView> {
           padding: const EdgeInsets.symmetric(horizontal: 16),
           child: Column(
             children: [
-              Gap.h10,
+              Gap.h14,
               Center(
                 child: Image.asset(
                   ImageAssets.logo2,

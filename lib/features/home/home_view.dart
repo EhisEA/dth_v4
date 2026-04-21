@@ -75,6 +75,7 @@ class HomeView extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
+                Gap.h14,
                 HomeHeader(onLiveTap: () {}, onNotificationTap: () {}),
                 Gap.h16,
                 HomeStoriesBar(

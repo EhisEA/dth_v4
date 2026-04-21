@@ -65,6 +65,7 @@ class _LoginViewState extends ConsumerState<LoginView> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              Gap.h14,
               Expanded(
                 child: Form(
                   key: _formKey,
