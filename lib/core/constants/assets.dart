@@ -68,9 +68,9 @@ class SvgAssets {
   static const String logout = "$svgPath/profile/logout.svg";
   static const String personal = "$svgPath/profile/personal.svg";
   static const String privacy = "$svgPath/profile/privacy.svg";
-  static const String reset = "$svgPath/profile/reset.svg";
   static const String social = "$svgPath/profile/social.svg";
   static const String terms = "$svgPath/profile/terms.svg";
+  static const String cup = "$svgPath/profile/cup.svg";
 
   /////////////////////APPLICATION//////////////////////
   ///

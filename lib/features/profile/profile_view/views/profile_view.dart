@@ -96,6 +96,13 @@ class _ProfileViewState extends ConsumerState<ProfileView> {
                         color: AppColors.tint15,
                       ),
                       Gap.h24,
+                      ContestantDashboardTile(
+                        role: user?.participationRole ?? ParticipationRole.user,
+                        onTap: () {
+                          _navigationService.navigateTo(ApplicationView.path);
+                        },
+                      ),
+                      Gap.h32,
                       ProfileTlle(
                         title: "Personal Information",
                         description: "Update your profile information",
@@ -126,13 +133,7 @@ class _ProfileViewState extends ConsumerState<ProfileView> {
                           );
                         },
                       ),
-                      Gap.h28,
-                      ProfileTlle(
-                        title: "Reset Password",
-                        description: "Update your password",
-                        icon: SvgAssets.reset,
-                        onTap: () {},
-                      ),
+
                       Gap.h32,
                       AppText.medium(
                         "Support & Legal",
