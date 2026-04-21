@@ -159,7 +159,7 @@ class _GetStartedViewState extends State<GetStartedView> {
                 ),
                 textAlign: TextAlign.center,
               ),
-              // Gap.h16,
+              Gap.h16,
             ],
           ),
         ),

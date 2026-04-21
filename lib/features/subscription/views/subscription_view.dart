@@ -43,11 +43,13 @@ class _SubscriptionViewState extends ConsumerState<SubscriptionView> {
             final plans = subscriptionState.plans.value;
 
             if (failed && plans == null) {
-              return Center(
+              return Align(
+                alignment: Alignment.bottomCenter,
                 child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 24),
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
                       AppText.regular(
                         "Could not load subscription plans.",
@@ -56,9 +58,10 @@ class _SubscriptionViewState extends ConsumerState<SubscriptionView> {
                         textAlign: TextAlign.center,
                       ),
                       Gap.h16,
-                      AppButton.onBorder(
+                      AppButton(
                         press: () => unawaited(subscriptionState.fetchPlans()),
                         text: "Retry",
+                        color: AppColors.white,
                         height: 48,
                       ),
                     ],

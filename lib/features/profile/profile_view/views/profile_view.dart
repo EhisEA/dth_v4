@@ -63,6 +63,7 @@ class _ProfileViewState extends ConsumerState<ProfileView> {
                         child: ProfileImageWidget(
                           size: 64,
                           color: AppColors.white,
+                          avatar: user?.avatar,
                         ),
                       ),
                       Gap.h16,

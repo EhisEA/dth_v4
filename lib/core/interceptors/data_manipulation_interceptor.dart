@@ -24,11 +24,14 @@ class DataManipulationInterceptor extends Interceptor {
     RequestOptions options,
     RequestInterceptorHandler handler,
   ) async {
-    options.headers.addAll({
-      "Content-Type": "application/json",
+    final baseHeaders = <String, dynamic>{
       "Accept": "application/json",
       ...AppInfo.payload,
-    });
+    };
+    if (options.data is! FormData) {
+      baseHeaders["Content-Type"] = "application/json";
+    }
+    options.headers.addAll(baseHeaders);
 
     try {
       // Fetch all device info in parallel

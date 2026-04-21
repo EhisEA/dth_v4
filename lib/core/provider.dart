@@ -14,6 +14,11 @@ final dataManipulationInterceptorProvider =
       );
     });
 
+/// Gallery / file picking (from [flutter_utils] `MediaServiceImpl`).
+final mediaServiceProvider = Provider<MediaService>((ref) {
+  return MediaServiceImpl();
+});
+
 final networkServiceProvider = Provider<NetworkServiceImpl>((ref) {
   final network = NetworkServiceImpl(
     interceptors: [
