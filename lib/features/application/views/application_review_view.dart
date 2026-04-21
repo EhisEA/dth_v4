@@ -2,6 +2,7 @@ import 'package:dth_v4/core/core.dart';
 import 'package:dth_v4/core/router/router.dart';
 import 'package:dth_v4/data/models/application_draft.dart';
 import 'package:dth_v4/features/application/components/review_section_card.dart';
+import 'package:dth_v4/features/bottomNavBar/bottom_nav_bar.dart';
 import 'package:dth_v4/features/application/view_model/application_view_model.dart';
 import 'package:dth_v4/widgets/text/textstyles.dart';
 import 'package:dth_v4/widgets/widgets.dart';
@@ -11,7 +12,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_utils/flutter_utils.dart';
 
-/// Pop result: wizard page index `0–4` to edit, or [submitPopResult] after successful submit.
+/// Pop result: wizard page index `0–4` when the user taps a section to edit.
 class ApplicationReviewView extends ConsumerStatefulWidget {
   const ApplicationReviewView({super.key, this.routeDraft});
 
@@ -19,9 +20,6 @@ class ApplicationReviewView extends ConsumerStatefulWidget {
   final ApplicationDraft? routeDraft;
 
   static const String path = NavigatorRoutes.applicationReview;
-
-  /// Pass to `Navigator.pop` when submission succeeds; parent closes wizard.
-  static const int submitPopResult = -1;
 
   static String maskAccountNumber(String digits) {
     final d = digits.replaceAll(RegExp(r'\D'), '');
@@ -240,17 +238,16 @@ class _ApplicationReviewViewState extends ConsumerState<ApplicationReviewView> {
                         vm.draft,
                         isFinalStep: true,
                       );
-                      final result = await vm.submitApplication(body);
-                      if (!context.mounted || result == null) {
-                        return;
-                      }
-                      ref.read(applicationViewModelProvider).reset();
-                      // MobileNavigationService.instance.popUntil(
-                      //   BottomNavBar.path,
-                      // );
-                      Navigator.of(
-                        context,
-                      ).pop(ApplicationReviewView.submitPopResult);
+
+                      await vm.submitApplication(
+                        body: body,
+                        onSuccess: () {
+                          ref.read(applicationViewModelProvider).reset();
+                          MobileNavigationService.instance.popUntil(
+                            BottomNavBar.path,
+                          );
+                        },
+                      );
                     },
                   ),
                 ),

@@ -35,8 +35,9 @@ class _BankDetailsStepState extends ConsumerState<BankDetailsStep>
   late final TextEditingController _accountNameController;
 
   String? _bankName;
-  String _lastResolvedForDigits = '';
-  int _resolveGeneration = 0;
+  // Automatic account-name resolution (stub) — disabled; user enters account name.
+  // String _lastResolvedForDigits = '';
+  // int _resolveGeneration = 0;
 
   @override
   void initState() {
@@ -45,13 +46,13 @@ class _BankDetailsStepState extends ConsumerState<BankDetailsStep>
     _accountNameFocus = FocusNode();
     _accountNumberController = TextEditingController();
     _accountNameController = TextEditingController();
-    _accountNumberController.addListener(_onAccountNumberChanged);
+    // _accountNumberController.addListener(_onAccountNumberChanged);
     widget.onRegisterPersist(_persist);
   }
 
   @override
   void dispose() {
-    _accountNumberController.removeListener(_onAccountNumberChanged);
+    // _accountNumberController.removeListener(_onAccountNumberChanged);
     _accountFocus.dispose();
     _accountNameFocus.dispose();
     _accountNumberController.dispose();
@@ -59,37 +60,37 @@ class _BankDetailsStepState extends ConsumerState<BankDetailsStep>
     super.dispose();
   }
 
-  void _onAccountNumberChanged() {
-    final digits = _digitsOnly(_accountNumberController.text);
-    if (digits.length != 10) {
-      if (_accountNameController.text.isNotEmpty) {
-        _accountNameController.clear();
-      }
-      _lastResolvedForDigits = '';
-      setState(() {});
-      return;
-    }
-    if (digits == _lastResolvedForDigits) return;
-    _resolveAccountStub(digits);
-  }
+  // void _onAccountNumberChanged() {
+  //   final digits = _digitsOnly(_accountNumberController.text);
+  //   if (digits.length != 10) {
+  //     if (_accountNameController.text.isNotEmpty) {
+  //       _accountNameController.clear();
+  //     }
+  //     _lastResolvedForDigits = '';
+  //     setState(() {});
+  //     return;
+  //   }
+  //   if (digits == _lastResolvedForDigits) return;
+  //   _resolveAccountStub(digits);
+  // }
 
   String _digitsOnly(String s) => s.replaceAll(RegExp(r'\D'), '');
 
-  Future<void> _resolveAccountStub(String tenDigits) async {
-    final gen = ++_resolveGeneration;
-    await Future<void>.delayed(const Duration(milliseconds: 450));
-    if (!mounted || gen != _resolveGeneration) return;
-    if (_digitsOnly(_accountNumberController.text) != tenDigits) return;
-    _lastResolvedForDigits = tenDigits;
-    final draft = ref.read(applicationViewModelProvider).draft;
-    final holder = draft.fullName.trim().isNotEmpty
-        ? draft.fullName.trim()
-        : 'Example Doe';
-    setState(() {
-      _accountNameController.text = holder;
-    });
-    widget.formKey.currentState?.validate();
-  }
+  // Future<void> _resolveAccountStub(String tenDigits) async {
+  //   final gen = ++_resolveGeneration;
+  //   await Future<void>.delayed(const Duration(milliseconds: 450));
+  //   if (!mounted || gen != _resolveGeneration) return;
+  //   if (_digitsOnly(_accountNumberController.text) != tenDigits) return;
+  //   _lastResolvedForDigits = tenDigits;
+  //   final draft = ref.read(applicationViewModelProvider).draft;
+  //   final holder = draft.fullName.trim().isNotEmpty
+  //       ? draft.fullName.trim()
+  //       : 'Example Doe';
+  //   setState(() {
+  //     _accountNameController.text = holder;
+  //   });
+  //   widget.formKey.currentState?.validate();
+  // }
 
   void _persist() {
     ref
@@ -108,7 +109,7 @@ class _BankDetailsStepState extends ConsumerState<BankDetailsStep>
       return null;
     }
     if (value.trim().isEmpty) {
-      return 'Name will appear after a valid account number';
+      return 'This field is required';
     }
     return null;
   }
@@ -143,8 +144,9 @@ class _BankDetailsStepState extends ConsumerState<BankDetailsStep>
           Gap.h24,
           AppDropdownFormField<String>(
             title: 'Bank Name',
-            hint: 'Select bank',
+            hint: 'select bank',
             options: bankOptions,
+            search: true,
             onChanged: (v) => setState(() => _bankName = v),
           ),
           Gap.h16,
@@ -169,12 +171,10 @@ class _BankDetailsStepState extends ConsumerState<BankDetailsStep>
           Gap.h16,
           AppTextField(
             title: 'Account Name',
-            hint: 'Name will appear here',
+            hint: 'Enter name as on bank account',
             controller: _accountNameController,
             focusNode: _accountNameFocus,
             titleColor: AppColors.black,
-            readOnly: true,
-            enabled: true,
             validator: _accountNameValidator,
             textInputAction: TextInputAction.done,
           ),

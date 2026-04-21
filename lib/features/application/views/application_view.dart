@@ -354,10 +354,6 @@ class _ApplicationViewState extends ConsumerState<ApplicationView> {
       );
       if (!mounted) return;
       if (result == null) return;
-      if (result == ApplicationReviewView.submitPopResult) {
-        Navigator.of(context).pop(true);
-        return;
-      }
       if (result is int && result >= 0 && result < _totalSteps) {
         _pageController.jumpToPage(result);
         setState(() => _currentIndex = result);

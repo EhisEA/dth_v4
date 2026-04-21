@@ -81,17 +81,3 @@ class ApplicationSubmitRequest {
     };
   }
 }
-
-/// Parsed `data` payload from `POST /application` (tolerant until backend contract is fixed).
-class ApplicationSubmitResult {
-  const ApplicationSubmitResult({required this.raw});
-
-  final Map<String, dynamic> raw;
-
-  factory ApplicationSubmitResult.fromJson(dynamic json) {
-    if (json is Map<String, dynamic>) {
-      return ApplicationSubmitResult(raw: json);
-    }
-    return const ApplicationSubmitResult(raw: {});
-  }
-}

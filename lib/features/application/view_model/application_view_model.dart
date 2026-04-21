@@ -140,18 +140,18 @@ class ApplicationViewModel extends BaseChangeNotifierViewModel {
     }
   }
 
-  Future<ApplicationSubmitResult?> submitApplication(
-    ApplicationSubmitRequest body,
-  ) async {
+  Future<void> submitApplication({
+    required ApplicationSubmitRequest body,
+    required Function()? onSuccess,
+  }) async {
     try {
       setState(_submitApplicationKey, const ViewModelState.busy());
-      final response = await _applicationRepo.submitApplication(body);
+      await _applicationRepo.submitApplication(body);
       setState(_submitApplicationKey, const ViewModelState.idle());
-      return response.data;
+      onSuccess?.call();
     } on ApiFailure catch (e) {
       setState(_submitApplicationKey, ViewModelState.error(e));
       DthFlushBar.instance.showError(message: e.message, title: "Failed");
-      return null;
     }
   }
 
