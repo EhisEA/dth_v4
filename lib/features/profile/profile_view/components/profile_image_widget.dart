@@ -52,6 +52,7 @@ class ProfileImageWidget extends StatelessWidget {
                 child: useNetwork
                     ? CachedNetworkImage(
                         imageUrl: avatar!.trim(),
+                        fit: BoxFit.cover,
                         placeholder: (context, url) =>
                             _placeholderImage(size: size, tint: tint),
                         errorWidget: (context, url, error) =>

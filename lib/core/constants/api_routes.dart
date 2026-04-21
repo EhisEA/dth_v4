@@ -31,6 +31,10 @@ class ApiRoute {
 
   ///SUBSCRIPTION
   static String get subscriptionPlans => "$baseUrl/plans";
+  static String get subscriptionPurchase => "$baseUrl/subscription/purchase";
+
+  static String paymentVerify(String reference) =>
+      "$baseUrl/payment/verify/$reference";
 
   ///PROFILE
   static String get user => "$baseUrl/profile";

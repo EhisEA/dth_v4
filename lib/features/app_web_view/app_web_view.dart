@@ -9,8 +9,14 @@ import "package:webview_flutter/webview_flutter.dart";
 
 class AppWebView extends ConsumerStatefulWidget {
   static const String path = NavigatorRoutes.webView;
-  const AppWebView({super.key, required this.initialURl, required this.title});
+  const AppWebView({
+    super.key,
+    required this.initialURl,
+    required this.title,
+    this.callbackUrl,
+  });
 
+  final String? callbackUrl;
   final String initialURl;
   final String title;
 
@@ -47,7 +53,12 @@ class _AppWebViewState extends ConsumerState<AppWebView> {
               });
             }
           },
-          onPageStarted: (String url) {},
+          onPageStarted: (String url) {
+            final cb = widget.callbackUrl;
+            if (cb != null && cb.isNotEmpty && url.contains(cb)) {
+              Navigator.pop<bool>(context, true);
+            }
+          },
           onPageFinished: (String url) {},
           onWebResourceError: (WebResourceError error) {},
         ),
@@ -57,32 +68,40 @@ class _AppWebViewState extends ConsumerState<AppWebView> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: DthAppBar(
-        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-        title: widget.title,
-        actions: [
-          GestureDetector(
-            onTap: () {
-              LinkLauncher.openURL(widget.initialURl);
-            },
-            child: Padding(
-              padding: const EdgeInsets.only(right: 16.0),
-              child: Icon(Icons.launch, color: AppColors.black, size: 18),
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, result) {
+        if (!didPop) {
+          Navigator.pop(context, false);
+        }
+      },
+      child: Scaffold(
+        appBar: DthAppBar(
+          backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+          title: widget.title,
+          actions: [
+            GestureDetector(
+              onTap: () {
+                LinkLauncher.openURL(widget.initialURl);
+              },
+              child: Padding(
+                padding: const EdgeInsets.only(right: 16.0),
+                child: Icon(Icons.launch, color: AppColors.black, size: 18),
+              ),
             ),
-          ),
-        ],
-      ),
-      body: Column(
-        children: [
-          if (progress != 100)
-            LinearProgressIndicator(
-              value: progress.toDouble() / 100,
-              color: AppColors.primary,
-              backgroundColor: AppColors.primary.withValues(alpha: 0.1),
-            ),
-          Expanded(child: WebViewWidget(controller: controller)),
-        ],
+          ],
+        ),
+        body: Column(
+          children: [
+            if (progress != 100)
+              LinearProgressIndicator(
+                value: progress.toDouble() / 100,
+                color: AppColors.primary,
+                backgroundColor: AppColors.primary.withValues(alpha: 0.1),
+              ),
+            Expanded(child: WebViewWidget(controller: controller)),
+          ],
+        ),
       ),
     );
   }
