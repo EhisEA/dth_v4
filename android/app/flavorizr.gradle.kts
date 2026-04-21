@@ -9,12 +9,12 @@ android.apply {
         create("dev") {
             dimension = "environment"
             applicationId = "com.dth.dth.dev"
-            resValue(type = "string", name = "app_name", value = "Dth (Dev)")
+            resValue(type = "string", name = "app_name", value = "DTH [dev]")
         }
         create("prod") {
             dimension = "environment"
             applicationId = "com.dth.dth"
-            resValue(type = "string", name = "app_name", value = "Dth")
+            resValue(type = "string", name = "app_name", value = "DTH")
         }
     }
 }

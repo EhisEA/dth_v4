@@ -5,14 +5,14 @@ app:
 flavors:
   dev:
     app:
-      name: "Dth (Dev)"
+      name: "DTH [dev]"
     android:
       applicationId: "com.dth.dth.dev"
     ios:
       bundleId: "com.dth.dthapp.dev"
   prod:
     app:
-      name: "Dth"
+      name: "DTH"
     android:
       applicationId: "com.dth.dth"
     ios:
