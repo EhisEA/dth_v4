@@ -82,18 +82,17 @@ class _ProfileViewState extends ConsumerState<ProfileView> {
                       ),
                       ContestantPill(user: user),
                       Gap.h32,
-                      ApplicationWidget(
-                        participationRole:
-                            user?.participationRole ?? ParticipationRole.user,
-                        onTap: () {
-                          user?.participationRole == ParticipationRole.user
-                              ? _navigationService.navigateTo(
-                                  ApplicationView.path,
-                                )
-                              : null;
-                        },
-                      ),
-                      Gap.h32,
+                      if (user?.participationRole ==
+                          ParticipationRole.user) ...[
+                        ApplicationWidget(
+                          participationRole:
+                              user?.participationRole ?? ParticipationRole.user,
+                          onTap: () {
+                            _navigationService.navigateTo(ApplicationView.path);
+                          },
+                        ),
+                        Gap.h32,
+                      ],
                       AppText.medium(
                         "Account Settings",
                         fontSize: 12,
