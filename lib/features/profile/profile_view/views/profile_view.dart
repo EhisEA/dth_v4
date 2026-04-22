@@ -102,7 +102,7 @@ class _ProfileViewState extends ConsumerState<ProfileView> {
                       ContestantDashboardTile(
                         role: user?.participationRole ?? ParticipationRole.user,
                         onTap: () {
-                          _navigationService.navigateTo(ApplicationView.path);
+                          // _navigationService.navigateTo(ApplicationView.path);
                         },
                       ),
                       Gap.h32,
