@@ -25,6 +25,14 @@ class HomeView extends StatelessWidget {
       imageUrl: "https://picsum.photos/seed/dth3/200",
       label: "Meet the judges",
     ),
+    const HomeStoryItem(
+      imageUrl: "https://picsum.photos/seed/g1/600/800",
+      label: "Meet the judges",
+    ),
+    const HomeStoryItem(
+      imageUrl: "https://picsum.photos/seed/g5/400/400",
+      label: "Meet the judges",
+    ),
   ];
 
   static final List<HomePostItem> _mockPosts = [
