@@ -6,6 +6,7 @@ class ImageAssets {
   static const String imagePath = "assets/images";
   static const String logo = "$imagePath/logo.png";
   static const String logo2 = "$imagePath/logo2.png";
+  static const String updateIcon = "$imagePath/update_icon.png";
 
   /////////////////////PROFILE//////////////////////
   ///
@@ -21,6 +22,9 @@ class ImageAssets {
   static const String subscriptionBg =
       "$imagePath/subscription/subscription_bg.png";
   static const String phoneBg = "$imagePath/subscription/phone_bg.png";
+
+  /////////////////////APPLICATION//////////////////////
+  static const String applicationBg = "$imagePath/application/application_bg.png";
 }
 
 class SvgAssets {

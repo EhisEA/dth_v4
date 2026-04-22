@@ -1,0 +1,27 @@
+app:
+  android:
+    flavorDimensions: "environment"
+
+flavors:
+  dev:
+    app:
+      name: "DTH [dev]"
+    android:
+      applicationId: "com.dth.dth.dev"
+    ios:
+      bundleId: "com.dth.dthapp.dev"
+  prod:
+    app:
+      name: "DTH"
+    android:
+      applicationId: "com.dth.dth"
+    ios:
+      bundleId: "com.dth.dthapp"
+
+instructions:
+  - android:androidManifest
+  - android:buildGradle
+  - ios:xcconfig
+  - ios:buildTargets
+  - ios:schema
+  - ios:plist

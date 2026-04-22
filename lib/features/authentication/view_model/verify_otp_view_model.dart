@@ -135,14 +135,15 @@ class VerifyOtpViewModel extends BaseChangeNotifierViewModel {
       return false;
     }
     try {
-      final fcmToken = await PushNotificationService.getToken();
-
       changeBaseState(const ViewModelState.busy());
+      final fcmToken = await PushNotificationService.getToken();
+      final deviceName = await deviceInfoState.getDeviceName();
       if (_isLoginFlow) {
         await _authRepo.verifyLoginOtp(
           otp: code,
           signature: sig,
           fcmToken: fcmToken ?? "",
+          deviceName: deviceName,
         );
       } else {
         await _authRepo.verifyRegisterOtp(

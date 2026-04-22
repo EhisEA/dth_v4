@@ -1,4 +1,4 @@
-package com.example.dth_v4
+package com.dth.dth
 
 import io.flutter.embedding.android.FlutterActivity
 

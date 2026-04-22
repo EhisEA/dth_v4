@@ -5,9 +5,10 @@ import "package:flutter_utils/flutter_utils.dart";
 import "package:intl/intl.dart";
 
 class ApplicationViewModel extends BaseChangeNotifierViewModel {
-  ApplicationViewModel(this._applicationRepo);
+  ApplicationViewModel(this._applicationRepo, this._userProfileState);
 
   final ApplicationRepo _applicationRepo;
+  final UserProfileState _userProfileState;
 
   ApplicationDraft _draft = ApplicationDraft.empty;
 
@@ -124,7 +125,7 @@ class ApplicationViewModel extends BaseChangeNotifierViewModel {
     );
   }
 
-  Future<ApplicationProcess?> fetchApplicationProcess() async {
+  Future<void> fetchApplicationProcess({Function()? onSuccess}) async {
     try {
       changeBaseState(const ViewModelState.busy());
       final response = await _applicationRepo.getApplicationProcess();
@@ -132,26 +133,26 @@ class ApplicationViewModel extends BaseChangeNotifierViewModel {
       final data = response.data;
       _applicationProcess = data;
       notifyListeners();
-      return data;
+      onSuccess?.call();
     } on ApiFailure catch (e) {
       changeBaseState(ViewModelState.error(e));
       DthFlushBar.instance.showError(message: e.message, title: "Failed");
-      return null;
     }
   }
 
-  Future<ApplicationSubmitResult?> submitApplication(
-    ApplicationSubmitRequest body,
-  ) async {
+  Future<void> submitApplication({
+    required ApplicationSubmitRequest body,
+    required Function()? onSuccess,
+  }) async {
     try {
       setState(_submitApplicationKey, const ViewModelState.busy());
-      final response = await _applicationRepo.submitApplication(body);
+      await _applicationRepo.submitApplication(body);
+      _userProfileState.updateUserDataFromServer();
       setState(_submitApplicationKey, const ViewModelState.idle());
-      return response.data;
+      onSuccess?.call();
     } on ApiFailure catch (e) {
       setState(_submitApplicationKey, ViewModelState.error(e));
       DthFlushBar.instance.showError(message: e.message, title: "Failed");
-      return null;
     }
   }
 
@@ -197,5 +198,8 @@ List<String> _participantNames(String raw) {
 
 final applicationViewModelProvider =
     ChangeNotifierProvider<ApplicationViewModel>((ref) {
-      return ApplicationViewModel(ref.read(applicationRepositoryProvider));
+      return ApplicationViewModel(
+        ref.read(applicationRepositoryProvider),
+        ref.read(userProfileStateProvider),
+      );
     });

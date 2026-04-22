@@ -37,6 +37,14 @@ abstract class AuthRepo {
     required String otp,
     required String signature,
     required String fcmToken,
+    required String deviceName,
+  });
+
+  Future<ApiResponse<RegistrationCompleteResult>> loginWithGoogle({
+    required String idToken,
+    required String deviceName,
+    required String fcmToken,
+    String? fullName,
   });
 
   /// Revokes the session on the server (best effort) and clears local auth state.

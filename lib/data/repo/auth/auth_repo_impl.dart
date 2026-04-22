@@ -123,13 +123,41 @@ class AuthRepoImpl implements AuthRepo {
     required String otp,
     required String signature,
     required String fcmToken,
+    required String deviceName,
   }) async {
     final response = await _networkService.post(
       ApiRoute.loginVerifyOtp,
-      data: {"token": otp, "signature": signature, "fcm_token": fcmToken},
+      data: {"token": otp, "signature": signature, "fcm_token": fcmToken, "device_name": deviceName,
+      },
     );
     final data =
         (response.data as Map<String, dynamic>)["data"] as Map<String, dynamic>;
+    final result = RegistrationCompleteResult.fromJson(data);
+
+    await _localCache.saveToken(result.token);
+    await _localCache.saveUserData(result.user.toJson());
+    _updateNetworkToken(result.token);
+
+    return ApiResponse(data: result);
+  }
+
+  @override
+  Future<ApiResponse<RegistrationCompleteResult>> loginWithGoogle({
+    required String idToken,
+    required String deviceName,
+    required String fcmToken,
+    String? fullName,
+  }) async {
+    final response = await _networkService.post(
+      ApiRoute.socialGoogle,
+      data: {
+        "id_token": idToken,
+        "device_name": deviceName,
+        "fcm_token": fcmToken,
+        if (fullName != null && fullName.isNotEmpty) "full_name": fullName,
+      },
+    );
+    final data = (response.data as Map<String, dynamic>)["data"];
     final result = RegistrationCompleteResult.fromJson(data);
 
     await _localCache.saveToken(result.token);

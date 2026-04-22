@@ -1,8 +1,8 @@
 import "package:flutter/foundation.dart";
 
 enum Flavor {
-  prod("Dth"),
-  dev("Dth (Dev)");
+  prod("DTH"),
+  dev("DTH [dev]");
 
   const Flavor(this.title);
   final String title;
