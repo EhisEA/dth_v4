@@ -6,6 +6,7 @@ class ImageAssets {
   static const String imagePath = "assets/images";
   static const String logo = "$imagePath/logo.png";
   static const String logo2 = "$imagePath/logo2.png";
+  static const String updateIcon = "$imagePath/update_icon.png";
 
   /////////////////////PROFILE//////////////////////
   ///
