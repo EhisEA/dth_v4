@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>API_KEY</key>
+	<string>AIzaSyDdWvTWDiCkB7-LpINaqtmhlDjvXgFedMQ</string>
+	<key>GCM_SENDER_ID</key>
+	<string>402353130555</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.dth.dthapp.dev</string>
+	<key>PROJECT_ID</key>
+	<string>dth-staging-79e5b</string>
+	<key>STORAGE_BUCKET</key>
+	<string>dth-staging-79e5b.firebasestorage.app</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:402353130555:ios:885eb0fc9c52d39d6fa01e</string>
+</dict>
+</plist>

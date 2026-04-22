@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "402353130555",
+    "project_id": "dth-staging-79e5b",
+    "storage_bucket": "dth-staging-79e5b.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:402353130555:android:b206eebd7cda27916fa01e",
+        "android_client_info": {
+          "package_name": "com.dth.dth.dev"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "402353130555-7c3i5be1f93lbfr9idlli4p1ousr2mim.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBtF8hvgOo6HwTC6MfimdYRKT6l_BV6dcM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "402353130555-7c3i5be1f93lbfr9idlli4p1ousr2mim.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

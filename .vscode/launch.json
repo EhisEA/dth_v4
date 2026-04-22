@@ -37,3 +37,13 @@
         }
     ]
 }
+
+
+//   flutterfire configure \
+//     --project=dth-staging-79e5b \
+//     --out=lib/firebase_options_dev.dart \
+//     --ios-bundle-id=com.dth.dthapp.dev \
+//     --ios-out=ios/config/dev/GoogleService-Info.plist \
+//     --android-package-name=com.dth.dth.dev \
+//     --android-out=android/app/src/dev/google-services.json \
+//     --platforms=android,ios
