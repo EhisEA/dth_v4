@@ -13,11 +13,9 @@ import "package:flutter_utils/utils/app_logger.dart";
 class DataManipulationInterceptor extends Interceptor {
   final _log = const AppLogger(DataManipulationInterceptor);
   final Ref _ref;
-  final DeviceInfoState _deviceInfoState;
   static bool _handlingLogout = false;
 
-  DataManipulationInterceptor(this._deviceInfoState, {required Ref ref})
-    : _ref = ref;
+  DataManipulationInterceptor({required Ref ref}) : _ref = ref;
 
   @override
   Future<void> onRequest(
@@ -29,36 +27,6 @@ class DataManipulationInterceptor extends Interceptor {
       "Accept": "application/json",
       ...AppInfo.payload,
     });
-
-    try {
-      // Fetch all device info in parallel
-      final results = await Future.wait([
-        _deviceInfoState.getDeviceName(),
-        _deviceInfoState.getDeviceId(),
-      ]);
-
-      final deviceName = results[0];
-      final deviceId = results[1];
-      final deviceIP = await _deviceInfoState.getDeviceIP();
-
-      // Add device details to request data
-      if (options.data is Map<String, dynamic>) {
-        options.data = {
-          ...(options.data as Map<String, dynamic>),
-          "device_name": deviceName,
-          "device_ip": deviceIP,
-          "device_id": deviceId,
-        };
-      } else if (options.data is FormData) {
-        (options.data as FormData).fields.addAll([
-          MapEntry("device_name", deviceName),
-          MapEntry("device_ip", deviceIP),
-          MapEntry("device_id", deviceId),
-        ]);
-      }
-    } catch (e) {
-      _log.e("Error fetching device info: $e");
-    }
 
     handler.next(options); // Proceed with the request
   }

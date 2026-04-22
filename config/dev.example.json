@@ -1,0 +1,4 @@
+{
+  "GOOGLE_SERVER_CLIENT_ID": "REPLACE_WITH_DEV_WEB_OAUTH_CLIENT_ID",
+  "STAGING_BASE_URL": "https://dth5.on-forge.com/api"
+}

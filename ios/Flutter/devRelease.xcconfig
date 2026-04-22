@@ -4,3 +4,6 @@
 ASSET_PREFIX=dev
 BUNDLE_NAME=DTH [dev]
 BUNDLE_DISPLAY_NAME=DTH [dev]
+
+GOOGLE_IOS_CLIENT_ID=402353130555-tnemp3kri0mn4fdvt8bv27r5t3l1la58.apps.googleusercontent.com
+REVERSED_CLIENT_ID=com.googleusercontent.apps.402353130555-tnemp3kri0mn4fdvt8bv27r5t3l1la58
