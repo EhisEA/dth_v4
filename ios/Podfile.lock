@@ -230,53 +230,32 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/webview_flutter_wkwebview/darwin"
 
 SPEC CHECKSUMS:
-<<<<<<< HEAD
-  device_info_plus: bf2e3232933866d73fe290f2942f2156cdd10342
-=======
   AppAuth: d4f13a8fe0baf391b2108511793e4b479691fb73
   AppCheckCore: cc8fd0a3a230ddd401f326489c99990b013f0c4f
-  device_info_plus: 21fcca2080fbcd348be798aa36c3e5ed849eefbe
->>>>>>> 0e2fd312b8c87f03f6910040e64fcab2c73f55c3
+  device_info_plus: bf2e3232933866d73fe290f2942f2156cdd10342
   DKImagePickerController: 946cec48c7873164274ecc4624d19e3da4c1ef3c
   DKPhotoGallery: b3834fecb755ee09a593d7c9e389d8b5d6deed60
   file_picker: b159e0c068aef54932bb15dc9fd1571818edaf49
   Firebase: aa154fee4e9b8eac17aa42344988865b3e857d33
-<<<<<<< HEAD
   firebase_core: 40bc9f4c0ee3a28fbfb1e00e2ddaed744bb86388
   firebase_messaging: 7168ed5c5f52fc396426745be147263cfcc39ecc
-  FirebaseCore: f28af0427998cd53f8d4826bce17260e33224053
-=======
-  firebase_core: 9156a152117c843440b0b990c785aa0259bc5447
-  firebase_messaging: 0d962ab44ff24ed36deb8fa2ee043c4671858269
   FirebaseCore: 86241206e656f5c80c995e370e6c975913b9b284
->>>>>>> 0e2fd312b8c87f03f6910040e64fcab2c73f55c3
   FirebaseCoreInternal: 7c12fc3011d889085e765e317d7b9fd1cef97af9
   FirebaseInstallations: 4e6e162aa4abaaeeeb01dd00179dfc5ad9c2194e
   FirebaseMessaging: 341004946fa7ffc741344b20f1b667514fc93e31
   Flutter: cabc95a1d2626b1b06e7179b784ebcf0c0cde467
-<<<<<<< HEAD
   flutter_secure_storage: d33dac7ae2ea08509be337e775f6b59f1ff45f12
-=======
-  flutter_secure_storage: 1ed9476fba7e7a782b22888f956cce43e2c62f13
-  google_sign_in_ios: b48bb9af78576358a168361173155596c845f0b9
->>>>>>> 0e2fd312b8c87f03f6910040e64fcab2c73f55c3
+  google_sign_in_ios: 7411fab6948df90490dc4620ecbcabdc3ca04017
   GoogleDataTransport: aae35b7ea0c09004c3797d53c8c41f66f219d6a7
   GoogleSignIn: ce8c89bb9b37fb624b92e7514cc67335d1e277e4
   GoogleUtilities: 00c88b9a86066ef77f0da2fab05f65d7768ed8e1
-<<<<<<< HEAD
+  GTMAppAuth: f69bd07d68cd3b766125f7e072c45d7340dea0de
+  GTMSessionFetcher: 5aea5ba6bd522a239e236100971f10cb71b96ab6
   image_cropper: e0bb0042e4404ff2ef134e5cf0492cbd892156cd
   image_picker_ios: 4f2f91b01abdb52842a8e277617df877e40f905b
   nanopb: fad817b59e0457d11a5dfbde799381cd727c1275
+  package_info_plus: c0502532a26c7662a62a356cebe2692ec5fe4ec4
   permission_handler_apple: 9878588469a2b0d0fc1e048d9f43605f92e6cec2
-=======
-  GTMAppAuth: f69bd07d68cd3b766125f7e072c45d7340dea0de
-  GTMSessionFetcher: 5aea5ba6bd522a239e236100971f10cb71b96ab6
-  image_cropper: c4326ea50132b1e1564499e5d32a84f01fb03537
-  image_picker_ios: e0ece4aa2a75771a7de3fa735d26d90817041326
-  nanopb: fad817b59e0457d11a5dfbde799381cd727c1275
-  package_info_plus: af8e2ca6888548050f16fa2f1938db7b5a5df499
-  permission_handler_apple: 4ed2196e43d0651e8ff7ca3483a069d469701f2d
->>>>>>> 0e2fd312b8c87f03f6910040e64fcab2c73f55c3
   PromisesObjC: f5707f49cb48b9636751c5b2e7d227e43fba9f47
   SDWebImage: e9fc87c1aab89a8ab1bbd74eba378c6f53be8abf
   shared_preferences_foundation: 5086985c1d43c5ba4d5e69a4e8083a389e2909e6

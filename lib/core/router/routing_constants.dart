@@ -30,6 +30,7 @@ class NavigatorRoutes {
   ////////////////APPLICATION////////////////////
   ///
   static const String application = "/application";
+  static const String applicationLanding = "/application-landing";
   static const String applicationReview = "/application-review";
 
   ////////////////SUBSCRIPTION////////////////////

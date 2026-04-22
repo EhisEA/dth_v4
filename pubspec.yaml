@@ -56,7 +56,6 @@ dependencies:
   # Same major line as flutter_utils; gallery pick uses pickImage (avoids
   # MediaServiceImpl's Permission.photos gate failing on iOS "limited" library).
   image_picker: ^1.1.2
-  package_info_plus: ^9.0.1
   google_sign_in: ^6.2.1
 
 dev_dependencies:
@@ -85,6 +84,7 @@ flutter:
     - assets/images/
     - assets/images/profile/
     - assets/images/subscription/
+    - assets/images/application/
     - assets/svgs/
     - assets/svgs/application/
     - assets/svgs/auth/

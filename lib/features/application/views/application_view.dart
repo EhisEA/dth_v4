@@ -364,6 +364,7 @@ class _ApplicationViewState extends ConsumerState<ApplicationView> {
   @override
   Widget build(BuildContext context) {
     final model = ref.watch(applicationViewModelProvider);
+
     return GestureDetector(
       onTap: () => FocusScope.of(context).unfocus(),
       child: model.baseState.when(

@@ -91,8 +91,8 @@ class _ProfileViewState extends ConsumerState<ProfileView> {
                             _navigationService.navigateTo(ApplicationView.path);
                           },
                         ),
-                      ],
                       Gap.h32,
+                      ],
                       AppText.medium(
                         "Account Settings",
                         fontSize: 12,
@@ -102,11 +102,11 @@ class _ProfileViewState extends ConsumerState<ProfileView> {
                       ContestantDashboardTile(
                         role: user?.participationRole ?? ParticipationRole.user,
                         onTap: () {
-                          if (user?.participationRole ==
-                              ParticipationRole.user) {
-                            _navigationService.navigateTo(ApplicationView.path);
-                          }
-                          null;
+                          // if (user?.participationRole ==
+                          //     ParticipationRole.user) {
+                          //   _navigationService.navigateTo(ApplicationView.path);
+                          // }
+                          // null;
                         },
                       ),
                       Gap.h32,

@@ -22,6 +22,9 @@ class ImageAssets {
   static const String subscriptionBg =
       "$imagePath/subscription/subscription_bg.png";
   static const String phoneBg = "$imagePath/subscription/phone_bg.png";
+
+  /////////////////////APPLICATION//////////////////////
+  static const String applicationBg = "$imagePath/application/application_bg.png";
 }
 
 class SvgAssets {
