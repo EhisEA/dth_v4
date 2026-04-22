@@ -10,19 +10,29 @@ class SubscriptionPlanCard extends StatelessWidget {
   const SubscriptionPlanCard({
     super.key,
     required this.plan,
+    this.activePlan,
     required this.onCTATap,
     this.isCheckoutBusy = false,
   });
 
   final SubscriptionModel plan;
+
+  /// Plan the user is subscribed to, if any (from the plans list).
+  final SubscriptionModel? activePlan;
   final VoidCallback onCTATap;
   final bool isCheckoutBusy;
 
   @override
   Widget build(BuildContext context) {
     final perks = featureLines(plan);
-    final active = plan.isActiveSubscription;
+    final active = activePlan;
+    final isSubscribed = active != null && plan.uid == active.uid;
+    final tierVsActive = active == null
+        ? null
+        : compareSubscriptionPlanTier(plan, active);
     final subscribeLabel = "Subscribe to ${plan.name}";
+    final upgradeLabel = "Upgrade to ${plan.name}";
+    const coveredLabel = "You have an active subscription";
     final priceLabel = plan.amount.toMoneyWholeNumber();
     final currencySymbol = _currencySymbol(plan);
     const periodSuffix = " /per season";
@@ -102,12 +112,25 @@ class SubscriptionPlanCard extends StatelessWidget {
                     ],
                   ),
                   Gap.h16,
-                  if (active)
+                  if (isSubscribed)
                     AppButton.primary(
                       press: () {},
                       text: "Subscribed",
                       height: 48,
+                      enabled: true,
+                    )
+                  else if (tierVsActive != null && tierVsActive < 0)
+                    AppButton.onBorder(
+                      press: () {},
+                      text: coveredLabel,
+                      height: 48,
                       enabled: false,
+                    )
+                  else if (tierVsActive != null && tierVsActive > 0)
+                    AppButton.onBorder(
+                      press: onCTATap,
+                      text: upgradeLabel,
+                      height: 48,
                     )
                   else
                     AppButton.onBorder(
