@@ -2,7 +2,7 @@ name: dth_v4
 description: "A new Flutter project."
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
-publish_to: 'none' # Remove this line if you wish to publish to pub.dev
+publish_to: "none" # Remove this line if you wish to publish to pub.dev
 
 # The following defines the version and build number for your application.
 # A version number is three numbers separated by dots, like 1.2.43
@@ -44,8 +44,8 @@ dependencies:
   flutter_riverpod: ^2.6.1
   dio: ^5.9.2
   another_flushbar: ^1.12.32
-  dart_ipify: ^1.1.1
-  device_info_plus: ^12.4.0
+  device_info_plus: 12.3.0
+  package_info_plus: ^8.1.2
   pin_code_fields: ^8.0.1
   flutter_countdown_timer: ^4.1.0
   webview_flutter: ^4.13.1
@@ -57,6 +57,7 @@ dependencies:
   # MediaServiceImpl's Permission.photos gate failing on iOS "limited" library).
   image_picker: ^1.1.2
   package_info_plus: ^9.0.1
+  google_sign_in: ^6.2.1
 
 dev_dependencies:
   flutter_test:
@@ -68,13 +69,13 @@ dev_dependencies:
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
   flutter_lints: ^5.0.0
+  flutter_flavorizr: ^2.4.2
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
 
 # The following section is specific to Flutter packages.
 flutter:
-
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in
   # the material Icons class.
@@ -111,7 +112,7 @@ flutter:
           weight: 700
         - asset: assets/fonts/hanken-grotesk/HankenGrotesk-Black.ttf
           weight: 900
-          
+
     - family: Matter
       fonts:
         - asset: assets/fonts/Matter/Matter-Light.ttf

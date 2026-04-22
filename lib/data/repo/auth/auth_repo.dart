@@ -39,6 +39,13 @@ abstract class AuthRepo {
     required String fcmToken,
   });
 
+  Future<ApiResponse<RegistrationCompleteResult>> loginWithGoogle({
+    required String idToken,
+    required String deviceName,
+    required String fcmToken,
+    String? fullName,
+  });
+
   /// Revokes the session on the server (best effort) and clears local auth state.
   Future<ApiResponse<void>> logout();
 

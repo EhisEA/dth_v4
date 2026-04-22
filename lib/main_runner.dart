@@ -12,6 +12,8 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await AppVersion.init();
 
+  await AppVersion.initialize();
+
   final container = ProviderContainer(
     overrides: [
       sharedPreferencesProvider.overrideWithValue(

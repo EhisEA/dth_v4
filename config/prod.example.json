@@ -1,0 +1,4 @@
+{
+  "GOOGLE_SERVER_CLIENT_ID": "REPLACE_WITH_PROD_WEB_OAUTH_CLIENT_ID",
+  "PROD_BASE_URL": "https://dth5.on-forge.com/api"
+}

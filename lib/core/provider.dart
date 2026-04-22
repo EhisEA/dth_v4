@@ -3,15 +3,11 @@ import "package:flutter_utils/flutter_utils.dart";
 import "package:shared_preferences/shared_preferences.dart";
 import "package:dth_v4/core/constants/constants.dart";
 import "package:dth_v4/core/interceptors/data_manipulation_interceptor.dart";
-import "package:dth_v4/data/state/device_info_state.dart";
 
 // DataManipulationInterceptor provider
 final dataManipulationInterceptorProvider =
     Provider<DataManipulationInterceptor>((ref) {
-      return DataManipulationInterceptor(
-        ref.read(deviceInfoStateProvider),
-        ref: ref,
-      );
+      return DataManipulationInterceptor(ref: ref);
     });
 
 /// Gallery / file picking (from [flutter_utils] `MediaServiceImpl`).
