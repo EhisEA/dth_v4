@@ -31,7 +31,7 @@ class ApiRoute {
   static String get applicationProcess => "$baseUrl/application/process";
 
   ///SUBSCRIPTION
-  static String get subscriptionPlans => "$baseUrl/plans";
+  static String get subscriptionPlans => "$baseUrl/subscription/plans";
   static String get subscriptionPurchase => "$baseUrl/subscription/purchase";
 
   static String paymentVerify(String reference) =>
@@ -43,4 +43,7 @@ class ApiRoute {
   static String get profilePhoneVerifyOtp =>
       "$baseUrl/profile/phone/verify-otp";
   static String get profileUpdate => "$baseUrl/profile";
+
+  ///MODULES
+  static String get mobileAppModules => "$baseUrl/mobile/app/modules";
 }

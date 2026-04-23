@@ -84,6 +84,7 @@ flutter:
     - assets/images/
     - assets/images/profile/
     - assets/images/subscription/
+    - assets/images/application/
     - assets/svgs/
     - assets/svgs/application/
     - assets/svgs/auth/
@@ -92,7 +93,7 @@ flutter:
     - assets/svgs/profile/
     - assets/svgs/subscription/
     - assets/audio/
-    - assets/lotties/
+    # - assets/lotties/
 
   fonts:
     - family: Hanken Grotesk

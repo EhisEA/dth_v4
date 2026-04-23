@@ -81,15 +81,18 @@ class _ProfileViewState extends ConsumerState<ProfileView> {
                         color: AppColors.tint15,
                       ),
                       ContestantPill(user: user),
+                      if (user?.participationRole ==
+                          ParticipationRole.user) ...[
+                        Gap.h32,
+                        ApplicationWidget(
+                          participationRole:
+                              user?.participationRole ?? ParticipationRole.user,
+                          onTap: () {
+                            _navigationService.navigateTo(ApplicationView.path);
+                          },
+                        ),
                       Gap.h32,
-                      ApplicationWidget(
-                        participationRole:
-                            user?.participationRole ?? ParticipationRole.user,
-                        onTap: () {
-                          _navigationService.navigateTo(ApplicationView.path);
-                        },
-                      ),
-                      Gap.h32,
+                      ],
                       AppText.medium(
                         "Account Settings",
                         fontSize: 12,
@@ -99,7 +102,11 @@ class _ProfileViewState extends ConsumerState<ProfileView> {
                       ContestantDashboardTile(
                         role: user?.participationRole ?? ParticipationRole.user,
                         onTap: () {
-                          _navigationService.navigateTo(ApplicationView.path);
+                          // if (user?.participationRole ==
+                          //     ParticipationRole.user) {
+                          //   _navigationService.navigateTo(ApplicationView.path);
+                          // }
+                          // null;
                         },
                       ),
                       Gap.h32,

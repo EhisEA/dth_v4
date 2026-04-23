@@ -30,13 +30,14 @@ class _ContactInformationStepState extends ConsumerState<ContactInformationStep>
   bool get wantKeepAlive => true;
 
   late final FocusNode _addressFocus;
+  late final FocusNode _nearestCampusFocus;
   late final TextEditingController _addressController;
+  late final TextEditingController _nearestCampusController;
 
   String? _stateOfResidence;
   String? _cityOfResidence;
   String? _stateOfOrigin;
   String? _lga;
-  String? _nearestCampus;
 
   String? _cityPrerequisiteError;
   String? _lgaPrerequisiteError;
@@ -45,14 +46,18 @@ class _ContactInformationStepState extends ConsumerState<ContactInformationStep>
   void initState() {
     super.initState();
     _addressFocus = FocusNode();
+    _nearestCampusFocus = FocusNode();
     _addressController = TextEditingController();
+    _nearestCampusController = TextEditingController();
     widget.onRegisterPersist(_persist);
   }
 
   @override
   void dispose() {
     _addressFocus.dispose();
+    _nearestCampusFocus.dispose();
     _addressController.dispose();
+    _nearestCampusController.dispose();
     super.dispose();
   }
 
@@ -66,7 +71,7 @@ class _ContactInformationStepState extends ConsumerState<ContactInformationStep>
             cityOfResidence: _cityOfResidence ?? '',
             stateOfOrigin: _stateOfOrigin ?? '',
             lga: _lga ?? '',
-            nearestCampus: _nearestCampus ?? '',
+            nearestCampus: _nearestCampusController.text.trim(),
           ),
         );
   }
@@ -104,14 +109,6 @@ class _ContactInformationStepState extends ConsumerState<ContactInformationStep>
     return [
       for (final lga in location.lgas)
         AppDropdownOption(value: lga, label: lga),
-    ];
-  }
-
-  /// Campus menu: one option per server location row, using that row's state name.
-  List<AppDropdownOption<String>> _campusOptions() {
-    return [
-      for (final campus in widget.applicationProcess.locations)
-        AppDropdownOption(value: campus.state, label: campus.state),
     ];
   }
 
@@ -262,12 +259,14 @@ class _ContactInformationStepState extends ConsumerState<ContactInformationStep>
             ],
           ),
           Gap.h16,
-          AppDropdownFormField<String>(
+          AppTextField(
             title: 'Nearest Campus',
-            hint: 'Select the campus nearest to you.',
-            search: true,
-            options: _campusOptions(),
-            onChanged: (v) => setState(() => _nearestCampus = v),
+            hint: 'Enter the campus nearest to you',
+            controller: _nearestCampusController,
+            focusNode: _nearestCampusFocus,
+            titleColor: AppColors.black,
+            validator: Validator.emptyField,
+            textInputAction: TextInputAction.done,
           ),
           Gap.h32,
         ],

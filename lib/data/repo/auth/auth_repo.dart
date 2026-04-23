@@ -37,6 +37,7 @@ abstract class AuthRepo {
     required String otp,
     required String signature,
     required String fcmToken,
+    required String deviceName,
   });
 
   Future<ApiResponse<RegistrationCompleteResult>> loginWithGoogle({

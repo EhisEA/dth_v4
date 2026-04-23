@@ -58,6 +58,14 @@ class _SubscriptionWidgetState extends ConsumerState<SubscriptionWidget> {
     final bottomInset = MediaQuery.paddingOf(context).bottom;
     final scrollEndPadding = bottomInset + 70;
 
+    SubscriptionModel? activePlan;
+    for (final p in widget.plans) {
+      if (p.isActiveSubscription) {
+        activePlan = p;
+        break;
+      }
+    }
+
     final listView = ListView.separated(
       controller: _scrollController,
       padding: EdgeInsets.fromLTRB(16, 0, 16, scrollEndPadding),
@@ -68,9 +76,14 @@ class _SubscriptionWidgetState extends ConsumerState<SubscriptionWidget> {
         final plan = widget.plans[index];
         return SubscriptionPlanCard(
           plan: plan,
+          activePlan: activePlan,
           isCheckoutBusy: checkoutVm.isBaseBusy,
           onCTATap: () {
-            if (plan.isActiveSubscription) return;
+            if (activePlan != null && plan.uid == activePlan.uid) return;
+            if (activePlan != null &&
+                compareSubscriptionPlanTier(plan, activePlan) < 0) {
+              return;
+            }
             unawaited(checkoutVm.purchasePlan(plan));
             HapticFeedback.lightImpact();
           },

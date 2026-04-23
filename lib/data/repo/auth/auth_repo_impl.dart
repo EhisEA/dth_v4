@@ -123,10 +123,12 @@ class AuthRepoImpl implements AuthRepo {
     required String otp,
     required String signature,
     required String fcmToken,
+    required String deviceName,
   }) async {
     final response = await _networkService.post(
       ApiRoute.loginVerifyOtp,
-      data: {"token": otp, "signature": signature, "fcm_token": fcmToken},
+      data: {"token": otp, "signature": signature, "fcm_token": fcmToken, "device_name": deviceName,
+      },
     );
     final data =
         (response.data as Map<String, dynamic>)["data"] as Map<String, dynamic>;

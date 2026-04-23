@@ -1,9 +1,17 @@
 import "package:dth_v4/core/utils/utils.dart";
 import "package:flutter/foundation.dart";
 
-class AppConstants {}
+class AppConstants {
+  static const String appUpdateRequired = "app-update-required";
+}
 
 class AppLink {
+  static const String iosStoreLink =
+      "https://apps.apple.com/us/app/de9jaspirit-talent-hunt/id1624305734";
+  static const String androidStoreLink =
+      "https://play.google.com/store/apps/details?id=com.dth.dth";
+      
+  static const String vent = "https://vent.africa";
   static const String privacyPolicy = "https://dth.ng/#";
   static const String termsAndConditions = "https://dth.ng/#";
 }

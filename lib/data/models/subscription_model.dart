@@ -172,3 +172,12 @@ class SubscriptionModel {
     "is_active_subscription": isActiveSubscription,
   };
 }
+
+/// Negative if [a] is a lower tier than [b], positive if higher, zero if tied.
+int compareSubscriptionPlanTier(SubscriptionModel a, SubscriptionModel b) {
+  final byOrder = a.order.compareTo(b.order);
+  if (byOrder != 0) return byOrder;
+  final byAmount = a.amount.compareTo(b.amount);
+  if (byAmount != 0) return byAmount;
+  return a.uid.compareTo(b.uid);
+}

@@ -10,7 +10,7 @@ class AppVersion {
     _buildNumber = info.buildNumber;
   }
 
-  static String getAppVersionSync() => _cached;
+  static String getAppVersionSync() => _cached; //"1.0.1";
 
   static String get buildNumber => _buildNumber;
 }

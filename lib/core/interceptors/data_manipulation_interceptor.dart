@@ -3,6 +3,7 @@ import "dart:async";
 import "package:dio/dio.dart";
 import "package:dth_v4/core/core.dart";
 import "package:dth_v4/data/data.dart";
+import "package:dth_v4/data/state/app_update_state.dart";
 import "package:dth_v4/features/authentication/views/get_started_view.dart";
 import "package:flutter/foundation.dart";
 import "package:flutter_riverpod/flutter_riverpod.dart";
@@ -88,6 +89,7 @@ class DataManipulationInterceptor extends Interceptor {
         ),
       );
     }
+    checkIfAppUpdateRequired(err.response?.data);
 
     // if (err.response?.data != null) {
     //   _handleVerificationEvents(err.response!.data);
@@ -110,19 +112,11 @@ class DataManipulationInterceptor extends Interceptor {
     }
   }
 
-  // void checkIfAppUpdateRequired(dynamic response) {
-  //   final responseMap = response as Map<String, dynamic>?;
-  //   if (responseMap?["event"] == AppConstants.appUpdateRequired) {
-  //     _log.i("== initialiseAppUpdate ==");
-  //     final Map<String, dynamic>? data =
-  //         responseMap?["data"] as Map<String, dynamic>?;
-  //     final appUpdateData = AppUpdateData.fromJson(data ?? {});
-  //     _ref.read(appUpdateStateProvider).appUpdateBS(appUpdateData);
-
-  //     // throw UserDefinedException(
-  //     //   "App Outdated",
-  //     //   "You are required to update your Vent Mobile App to the latest version",
-  //     // );
-  //   }
-  // }
+  void checkIfAppUpdateRequired(dynamic response) {
+    final responseMap = response as Map<String, dynamic>?;
+    if (responseMap?["event"] == AppConstants.appUpdateRequired) {
+      _log.i("== initialiseAppUpdate ==");
+      _ref.read(appUpdateStateProvider).appUpdateBS();
+    }
+  }
 }
