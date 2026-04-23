@@ -1,13 +1,12 @@
 import "package:dth_v4/core/core.dart";
 import "package:dth_v4/core/router/router.dart";
+import "package:dth_v4/features/bottomNavBar/bottom_nav_bar.dart";
 import "package:dth_v4/features/profile/personal_information/view_model/personal_information_view_model.dart";
 import "package:dth_v4/widgets/widgets.dart";
 import "package:flutter/material.dart";
 import "package:flutter/services.dart";
 import "package:flutter_riverpod/flutter_riverpod.dart";
 import "package:flutter_utils/flutter_utils.dart";
-
-import "personal_infomation_view.dart";
 
 class ProfilePhoneVerifyOtpView extends ConsumerStatefulWidget {
   const ProfilePhoneVerifyOtpView({super.key});
@@ -98,7 +97,7 @@ class _ProfilePhoneVerifyOtpViewState
                     final ok = await vm.submitPhoneVerificationCode(code);
                     if (!mounted || !ok) return;
                     MobileNavigationService.instance.popUntil(
-                      PersonalInfomationView.path,
+                      BottomNavBar.path,
                     );
                   },
                 ),

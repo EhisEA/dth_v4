@@ -1,7 +1,9 @@
+import "package:cached_network_image/cached_network_image.dart";
 import "package:dth_v4/core/core.dart";
 import "package:dth_v4/features/home/models/home_feed_models.dart";
 import "package:dth_v4/widgets/widgets.dart";
 import "package:flutter/material.dart";
+import "package:flutter_svg/svg.dart";
 import "package:flutter_utils/flutter_utils.dart";
 
 class HomeStoriesBar extends StatelessWidget {
@@ -10,19 +12,10 @@ class HomeStoriesBar extends StatelessWidget {
   final List<HomeStoryItem> stories;
   final void Function(HomeStoryItem story)? onStoryTap;
 
-  static const double _ringSize = 80;
-  static const double _borderWidth = 3;
-
-  static const _ringGradient = LinearGradient(
-    begin: Alignment.topLeft,
-    end: Alignment.bottomRight,
-    colors: [Color(0xFF00AD55), Color(0xFF284B9A)],
-  );
-
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: _ringSize + 28,
+      height: 157,
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
         itemCount: stories.length,
@@ -33,49 +26,64 @@ class HomeStoriesBar extends StatelessWidget {
             onTap: () => onStoryTap?.call(s),
             behavior: HitTestBehavior.opaque,
             child: SizedBox(
-              width: 80,
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Container(
-                    width: _ringSize,
-                    height: _ringSize,
-                    decoration: const BoxDecoration(
-                      shape: BoxShape.circle,
-                      gradient: _ringGradient,
-                    ),
-                    padding: const EdgeInsets.all(_borderWidth),
-                    child: Container(
-                      padding: const EdgeInsets.all(_borderWidth),
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: AppColors.white,
+              width: 96,
+              child: Container(
+                width: 96,
+                height: 157,
+                clipBehavior: Clip.hardEdge,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Stack(
+                  children: [
+                    CachedNetworkImage(
+                      imageUrl: s.imageUrl,
+                      height: 157,
+                      fit: BoxFit.fill,
+                      errorWidget: (_, __, ___) => ColoredBox(
+                        color: AppColors.baseShimmer(context),
+                        child: Icon(
+                          Icons.image_outlined,
+                          color: AppColors.tint15,
+                        ),
                       ),
-                      child: ClipOval(
-                        child: Image.network(
-                          s.imageUrl,
-                          fit: BoxFit.cover,
-                          errorBuilder: (_, __, ___) => ColoredBox(
-                            color: AppColors.baseShimmer(context),
-                            child: Icon(
-                              Icons.image_outlined,
-                              color: AppColors.tint15,
-                            ),
+                      placeholder: (_, ___) =>
+                          ColoredBox(color: AppColors.baseShimmer(context)),
+                    ),
+                    Positioned.fill(
+                      child: Container(
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            colors: [
+                              const Color(0xff121212).withValues(alpha: 0.0),
+                              const Color(0xff121212),
+                            ],
+                            begin: Alignment.topCenter,
+                            end: Alignment.bottomCenter,
                           ),
                         ),
                       ),
                     ),
-                  ),
-                  Gap.h6,
-                  AppText.regular(
-                    s.label,
-                    fontSize: 11,
-                    maxLines: 1,
-                    color: const Color(0xff08102F),
-                    height: 1.2,
-                    centered: true,
-                  ),
-                ],
+                    Positioned(
+                      bottom: 12,
+                      right: 12,
+                      left: 12,
+                      child: AppText.semiBold(
+                        s.label,
+                        fontSize: 10,
+                        maxLines: 1,
+                        color: AppColors.white,
+                        height: 1.2,
+                        centered: true,
+                      ),
+                    ),
+                    Positioned(
+                      top: 8,
+                      left: 8,
+                      child: SvgPicture.asset(SvgAssets.homeStar),
+                    ),
+                  ],
+                ),
               ),
             ),
           );

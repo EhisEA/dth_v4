@@ -58,6 +58,7 @@ class SvgAssets {
   static const String play = "$svgPath/home/play.svg";
   static const String message = "$svgPath/home/message.svg";
   static const String send2 = "$svgPath/home/send-2.svg";
+  static const String homeStar = "$svgPath/home/home_star.svg";
   static const String send = "$svgPath/home/send.svg";
 
   /////////////////////PROFILE//////////////////////
@@ -68,9 +69,9 @@ class SvgAssets {
   static const String logout = "$svgPath/profile/logout.svg";
   static const String personal = "$svgPath/profile/personal.svg";
   static const String privacy = "$svgPath/profile/privacy.svg";
-  static const String reset = "$svgPath/profile/reset.svg";
   static const String social = "$svgPath/profile/social.svg";
   static const String terms = "$svgPath/profile/terms.svg";
+  static const String cup = "$svgPath/profile/cup.svg";
 
   /////////////////////APPLICATION//////////////////////
   ///

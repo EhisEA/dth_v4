@@ -96,8 +96,11 @@ class AppRouter {
         return _getPageRoute(
           settings: settings,
           viewToShow: AppWebView(
-            initialURl: routeArgs[RoutingArgumentKey.initialURl],
-            title: routeArgs[RoutingArgumentKey.title],
+            initialURl:
+                routeArgs[RoutingArgumentKey.initialURl] as String? ?? "",
+            title: routeArgs[RoutingArgumentKey.title] as String? ?? "",
+            callbackUrl:
+                routeArgs[RoutingArgumentKey.callbackUrl] as String? ?? "",
           ),
         );
       ////////////////APPLICATION VIEW////////////////////
