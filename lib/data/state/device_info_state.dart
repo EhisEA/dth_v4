@@ -1,4 +1,3 @@
-import "package:dart_ipify/dart_ipify.dart";
 import "package:device_info_plus/device_info_plus.dart";
 import "package:flutter/foundation.dart";
 import "package:flutter_riverpod/flutter_riverpod.dart";
@@ -8,7 +7,6 @@ class DeviceInfoState extends BaseState {
   final DeviceInfoPlugin _deviceInfo = DeviceInfoPlugin();
 
   String? _deviceName;
-  String? _deviceIP;
   String? _deviceId;
 
   Future<void>? _initFuture;
@@ -20,14 +18,9 @@ class DeviceInfoState extends BaseState {
 
   Future<void> _doInit() async {
     try {
-      final results = await Future.wait([
-        _getDeviceName(),
-        _getDeviceIP(),
-        _getDeviceId(),
-      ]);
+      final results = await Future.wait([_getDeviceName(), _getDeviceId()]);
       _deviceName = results[0];
-      _deviceIP = results[1];
-      _deviceId = results[2];
+      _deviceId = results[1];
     } catch (e) {
       _initFuture = null; // allow retry on next call
       rethrow;
@@ -39,18 +32,9 @@ class DeviceInfoState extends BaseState {
     return _deviceName!;
   }
 
-  Future<String> getDeviceIP() async {
-    await ensureInitialized();
-    return _deviceIP!;
-  }
-
   Future<String> getDeviceId() async {
     await ensureInitialized();
     return _deviceId!;
-  }
-
-  Future<String> _getDeviceIP() async {
-    return await Ipify.ipv4();
   }
 
   Future<String> _getDeviceName() async {

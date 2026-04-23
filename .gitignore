@@ -10,7 +10,12 @@
 .history
 .svn/
 .swiftpm/
+.tmp/
 migrate_working_dir/
+
+# Per-flavor dart-define values (contains secrets). Track *.example.json instead.
+config/*.json
+!config/*.example.json
 
 # IntelliJ related
 *.iml
