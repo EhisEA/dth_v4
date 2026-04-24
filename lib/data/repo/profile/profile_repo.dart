@@ -11,7 +11,7 @@ abstract class ProfileRepo {
     required String token,
     required String signature,
   });
-  
+
   Future<ApiResponse<UserModel>> updateProfile({
     String? fullName,
     String? phone,

@@ -43,6 +43,9 @@ class AppColors {
   // F4F4F4
   static Color greyTint20 = const Color(0xffF4F4F4);
 
+  // F2F2F2
+  static Color greyTint25 = const Color(0xffF2F2F2);
+
   // EFEFEF
   static Color greyTint30 = const Color(0xffEFEFEF);
 

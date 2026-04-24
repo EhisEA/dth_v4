@@ -91,6 +91,7 @@ flutter:
     - assets/svgs/bottomNavBar/
     - assets/svgs/home/
     - assets/svgs/profile/
+    - assets/svgs/search/
     - assets/svgs/subscription/
     - assets/audio/
     # - assets/lotties/

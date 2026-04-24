@@ -243,18 +243,26 @@ class AppButton extends StatelessWidget {
             : disableBGColor ?? const Color(0xffF2F4F7),
       ),
       child: TextButton(
+        style: isLoading
+            ? TextButton.styleFrom(
+                minimumSize: Size.zero,
+                padding: EdgeInsets.zero,
+                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+              )
+            : null,
         onPressed: () {
           enabled && !isLoading ? press?.call() : null;
           HapticFeedback.lightImpact();
         },
         child: isLoading
-            ? SizedBox(
-                height: 20,
-                width: 20,
-                child: CircularProgressIndicator.adaptive(
-                  strokeWidth: 2,
-                  valueColor: AlwaysStoppedAnimation<Color?>(
-                    loadingColor ?? textColor,
+            ? Center(
+                child: SizedBox.square(
+                  dimension: 20,
+                  child: CircularProgressIndicator.adaptive(
+                    strokeWidth: 2,
+                    valueColor: AlwaysStoppedAnimation<Color?>(
+                      loadingColor ?? textColor,
+                    ),
                   ),
                 ),
               )

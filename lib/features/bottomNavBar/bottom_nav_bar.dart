@@ -1,13 +1,12 @@
 import "dart:async";
 
 import "package:dth_v4/core/core.dart";
-import "package:dth_v4/core/router/router.dart";
 import "package:dth_v4/data/data.dart";
 import "package:dth_v4/features/bottomNavBar/components/nav_item.dart";
 import "package:dth_v4/features/bottomNavBar/viewmodel/bottom_nav_bar_view_model.dart";
-import "package:dth_v4/features/home/home_view.dart";
+import "package:dth_v4/features/home/views/home_view.dart";
 import "package:dth_v4/features/profile/profile_view/views/profile_view.dart";
-import "package:dth_v4/features/search/search_view.dart";
+import "package:dth_v4/features/search/views/search_view.dart";
 import "package:dth_v4/features/subscription/views/subscription_view.dart";
 import "package:dth_v4/features/tickets/tickets.dart";
 import "package:dth_v4/widgets/widgets.dart";

@@ -1,8 +1,5 @@
 import "package:dth_v4/core/router/router.dart";
-import "package:dth_v4/features/home/components/home_header.dart";
-import "package:dth_v4/features/home/components/home_post_card.dart";
-import "package:dth_v4/features/home/components/home_stories_bar.dart";
-import "package:dth_v4/features/home/models/home_feed_models.dart";
+import "package:dth_v4/features/home/home.dart";
 import "package:dth_v4/features/stories/views/stories_view.dart";
 import "package:flutter/material.dart";
 import "package:flutter_utils/flutter_utils.dart";

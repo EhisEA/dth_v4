@@ -1,5 +1,4 @@
 import 'package:dth_v4/core/core.dart';
-import 'package:dth_v4/core/router/router.dart';
 import 'package:dth_v4/features/app_web_view/app_web_view.dart';
 import 'package:dth_v4/features/authentication/view_model/get_started_view_model.dart';
 import 'package:dth_v4/features/authentication/views/create_account_view.dart';

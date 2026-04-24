@@ -1,7 +1,6 @@
 import "dart:async";
 
 import "package:dth_v4/core/core.dart";
-import "package:dth_v4/core/router/router.dart";
 import "package:dth_v4/features/splash/view_model/splash_view_model.dart";
 import "package:flutter/material.dart";
 import "package:flutter_riverpod/flutter_riverpod.dart";

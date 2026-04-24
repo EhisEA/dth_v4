@@ -24,7 +24,8 @@ class ImageAssets {
   static const String phoneBg = "$imagePath/subscription/phone_bg.png";
 
   /////////////////////APPLICATION//////////////////////
-  static const String applicationBg = "$imagePath/application/application_bg.png";
+  static const String applicationBg =
+      "$imagePath/application/application_bg.png";
 }
 
 class SvgAssets {
@@ -82,6 +83,11 @@ class SvgAssets {
   static const String support = "$svgPath/application/support.svg";
   static const String edit = "$svgPath/application/edit.svg";
   static const String calendarEdit = "$svgPath/application/calendar-edit.svg";
+
+  /////////////////////SEARCH//////////////////////
+  ///
+  static const String location = "$svgPath/search/location.svg";
+  static const String clock = "$svgPath/search/clock.svg";
 
   /////////////////////SUBSCRIPTION//////////////////////
   ///

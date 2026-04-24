@@ -358,7 +358,15 @@ class _PhoneNumberCountryInputState extends State<PhoneNumberCountryInput> {
                             },
                     ),
                   ),
-                  if (widget.suffix != null) ...[Gap.w8, widget.suffix!],
+                  if (widget.suffix != null) ...[
+                    Gap.w8,
+                    Align(
+                      alignment: Alignment.center,
+                      widthFactor: 1,
+                      heightFactor: 1,
+                      child: widget.suffix!,
+                    ),
+                  ],
                 ],
               ),
             ],
