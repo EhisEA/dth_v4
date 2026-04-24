@@ -10,7 +10,7 @@ class AppLink {
       "https://apps.apple.com/us/app/de9jaspirit-talent-hunt/id1624305734";
   static const String androidStoreLink =
       "https://play.google.com/store/apps/details?id=com.dth.dth";
-      
+
   static const String vent = "https://vent.africa";
   static const String privacyPolicy = "https://dth.ng/#";
   static const String termsAndConditions = "https://dth.ng/#";
@@ -43,7 +43,7 @@ class AppInfo {
   static Map<String, dynamic> get payload {
     return {
       "x-Device-OS": deviceOS,
-      "X-App-Version": getAppVersionSync(),
+      "x-App-Version": getAppVersionSync(),
       // appVersion,
     };
   }

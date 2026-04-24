@@ -134,19 +134,19 @@ class _GetStartedViewState extends ConsumerState<GetStartedView> {
                 enabled: !model.isBaseBusy,
                 press: _onGooglePressed,
               ),
-              Gap.h12,
-              AppButton.onBorder(
-                text: 'Continue with Apple',
-                textColor: AppColors.black,
-                borderColor: AppColors.primary,
-                prefixIcon: svgIcon(SvgAssets.appleLogo),
-                enabled: !model.isBaseBusy,
-                press: () {
-                  MobileNavigationService.instance.navigateAndClearStack(
-                    BottomNavBar.path,
-                  );
-                },
-              ),
+              // Gap.h12,
+              // AppButton.onBorder(
+              //   text: 'Continue with Apple',
+              //   textColor: AppColors.black,
+              //   borderColor: AppColors.primary,
+              //   prefixIcon: svgIcon(SvgAssets.appleLogo),
+              //   enabled: !model.isBaseBusy,
+              //   press: () {
+              //     MobileNavigationService.instance.navigateAndClearStack(
+              //       BottomNavBar.path,
+              //     );
+              //   },
+              // ),
               Gap.h24,
               Text.rich(
                 TextSpan(
