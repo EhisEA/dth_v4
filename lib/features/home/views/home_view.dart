@@ -1,117 +1,224 @@
-import "package:dth_v4/core/router/router.dart";
+import "dart:async";
+
+import "package:dth_v4/core/core.dart";
+import "package:dth_v4/data/data.dart";
+import "package:dth_v4/features/application/views/application_view.dart";
 import "package:dth_v4/features/home/home.dart";
 import "package:dth_v4/features/stories/views/stories_view.dart";
+import "package:dth_v4/widgets/widgets.dart";
 import "package:flutter/material.dart";
+import "package:flutter_riverpod/flutter_riverpod.dart";
 import "package:flutter_utils/flutter_utils.dart";
 
-class HomeView extends StatelessWidget {
+class HomeView extends ConsumerStatefulWidget {
   const HomeView({super.key});
 
   static const String path = NavigatorRoutes.home;
 
-  static final List<HomeStoryItem> _mockStories = [
-    const HomeStoryItem(
-      imageUrl: "https://picsum.photos/seed/dth1/200",
-      label: "Day One: Auditi...",
-    ),
-    const HomeStoryItem(
-      imageUrl: "https://picsum.photos/seed/dth2/200",
-      label: "Behind scenes",
-    ),
-    const HomeStoryItem(
-      imageUrl: "https://picsum.photos/seed/dth3/200",
-      label: "Meet the judges",
-    ),
-    const HomeStoryItem(
-      imageUrl: "https://picsum.photos/seed/g1/600/800",
-      label: "Meet the judges",
-    ),
-    const HomeStoryItem(
-      imageUrl: "https://picsum.photos/seed/g5/400/400",
-      label: "Meet the judges",
-    ),
-  ];
+  @override
+  ConsumerState<HomeView> createState() => _HomeViewState();
+}
 
-  static final List<HomePostItem> _mockPosts = [
-    HomePostItem(
-      authorName: "DE9JASPIRIT★",
-      withName: "Osakpolo Evans",
-      timeAgo: "14 Hours ago",
-      description:
-          "This is a sample caption for a video post. It can run longer than two lines so you can see how the ellipsis and Read more behave when the text does not fit in the allowed space.",
-      likeCount: 361,
-      commentCount: 24,
-      shareCount: 12,
-      video: const HomePostVideo(
-        thumbnailUrl: "https://picsum.photos/seed/video1/800/450",
-      ),
-    ),
-    HomePostItem(
-      authorName: "DE9JASPIRIT★",
-      withName: "Osakpolo Evans",
-      timeAgo: "1 Day ago",
-      description:
-          "Gallery post with five images — layout shows one large tile and two stacked on the right; the last tile shows how many additional photos are in the set.",
-      likeCount: 120,
-      commentCount: 8,
-      shareCount: 3,
-      imageUrls: [
-        "https://picsum.photos/seed/g1/600/800",
-        "https://picsum.photos/seed/g2/400/400",
-        "https://picsum.photos/seed/g3/400/400",
-        "https://picsum.photos/seed/g4/400/400",
-        "https://picsum.photos/seed/g5/400/400",
-      ],
-    ),
-  ];
+class _HomeViewState extends ConsumerState<HomeView> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      unawaited(ref.read(homeViewModelProvider).loadTimeline());
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     final bottomInset = MediaQuery.paddingOf(context).bottom + 100;
-    return GestureDetector(
-      onTap: () => FocusScope.of(context).unfocus(),
-      behavior: HitTestBehavior.translucent,
-      child: Scaffold(
-        body: SafeArea(
-          bottom: false,
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Gap.h14,
-                HomeHeader(onLiveTap: () {}, onNotificationTap: () {}),
-                Gap.h16,
-                HomeStoriesBar(
-                  stories: _mockStories,
-                  onStoryTap: (story) {
-                    MobileNavigationService.instance.push(
-                      StoriesView.path,
-                      extra: {RoutingArgumentKey.imageUrl: story.imageUrl},
-                    );
-                  },
+    final vm = ref.watch(homeViewModelProvider);
+    return ValueListenableBuilder(
+      valueListenable: vm.userModel,
+      builder: (context, value, child) {
+        return GestureDetector(
+          onTap: () => FocusScope.of(context).unfocus(),
+          behavior: HitTestBehavior.translucent,
+          child: Scaffold(
+            body: SafeArea(
+              bottom: false,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Gap.h14,
+                    HomeHeader(onLiveTap: () {}, onNotificationTap: () {}),
+                    Expanded(
+                      child: vm.baseState.when(
+                        busy: () => const Center(
+                          child: CircularProgressIndicator.adaptive(),
+                        ),
+                        error: (Failure failure) => Center(
+                          child: ListView(
+                            physics: const AlwaysScrollableScrollPhysics(),
+                            padding: const EdgeInsets.symmetric(vertical: 48),
+                            children: [
+                              AppText.semiBold(
+                                "Could not load timeline",
+                                fontSize: 16,
+                                color: AppColors.mainBlack,
+                                textAlign: TextAlign.center,
+                              ),
+                              Gap.h12,
+                              AppText.regular(
+                                failure.message,
+                                fontSize: 14,
+                                color: AppColors.blackTint20,
+                                textAlign: TextAlign.center,
+                              ),
+                              Gap.h24,
+                              Center(
+                                child: AppButton.primary(
+                                  text: "Retry",
+                                  height: 48,
+                                  press: () => unawaited(vm.loadTimeline()),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        idle: () => RefreshIndicator(
+                          onRefresh: () => vm.refreshTimeline(),
+                          child: CustomScrollView(
+                            physics: const AlwaysScrollableScrollPhysics(),
+                            slivers: [
+                              SliverToBoxAdapter(
+                                child: vm.stories.isEmpty
+                                    ? const SizedBox.shrink()
+                                    : Column(
+                                        mainAxisSize: MainAxisSize.min,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.stretch,
+                                        children: [
+                                          Gap.h16,
+                                          HomeStoriesBar(
+                                            stories: vm.stories,
+                                            onStoryTap: (story) {
+                                              MobileNavigationService.instance
+                                                  .push(
+                                                    StoriesView.path,
+                                                    extra: {
+                                                      RoutingArgumentKey
+                                                              .imageUrl:
+                                                          story.imageUrl,
+                                                    },
+                                                  );
+                                            },
+                                          ),
+                                          Gap.h16,
+                                        ],
+                                      ),
+                              ),
+                              SliverToBoxAdapter(
+                                child:
+                                    value?.participationRole ==
+                                        ParticipationRole.user
+                                    ? Column(
+                                        mainAxisSize: MainAxisSize.min,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.stretch,
+                                        children: [
+                                          Gap.h10,
+                                          GestureDetector(
+                                            behavior: HitTestBehavior.opaque,
+                                            onTap: () {
+                                              MobileNavigationService.instance
+                                                  .navigateTo(
+                                                    ApplicationView.path,
+                                                  );
+                                            },
+                                            child: Container(
+                                              height: 108,
+                                              width: double.infinity,
+                                              decoration: BoxDecoration(
+                                                image: DecorationImage(
+                                                  image: AssetImage(
+                                                    ImageAssets.applyimg,
+                                                  ),
+                                                  fit: BoxFit.fill,
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                          Gap.h10,
+                                        ],
+                                      )
+                                    : const SizedBox.shrink(),
+                              ),
+                              if (vm.posts.isEmpty)
+                                SliverFillRemaining(
+                                  hasScrollBody: false,
+                                  child: Padding(
+                                    padding: EdgeInsets.only(
+                                      bottom: bottomInset,
+                                    ),
+                                    child: Center(
+                                      child: AppText.regular(
+                                        "No posts yet.",
+                                        fontSize: 14,
+                                        color: AppColors.blackTint20,
+                                        textAlign: TextAlign.center,
+                                      ),
+                                    ),
+                                  ),
+                                )
+                              else
+                                SliverPadding(
+                                  padding: EdgeInsets.only(bottom: bottomInset),
+                                  sliver: SliverList(
+                                    delegate: SliverChildBuilderDelegate((
+                                      context,
+                                      index,
+                                    ) {
+                                      final post = vm.posts[index];
+                                      final isLast =
+                                          index == vm.posts.length - 1;
+                                      return Padding(
+                                        padding: EdgeInsets.only(
+                                          top: index == 0 ? 12 : 0,
+                                          bottom: isLast ? 0 : 28,
+                                        ),
+                                        child: HomePostCard(
+                                          post: post,
+                                          onVideoTap: () {
+                                            final thumb =
+                                                post.video?.thumbnailUrl;
+                                            if (thumb == null ||
+                                                thumb.isEmpty) {
+                                              return;
+                                            }
+                                            MobileNavigationService.instance
+                                                .navigateTo(
+                                                  StoriesView.path,
+                                                  extra: {
+                                                    RoutingArgumentKey.imageUrl:
+                                                        thumb,
+                                                  },
+                                                );
+                                          },
+                                          onReadMore: () {},
+                                        ),
+                                      );
+                                    }, childCount: vm.posts.length),
+                                  ),
+                                ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
-                Gap.h16,
-                Expanded(
-                  child: ListView.separated(
-                    padding: EdgeInsets.only(bottom: bottomInset, top: 32),
-                    itemCount: _mockPosts.length,
-                    separatorBuilder: (_, __) => const SizedBox(height: 28),
-                    itemBuilder: (context, index) {
-                      final post = _mockPosts[index];
-                      return HomePostCard(
-                        post: post,
-                        onVideoTap: () {},
-                        onReadMore: () {},
-                      );
-                    },
-                  ),
-                ),
-              ],
+              ),
             ),
           ),
-        ),
-      ),
+        );
+      },
     );
   }
 }

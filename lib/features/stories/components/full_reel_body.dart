@@ -2,10 +2,8 @@ import "dart:ui";
 
 import "package:cached_network_image/cached_network_image.dart";
 import "package:dth_v4/core/core.dart";
-import "package:dth_v4/features/stories/components/rail_action.dart";
 import "package:dth_v4/features/stories/models/stories_mock_data.dart";
 import "package:dth_v4/features/tickets/tickets.dart";
-import "package:dth_v4/widgets/dth_send_button.dart";
 import "package:dth_v4/widgets/text/text.dart";
 import "package:dth_v4/widgets/widgets.dart";
 import "package:flutter/gestures.dart";
@@ -86,33 +84,6 @@ class FullReelBody extends StatelessWidget {
           bottom: 0,
           child: Column(
             children: [
-              Align(
-                alignment: Alignment.centerRight,
-                child: RailAction(
-                  icon: _whiteSvg(SvgAssets.favorite),
-                  label: formatStoryCount(storyLikes),
-                  onTap: () {},
-                ),
-              ),
-              Gap.h24,
-              Align(
-                alignment: Alignment.centerRight,
-                child: RailAction(
-                  icon: _whiteSvg(SvgAssets.message),
-                  label: formatStoryCount(storyCommentCount),
-                  onTap: onChatTap,
-                ),
-              ),
-              Gap.h24,
-              Align(
-                alignment: Alignment.centerRight,
-                child: RailAction(
-                  icon: _whiteSvg(SvgAssets.send2),
-                  label: formatStoryCount(storyShares),
-                  onTap: () {},
-                ),
-              ),
-              Gap.h24,
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: 16),
                 child: Row(
@@ -197,31 +168,59 @@ class FullReelBody extends StatelessWidget {
                   ),
                 ),
               ),
-              Gap.h12,
-              SafeArea(
-                top: false,
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: AppTextField(
-                          fillColor: const Color(
-                            0xffEFEFEF,
-                          ).withValues(alpha: 0.16),
-                          showBorder: false,
-                          borderRadius: BorderRadius.circular(100),
-                          hint: "Join the vibe...",
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 14,
-                          ),
+
+              Container(
+                padding: EdgeInsets.only(
+                  top: 16,
+                  bottom: 30,
+                  left: 16,
+                  right: 16,
+                ),
+                decoration: BoxDecoration(color: AppColors.mainBlack),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: AppTextField(
+                        fillColor: const Color(
+                          0xffEFEFEF,
+                        ).withValues(alpha: 0.16),
+                        showBorder: false,
+                        borderRadius: BorderRadius.circular(100),
+                        hint: "Join the vibe...",
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 14,
                         ),
                       ),
-                      Gap.w8,
-                      DthSendButton(onTap: () {}),
-                    ],
-                  ),
+                    ),
+                    Gap.w16,
+                    SvgPicture.asset(
+                      SvgAssets.favorite,
+                      height: 24,
+                      width: 24,
+                      colorFilter: ColorFilter.mode(
+                        AppColors.redTint35,
+                        BlendMode.srcIn,
+                      ),
+                    ),
+                    Gap.w16,
+                    GestureDetector(
+                      behavior: HitTestBehavior.opaque,
+                      onTap: onChatTap,
+                      child: SvgPicture.asset(
+                        SvgAssets.messagesBorder,
+                        height: 24,
+                        width: 24,
+                        colorFilter: ColorFilter.mode(
+                          AppColors.white,
+                          BlendMode.srcIn,
+                        ),
+                      ),
+                    ),
+                    Gap.w16,
+                    SvgPicture.asset(SvgAssets.share, height: 24, width: 24),
+                    // DthSendButton(onTap: () {}),
+                  ],
                 ),
               ),
             ],

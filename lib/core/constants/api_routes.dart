@@ -46,4 +46,8 @@ class ApiRoute {
 
   ///MODULES
   static String get mobileAppModules => "$baseUrl/mobile/app/modules";
+
+  ///TIMELINE
+  static String get timeline => "$baseUrl/timeline-posts";
+  static String get timelineReels => "$baseUrl/timeline-reels";
 }

@@ -8,6 +8,10 @@ class ImageAssets {
   static const String logo2 = "$imagePath/logo2.png";
   static const String updateIcon = "$imagePath/update_icon.png";
 
+  /////////////////////HOME//////////////////////
+  ///
+  static const String applyimg = "$imagePath/home/apply_img.png";
+
   /////////////////////PROFILE//////////////////////
   ///
   static const String user = "$imagePath/profile/user.png";

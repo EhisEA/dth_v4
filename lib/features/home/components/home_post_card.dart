@@ -74,7 +74,7 @@ class HomePostCard extends StatelessWidget {
               count: post.commentCount,
             ),
             Gap.w10,
-            _ActionChip(icon: SvgAssets.sendBorder, count: post.shareCount),
+            _ActionChip(icon: SvgAssets.share, count: post.shareCount),
           ],
         ),
       ],
@@ -93,7 +93,12 @@ class _ActionChip extends StatelessWidget {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        SvgPicture.asset(icon, height: 22, width: 22),
+        SvgPicture.asset(
+          icon,
+          height: 14,
+          width: 14,
+          colorFilter: ColorFilter.mode(AppColors.blackTint20, BlendMode.srcIn),
+        ),
         Gap.w4,
         AppText.medium('$count', fontSize: 12, color: AppColors.tint25),
       ],

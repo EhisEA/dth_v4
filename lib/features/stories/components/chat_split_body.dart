@@ -29,8 +29,8 @@ class ChatSplitBody extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final viewportHeight = MediaQuery.sizeOf(context).height;
-    final mediaHeight = viewportHeight * 0.5;
-    final panelMinHeight = viewportHeight * 0.4;
+    final mediaHeight = viewportHeight * 0.6;
+    final panelMinHeight = viewportHeight * 0.3;
 
     return SizedBox.expand(
       child: Column(

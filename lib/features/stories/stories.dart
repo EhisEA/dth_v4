@@ -1,6 +1,5 @@
 export "models/stories_mock_data.dart";
 export "views/stories_view.dart";
-export "components/rail_action.dart";
 export "components/chat_split_body.dart";
 export "components/full_reel_body.dart";
 export "models/mock_comment.dart";
