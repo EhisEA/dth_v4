@@ -80,7 +80,7 @@ class _LoginViewState extends ConsumerState<LoginView> {
                       AppText.regular(
                         'Enter your email to continue from where you left off.',
                         fontSize: 14,
-                        color: const Color(0xff474954),
+                        color: AppColors.paleLavender,
                       ),
                       Gap.h24,
                       AppTextField(

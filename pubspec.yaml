@@ -93,6 +93,7 @@ flutter:
     - assets/svgs/profile/
     - assets/svgs/search/
     - assets/svgs/subscription/
+    - assets/svgs/tickets/
     - assets/audio/
     # - assets/lotties/
 

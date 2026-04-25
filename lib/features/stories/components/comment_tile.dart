@@ -22,7 +22,7 @@ class CommentTile extends StatelessWidget {
             comment.user.isNotEmpty ? comment.user[0].toUpperCase() : "?",
             fontSize: 10,
             fontWeight: FontWeight.w600,
-            color: const Color(0xff474954),
+            color: AppColors.paleLavender,
           ),
         ),
         Gap.w10,

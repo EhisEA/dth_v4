@@ -2,9 +2,9 @@ import "dart:ui";
 
 import "package:cached_network_image/cached_network_image.dart";
 import "package:dth_v4/core/core.dart";
-import "package:dth_v4/features/stories/components/circle_blur_icon.dart";
 import "package:dth_v4/features/stories/components/rail_action.dart";
 import "package:dth_v4/features/stories/models/stories_mock_data.dart";
+import "package:dth_v4/features/tickets/tickets.dart";
 import "package:dth_v4/widgets/dth_send_button.dart";
 import "package:dth_v4/widgets/text/text.dart";
 import "package:dth_v4/widgets/widgets.dart";

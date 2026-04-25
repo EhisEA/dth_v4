@@ -5,8 +5,8 @@ import "package:flutter/material.dart";
 import "package:flutter_svg/svg.dart";
 import "package:flutter_utils/flutter_utils.dart";
 
-class UpcomingShows extends StatelessWidget {
-  const UpcomingShows({
+class UpcomingShowsComponent extends StatelessWidget {
+  const UpcomingShowsComponent({
     super.key,
     this.imageUrl = "https://picsum.photos/seed/dth-upcoming/960/540",
     this.title = "DTH Tradition Royalty Week",
@@ -14,6 +14,8 @@ class UpcomingShows extends StatelessWidget {
         "De9jaspiriTalentHunt is back, and this time it's bigger and better than ever before! Prepare yourself for an exhilarating experience filled with music, culture, and unforgettable performances.",
     this.location = "Calabar Int'l Event Center, Calabar",
     this.dateTimeLabel = "9 Sept., 2026 02:30AM",
+    this.showLocation = true,
+    this.showDescription = true,
     this.showDivider = true,
     this.onTap,
   });
@@ -23,6 +25,11 @@ class UpcomingShows extends StatelessWidget {
   final String description;
   final String location;
   final String dateTimeLabel;
+
+  /// When false (e.g. ticket strip), only the clock row is shown; pass a time
+  /// string such as `02:30AM` in [dateTimeLabel].
+  final bool showLocation;
+  final bool showDescription;
   final bool showDivider;
   final VoidCallback? onTap;
 
@@ -59,29 +66,56 @@ class UpcomingShows extends StatelessWidget {
             maxLines: 2,
             multiText: true,
           ),
-          Gap.h8,
-          AppText.regular(
-            description,
-            color: const Color(0xff474954),
-            fontSize: 12,
-            maxLines: 2,
-            multiText: true,
-          ),
-          Gap.h10,
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Expanded(
-                flex: 3,
-                child: _MetaChip(icon: SvgAssets.location, text: location),
-              ),
-              Gap.w10,
-              Expanded(
-                flex: 2,
-                child: _MetaChip(icon: SvgAssets.clock, text: dateTimeLabel),
-              ),
-            ],
-          ),
+          Gap.h4,
+          if (showDescription) ...[
+            AppText.regular(
+              description,
+              color: AppColors.paleLavender,
+              fontSize: 12,
+              maxLines: 2,
+              multiText: true,
+            ),
+            Gap.h10,
+          ],
+
+          if (showLocation)
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Expanded(
+                  flex: 3,
+                  child: _MetaChip(icon: SvgAssets.location, text: location),
+                ),
+                Gap.w10,
+                Expanded(
+                  flex: 2,
+                  child: _MetaChip(icon: SvgAssets.clock, text: dateTimeLabel),
+                ),
+              ],
+            )
+          else
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                SvgPicture.asset(
+                  SvgAssets.clock,
+                  width: 11,
+                  height: 11,
+                  colorFilter: ColorFilter.mode(
+                    AppColors.blackTint20,
+                    BlendMode.srcIn,
+                  ),
+                ),
+                Gap.w4,
+                AppText.regular(
+                  dateTimeLabel,
+                  color: AppColors.blackTint20,
+                  fontSize: 10,
+                  maxLines: 1,
+                  multiText: false,
+                ),
+              ],
+            ),
           if (showDivider) ...[
             Gap.h16,
             Container(

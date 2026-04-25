@@ -16,6 +16,25 @@ class RoutingArgumentKey {
   static const String confirmationSuccess = "confirmationSuccess";
 
   static const String callbackUrl = "callbackUrl";
+
+  /// [ShowView] — full event location line (quick info row).
+  static const String eventLocation = "eventLocation";
+
+  /// [ShowView] — clock line in quick info (e.g. `9 Sept., 2026 02:30AM`).
+  static const String eventDateTimeDisplay = "eventDateTimeDisplay";
+
+  /// [ShowView] — long “About event” copy (use `\n\n` between paragraphs).
+  static const String aboutEventBody = "aboutEventBody";
+
+  static const String eventDetailDate = "eventDetailDate";
+  static const String eventDetailTime = "eventDetailTime";
+  static const String eventDetailVenue = "eventDetailVenue";
+
+  /// [ShowView] — e.g. `546` or `(546 available)`; shown under CTA.
+  static const String ticketsAvailable = "ticketsAvailable";
+
+  /// [ShowView] — badge label, default `Upcoming`.
+  static const String eventStatusLabel = "eventStatusLabel";
 }
 
 abstract class OtpFlowArg {

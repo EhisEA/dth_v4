@@ -3,7 +3,7 @@ import "dart:ui";
 import "package:cached_network_image/cached_network_image.dart";
 import "package:dth_v4/core/core.dart";
 import "package:dth_v4/features/stories/components/chat_panel.dart";
-import "package:dth_v4/features/stories/components/circle_blur_icon.dart";
+import "package:dth_v4/features/tickets/tickets.dart";
 import "package:flutter/gestures.dart";
 import "package:flutter/material.dart";
 import "package:flutter_svg/flutter_svg.dart";

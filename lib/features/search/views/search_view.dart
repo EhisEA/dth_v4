@@ -1,5 +1,6 @@
 import 'package:dth_v4/core/core.dart';
 import 'package:dth_v4/features/search/search.dart';
+import 'package:dth_v4/features/tickets/tickets.dart';
 import 'package:dth_v4/widgets/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_utils/flutter_utils.dart';
@@ -66,7 +67,8 @@ class _SearchViewState extends State<SearchView> {
                       Gap.h12,
                       ...List.generate(
                         2,
-                        (index) => UpcomingShows(showDivider: index < 1),
+                        (index) =>
+                            UpcomingShowsComponent(showDivider: index < 1),
                       ),
                     ],
                   ),

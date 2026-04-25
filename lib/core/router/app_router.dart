@@ -1,4 +1,4 @@
-import 'package:dth_v4/core/router/router.dart';
+import "package:dth_v4/core/router/router.dart";
 import 'package:dth_v4/data/data.dart';
 import 'package:dth_v4/features/app_web_view/app_web_view.dart';
 import 'package:dth_v4/features/application/views/application_landing_view.dart';
@@ -16,6 +16,7 @@ import 'package:dth_v4/features/stories/views/stories_view.dart';
 import 'package:dth_v4/features/search/views/search_view.dart';
 import 'package:dth_v4/features/splash/views/splash_view.dart';
 import 'package:dth_v4/features/subscription/subscription.dart';
+import 'package:dth_v4/features/tickets/tickets.dart';
 import 'package:flutter/material.dart';
 
 class AppRouter {
@@ -146,6 +147,50 @@ class AppRouter {
         return _getPageRoute(
           settings: settings,
           viewToShow: ConfirmationView(isSuccess: confirmationSuccess),
+        );
+
+      ////////////////TICKETS VIEW////////////////////
+      case UpcomingShowsView.path:
+        return _getPageRoute(
+          settings: settings,
+          viewToShow: const UpcomingShowsView(),
+        );
+
+      case ShowView.path:
+        final ticketsLeft =
+            routeArgs[RoutingArgumentKey.ticketsAvailable] as int? ?? 546;
+        return _getPageRoute(
+          settings: settings,
+          viewToShow: ShowView(
+            heroImageUrl:
+                routeArgs[RoutingArgumentKey.imageUrl] as String? ??
+                "https://images.pexels.com/photos/37054685/pexels-photo-37054685.jpeg",
+            eventTitle:
+                routeArgs[RoutingArgumentKey.title] as String? ??
+                "Week 3: DTH Tradition Royalty Week",
+            eventLocation:
+                routeArgs[RoutingArgumentKey.eventLocation] as String? ??
+                "Calabar Int'l Event Center",
+            eventDateTimeLine:
+                routeArgs[RoutingArgumentKey.eventDateTimeDisplay] as String? ??
+                "9 Sept, 2026 02:30AM",
+            aboutBody:
+                routeArgs[RoutingArgumentKey.aboutEventBody] as String? ??
+                ShowView.kDefaultAboutBody,
+            detailDate:
+                routeArgs[RoutingArgumentKey.eventDetailDate] as String? ??
+                "9 September, 2026",
+            detailTime:
+                routeArgs[RoutingArgumentKey.eventDetailTime] as String? ??
+                "9 AM",
+            detailVenue:
+                routeArgs[RoutingArgumentKey.eventDetailVenue] as String? ??
+                "Calabar International Event Center, Calabar",
+            ticketsAvailable: ticketsLeft,
+            statusLabel:
+                routeArgs[RoutingArgumentKey.eventStatusLabel] as String? ??
+                "Upcoming",
+          ),
         );
 
       default:

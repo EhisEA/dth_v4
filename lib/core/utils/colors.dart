@@ -37,6 +37,9 @@ class AppColors {
   // 454545
   static Color tint25 = const Color(0xff454545);
 
+  // 474954
+  static const Color paleLavender = Color(0xff474954);
+
   // F7F7F7
   static Color greyTint15 = const Color(0xffF7F7F7);
 

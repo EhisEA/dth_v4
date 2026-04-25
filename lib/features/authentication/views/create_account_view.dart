@@ -188,7 +188,7 @@ class _CreateAccountViewState extends ConsumerState<CreateAccountView> {
                           'Enter your email to sign up for the most exciting Talent Hunt show in Africa.',
                           fontSize: 14,
                           height: 1.4,
-                          color: const Color(0xff474954),
+                          color: AppColors.paleLavender,
                         ),
                         Gap.h24,
                         AppTextField(

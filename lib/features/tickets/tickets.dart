@@ -1,1 +1,11 @@
 export "views/ticket_view.dart";
+export "components/booked_shows_component.dart";
+export "components/description_widget.dart";
+export "views/upcoming_shows_view.dart";
+export "components/upcoming_shows_component.dart";
+export "components/show_detail_hero.dart";
+export "components/show_status_chip.dart";
+export "components/show_event_quick_info_row.dart";
+export "components/show_about_event_panel.dart";
+export "components/show_buy_ticket.dart";
+export "views/show_view.dart";

@@ -2,7 +2,7 @@ import 'package:dth_v4/core/core.dart';
 import 'package:dth_v4/data/data.dart';
 import 'package:dth_v4/features/app_web_view/app_web_view.dart';
 import 'package:dth_v4/features/application/views/application_view.dart';
-import 'package:dth_v4/features/logout/logout.dart';
+import 'package:dth_v4/features/profile/logout/logout.dart';
 import 'package:dth_v4/features/profile/profile.dart';
 import 'package:dth_v4/widgets/widgets.dart';
 import 'package:flutter/material.dart';

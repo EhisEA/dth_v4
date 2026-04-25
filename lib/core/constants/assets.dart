@@ -89,6 +89,10 @@ class SvgAssets {
   static const String location = "$svgPath/search/location.svg";
   static const String clock = "$svgPath/search/clock.svg";
 
+  /////////////////////TICKETS//////////////////////
+  ///
+  static const String share = "$svgPath/tickets/share.svg";
+
   /////////////////////SUBSCRIPTION//////////////////////
   ///
   static const String check = "$svgPath/subscription/check.svg";
