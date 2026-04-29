@@ -5,6 +5,7 @@ export "application_process_models.dart";
 export "application_submit_models.dart";
 export "application_wizard_inputs.dart";
 export "dth_country.dart";
+export "poll_model.dart";
 export "registration_models.dart";
 export "user_model.dart";
 export "subscription_model.dart";

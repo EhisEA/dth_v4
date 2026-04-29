@@ -50,4 +50,8 @@ class ApiRoute {
   ///TIMELINE
   static String get timeline => "$baseUrl/timeline-posts";
   static String get timelineReels => "$baseUrl/timeline-reels";
+
+  ///POLLS
+  static String get polls => "$baseUrl/polls";
+  static String pollVote(String pollUid) => "$baseUrl/polls/$pollUid";
 }

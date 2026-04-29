@@ -4,6 +4,7 @@ import "package:dth_v4/core/core.dart";
 import "package:dth_v4/data/data.dart";
 import "package:dth_v4/features/application/views/application_view.dart";
 import "package:dth_v4/features/home/home.dart";
+import "package:dth_v4/features/polls/polls.dart";
 import "package:dth_v4/features/stories/views/stories_view.dart";
 import "package:dth_v4/widgets/widgets.dart";
 import "package:flutter/material.dart";
@@ -25,6 +26,7 @@ class _HomeViewState extends ConsumerState<HomeView> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       unawaited(ref.read(homeViewModelProvider).loadTimeline());
+      unawaited(ref.read(pollViewModelProvider).loadPoll());
     });
   }
 
@@ -32,6 +34,7 @@ class _HomeViewState extends ConsumerState<HomeView> {
   Widget build(BuildContext context) {
     final bottomInset = MediaQuery.paddingOf(context).bottom + 100;
     final vm = ref.watch(homeViewModelProvider);
+    final pollVm = ref.watch(pollViewModelProvider);
     return ValueListenableBuilder(
       valueListenable: vm.userModel,
       builder: (context, value, child) {
@@ -149,6 +152,15 @@ class _HomeViewState extends ConsumerState<HomeView> {
                                         ],
                                       )
                                     : const SizedBox.shrink(),
+                              ),
+                              SliverToBoxAdapter(
+                                child: PollComponent(
+                                  pollListenable: pollVm.poll,
+                                  isVoteBusy: pollVm.isVoteBusy,
+                                  onVoteTap: (optionUid) {
+                                    unawaited(pollVm.vote(optionUid));
+                                  },
+                                ),
                               ),
                               if (vm.posts.isEmpty)
                                 SliverFillRemaining(
