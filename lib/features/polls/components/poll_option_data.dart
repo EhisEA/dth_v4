@@ -4,7 +4,6 @@ class PollOptionData {
     required this.title,
     required this.percentage,
     required this.progress,
-    this.showResults = true,
     this.selected = false,
   });
 
@@ -12,6 +11,5 @@ class PollOptionData {
   final String title;
   final int percentage;
   final double progress;
-  final bool showResults;
   final bool selected;
 }

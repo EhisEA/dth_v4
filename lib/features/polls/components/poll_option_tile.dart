@@ -1,7 +1,6 @@
 import 'package:dth_v4/core/core.dart';
 import 'package:dth_v4/features/polls/components/poll_option_data.dart';
 import 'package:dth_v4/features/polls/components/poll_progress_bar.dart';
-import 'package:dth_v4/features/polls/components/voter_stack.dart';
 import 'package:dth_v4/widgets/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_utils/flutter_utils.dart';
@@ -83,21 +82,13 @@ class PollOptionTile extends StatelessWidget {
                     ),
                   ),
                   Gap.w8,
-                  if (data.showResults) ...[
-                    AppText.regular(
-                      '${data.percentage}%',
-                      fontSize: 10,
-                      color: AppColors.black,
-                      letterSpacing: -0.25,
-                    ),
-                    Gap.w4,
-                    const VoterStack(),
-                  ] else
-                    AppText.regular(
-                      "Pending",
-                      fontSize: 10,
-                      color: AppColors.blackTint20,
-                    ),
+
+                  AppText.regular(
+                    '${data.percentage}%',
+                    fontSize: 10,
+                    color: AppColors.black,
+                    letterSpacing: -0.25,
+                  ),
                 ],
               ),
               Gap.h4,

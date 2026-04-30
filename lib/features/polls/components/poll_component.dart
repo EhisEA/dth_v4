@@ -39,7 +39,6 @@ class PollComponent extends StatelessWidget {
                 progress: showResults
                     ? (option.percentage / 100).clamp(0.0, 1.0)
                     : 0,
-                showResults: showResults,
                 selected: showResults && poll.votedOptionUid == option.uid,
               ),
             )

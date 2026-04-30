@@ -57,36 +57,41 @@ class _HomeViewState extends ConsumerState<HomeView> {
                           child: CircularProgressIndicator.adaptive(),
                         ),
                         error: (Failure failure) => Center(
-                          child: ListView(
-                            physics: const AlwaysScrollableScrollPhysics(),
-                            padding: const EdgeInsets.symmetric(vertical: 48),
-                            children: [
-                              AppText.semiBold(
-                                "Could not load timeline",
-                                fontSize: 16,
-                                color: AppColors.mainBlack,
-                                textAlign: TextAlign.center,
-                              ),
-                              Gap.h12,
-                              AppText.regular(
-                                failure.message,
-                                fontSize: 14,
-                                color: AppColors.blackTint20,
-                                textAlign: TextAlign.center,
-                              ),
-                              Gap.h24,
-                              Center(
-                                child: AppButton.primary(
-                                  text: "Retry",
-                                  height: 48,
-                                  press: () => unawaited(vm.loadTimeline()),
+                          child: Center(
+                            child: ListView(
+                              physics: const AlwaysScrollableScrollPhysics(),
+                              padding: const EdgeInsets.symmetric(vertical: 48),
+                              children: [
+                                AppText.semiBold(
+                                  "Could not load timeline",
+                                  fontSize: 16,
+                                  color: AppColors.mainBlack,
+                                  textAlign: TextAlign.center,
                                 ),
-                              ),
-                            ],
+                                Gap.h12,
+                                AppText.regular(
+                                  failure.message,
+                                  fontSize: 14,
+                                  color: AppColors.blackTint20,
+                                  textAlign: TextAlign.center,
+                                ),
+                                Gap.h24,
+                                Center(
+                                  child: AppButton.primary(
+                                    text: "Retry",
+                                    height: 48,
+                                    press: () => unawaited(vm.loadTimeline()),
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
                         ),
                         idle: () => RefreshIndicator(
-                          onRefresh: () => vm.refreshTimeline(),
+                          onRefresh: () async {
+                            await vm.refreshTimeline();
+                            await pollVm.loadPoll();
+                          },
                           child: CustomScrollView(
                             physics: const AlwaysScrollableScrollPhysics(),
                             slivers: [
