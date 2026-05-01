@@ -1,10 +1,13 @@
+import "package:dth_v4/core/constants/assets.dart";
 import "package:dth_v4/core/router/router.dart";
+import "package:dth_v4/core/utils/colors.dart";
 import "package:dth_v4/features/stories/components/chat_split_body.dart";
 import "package:dth_v4/features/stories/components/full_reel_body.dart";
 import "package:dth_v4/widgets/widgets.dart";
 import "package:flutter/gestures.dart";
 import "package:flutter/material.dart";
 import "package:flutter/services.dart";
+import "package:flutter_svg/svg.dart";
 import "package:flutter_utils/flutter_utils.dart";
 
 class StoriesView extends StatefulWidget {
@@ -80,13 +83,78 @@ class _StoriesViewState extends State<StoriesView> {
                   setState(() => _chatOpen = false);
                 }
               },
-              child: FullReelBody(
-                imageUrl: widget.imageUrl,
-                topPad: topPad,
-                bottomPad: bottomPad,
-                onBack: _onBack,
-                onChatTap: _toggleChat,
-                readMoreTap: _readMoreReelTap,
+              child: Column(
+                children: [
+                  Expanded(
+                    child: FullReelBody(
+                      imageUrl: widget.imageUrl,
+                      topPad: topPad,
+                      bottomPad: bottomPad,
+                      onBack: _onBack,
+                      onChatTap: _toggleChat,
+                      readMoreTap: _readMoreReelTap,
+                    ),
+                  ),
+
+                  Container(
+                    padding: EdgeInsets.only(
+                      top: 16,
+                      bottom: 30,
+                      left: 16,
+                      right: 16,
+                    ),
+                    decoration: BoxDecoration(color: AppColors.mainBlack),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: AppTextField(
+                            fillColor: const Color(
+                              0xffEFEFEF,
+                            ).withValues(alpha: 0.16),
+                            showBorder: false,
+                            borderRadius: BorderRadius.circular(100),
+                            hint: "Join the vibe...",
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 14,
+                            ),
+                          ),
+                        ),
+                        Gap.w16,
+                        SvgPicture.asset(
+                          SvgAssets.favorite,
+                          height: 24,
+                          width: 24,
+                          colorFilter: ColorFilter.mode(
+                            AppColors.redTint35,
+                            BlendMode.srcIn,
+                          ),
+                        ),
+                        Gap.w16,
+                        GestureDetector(
+                          behavior: HitTestBehavior.opaque,
+                          // onTap: onChatTap,
+                          child: SvgPicture.asset(
+                            SvgAssets.messagesBorder,
+                            height: 24,
+                            width: 24,
+                            colorFilter: ColorFilter.mode(
+                              AppColors.white,
+                              BlendMode.srcIn,
+                            ),
+                          ),
+                        ),
+                        Gap.w16,
+                        SvgPicture.asset(
+                          SvgAssets.share,
+                          height: 24,
+                          width: 24,
+                        ),
+                        // DthSendButton(onTap: () {}),
+                      ],
+                    ),
+                  ),
+                ],
               ),
             ),
     );

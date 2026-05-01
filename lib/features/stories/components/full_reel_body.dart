@@ -95,35 +95,38 @@ class FullReelBody extends StatelessWidget {
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          Row(
-                            children: [
-                              SvgPicture.asset(
-                                SvgAssets.blackLogo,
-                                height: 20,
-                                colorFilter: ColorFilter.mode(
-                                  AppColors.white,
-                                  BlendMode.srcIn,
+                          FittedBox(
+                            child: Row(
+                              children: [
+                                SvgPicture.asset(
+                                  SvgAssets.blackLogo,
+                                  height: 20,
+                                  colorFilter: ColorFilter.mode(
+                                    AppColors.white,
+                                    BlendMode.srcIn,
+                                  ),
                                 ),
-                              ),
-                              Gap.w4,
-                              AppText.medium(
-                                "with",
-                                fontSize: 12,
-                                color: AppColors.tint5,
-                              ),
-                              Gap.w4,
-                              AppText.medium(
-                                storyWith,
-                                fontSize: 14,
-                                color: AppColors.white,
-                              ),
-                              Gap.w4,
-                              AppText.regular(
-                                storyTime,
-                                fontSize: 12,
-                                color: AppColors.tint5,
-                              ),
-                            ],
+                                Gap.w4,
+                                AppText.medium(
+                                  "with",
+                                  fontSize: 12,
+                                  color: AppColors.tint5,
+                                ),
+                                Gap.w4,
+                                AppText.medium(
+                                  storyWith,
+                                  fontSize: 14,
+                                  color: AppColors.white,
+                                ),
+                                Gap.w4,
+                                AppText.regular(
+                                  storyTime,
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w400,
+                                  color: AppColors.tint5,
+                                ),
+                              ],
+                            ),
                           ),
                           Gap.h4,
                           Text.rich(
@@ -166,61 +169,6 @@ class FullReelBody extends StatelessWidget {
                   valueColor: const AlwaysStoppedAnimation<Color>(
                     AppColors.primary,
                   ),
-                ),
-              ),
-
-              Container(
-                padding: EdgeInsets.only(
-                  top: 16,
-                  bottom: 30,
-                  left: 16,
-                  right: 16,
-                ),
-                decoration: BoxDecoration(color: AppColors.mainBlack),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: AppTextField(
-                        fillColor: const Color(
-                          0xffEFEFEF,
-                        ).withValues(alpha: 0.16),
-                        showBorder: false,
-                        borderRadius: BorderRadius.circular(100),
-                        hint: "Join the vibe...",
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 14,
-                        ),
-                      ),
-                    ),
-                    Gap.w16,
-                    SvgPicture.asset(
-                      SvgAssets.favorite,
-                      height: 24,
-                      width: 24,
-                      colorFilter: ColorFilter.mode(
-                        AppColors.redTint35,
-                        BlendMode.srcIn,
-                      ),
-                    ),
-                    Gap.w16,
-                    GestureDetector(
-                      behavior: HitTestBehavior.opaque,
-                      onTap: onChatTap,
-                      child: SvgPicture.asset(
-                        SvgAssets.messagesBorder,
-                        height: 24,
-                        width: 24,
-                        colorFilter: ColorFilter.mode(
-                          AppColors.white,
-                          BlendMode.srcIn,
-                        ),
-                      ),
-                    ),
-                    Gap.w16,
-                    SvgPicture.asset(SvgAssets.share, height: 24, width: 24),
-                    // DthSendButton(onTap: () {}),
-                  ],
                 ),
               ),
             ],
