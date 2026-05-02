@@ -26,6 +26,8 @@ class NavigatorRoutes {
   static const String profile = "/profile";
   static const String personalInformation = "/personal-information";
   static const String profilePhoneVerifyOtp = "/profile-phone-verify-otp";
+  static const String deleteAccountConsent = "/delete-account-consent";
+  static const String deleteAccountOtp = "/delete-account-otp";
 
   ////////////////APPLICATION////////////////////
   ///

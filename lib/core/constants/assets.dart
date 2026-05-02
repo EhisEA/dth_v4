@@ -81,6 +81,8 @@ class SvgAssets {
   static const String social = "$svgPath/profile/social.svg";
   static const String terms = "$svgPath/profile/terms.svg";
   static const String cup = "$svgPath/profile/cup.svg";
+  static const String error = "$svgPath/profile/error.svg";
+  static const String doubleTick = "$svgPath/profile/double_tick.svg";
 
   /////////////////////APPLICATION//////////////////////
   ///

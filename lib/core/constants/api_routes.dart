@@ -43,6 +43,7 @@ class ApiRoute {
   static String get profilePhoneVerifyOtp =>
       "$baseUrl/profile/phone/verify-otp";
   static String get profileUpdate => "$baseUrl/profile";
+  static String get profileDeleteAccount => "$baseUrl/profile/delete-account";
 
   ///MODULES
   static String get mobileAppModules => "$baseUrl/mobile/app/modules";

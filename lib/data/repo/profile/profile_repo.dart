@@ -18,4 +18,13 @@ abstract class ProfileRepo {
     String? isoCode,
     String? avatarFilePath,
   });
+
+  Future<ApiResponse<String>> requestAccountDeletion({String? deviceName});
+
+  Future<ApiResponse<String?>> confirmAccountDeletion({
+    required String token,
+    required String signature,
+    String? deviceName,
+    String? fcmToken,
+  });
 }
