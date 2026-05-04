@@ -19,7 +19,7 @@ class HomePostCard extends StatelessWidget {
   final VoidCallback? onVideoTap;
   final VoidCallback? onReadMore;
 
-  static const Color _muted = Color(0xff6A6A6A);
+  static const Color _muted = Color(0xff8F8F8F);
 
   @override
   Widget build(BuildContext context) {
@@ -36,34 +36,36 @@ class HomePostCard extends StatelessWidget {
                 children: [
                   Row(
                     children: [
-                      SvgPicture.asset(SvgAssets.blackLogo, height: 24),
-                      Gap.w4,
+                      SvgPicture.asset(SvgAssets.blackLogo, height: 16),
+                      Gap.w2,
                       AppText.regular(
                         "with",
                         fontSize: 10,
                         color: AppColors.blackTint20,
                       ),
-                      Gap.w4,
+                      Gap.w2,
                       AppText.medium(
                         post.withName ?? "",
                         fontSize: 12,
+                        fontWeight: FontWeight.w500,
                         color: AppColors.black,
                       ),
                     ],
                   ),
 
-                  AppText.regular(post.timeAgo, fontSize: 12, color: _muted),
+                  AppText.regular(post.timeAgo, fontSize: 10, color: _muted),
                 ],
               ),
             ),
           ],
         ),
-        Gap.h8,
-        HomePostMedia(post: post, onVideoTap: onVideoTap),
+        // Gap.h8,
         if (post.description.isNotEmpty) ...[
           Gap.h12,
           HomePostDescription(text: post.description, onReadMore: onReadMore),
         ],
+        Gap.h12,
+        HomePostMedia(post: post, onVideoTap: onVideoTap),
         Gap.h12,
         Row(
           children: [
