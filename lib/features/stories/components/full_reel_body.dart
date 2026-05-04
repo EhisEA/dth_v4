@@ -5,7 +5,6 @@ import "package:dth_v4/core/core.dart";
 import "package:dth_v4/features/stories/models/stories_mock_data.dart";
 import "package:dth_v4/features/tickets/tickets.dart";
 import "package:dth_v4/widgets/text/text.dart";
-import "package:dth_v4/widgets/widgets.dart";
 import "package:flutter/gestures.dart";
 import "package:flutter/material.dart";
 import "package:flutter_svg/svg.dart";

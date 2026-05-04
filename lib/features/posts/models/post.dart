@@ -1,15 +1,8 @@
 import "package:flutter/foundation.dart";
 
 @immutable
-class HomeStoryItem {
-  const HomeStoryItem({required this.imageUrl, required this.label});
-  final String imageUrl;
-  final String label;
-}
-
-@immutable
-class HomePostItem {
-  const HomePostItem({
+class Post {
+  const Post({
     required this.authorName,
     this.withName,
     required this.timeAgo,
@@ -28,14 +21,14 @@ class HomePostItem {
   final int likeCount;
   final int commentCount;
   final int shareCount;
-  final HomePostVideo? video;
+  final PostVideo? video;
   final List<String> imageUrls;
 
   bool get isVideo => video != null;
 }
 
 @immutable
-class HomePostVideo {
-  const HomePostVideo({required this.thumbnailUrl});
+class PostVideo {
+  const PostVideo({required this.thumbnailUrl});
   final String thumbnailUrl;
 }

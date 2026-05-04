@@ -2,14 +2,14 @@ import "dart:ui" show ImageFilter;
 
 import "package:cached_network_image/cached_network_image.dart";
 import "package:dth_v4/core/core.dart";
-import "package:dth_v4/features/home/models/home_feed_models.dart";
+import "package:dth_v4/features/posts/models/post.dart";
 import "package:flutter/material.dart";
 import "package:flutter_svg/svg.dart";
 
-class HomePostMedia extends StatelessWidget {
-  const HomePostMedia({super.key, required this.post});
+class PostMedia extends StatelessWidget {
+  const PostMedia({super.key, required this.post});
 
-  final HomePostItem post;
+  final Post post;
 
   static const double _mediaHeight = 160;
   static const double _radius = 12;

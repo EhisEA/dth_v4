@@ -1,5 +1,6 @@
 import "package:dth_v4/data/data.dart";
-import "package:dth_v4/features/home/models/home_feed_models.dart";
+import "package:dth_v4/features/posts/models/post.dart";
+import "package:dth_v4/features/stories/models/story.dart";
 import "package:dth_v4/widgets/widgets.dart";
 import "package:flutter/material.dart";
 import "package:flutter_riverpod/flutter_riverpod.dart";
@@ -13,23 +14,23 @@ class HomeViewModel extends BaseChangeNotifierViewModel {
   final TimelineRepo _timelineRepo;
 
   ValueNotifier<UserModel?> get userModel => userState.user;
-  List<HomePostItem> _posts = const [];
-  List<HomeStoryItem> _stories = const [];
+  List<Post> _posts = const [];
+  List<Story> _stories = const [];
 
-  List<HomePostItem> get posts => _posts;
+  List<Post> get posts => _posts;
 
-  List<HomeStoryItem> get stories => _stories;
+  List<Story> get stories => _stories;
 
   Future<void> loadTimeline() async {
     try {
       changeBaseState(const ViewModelState.busy());
 
       final posts = await _timelineRepo.fetchTimeline();
-      _posts = posts.map(_timelinePostToHomeItem).toList();
+      _posts = posts.map(_timelinePostToPost).toList();
 
       try {
         final reels = await _timelineRepo.fetchTimelineReels();
-        _stories = reels.map(_reelToHomeStory).toList();
+        _stories = reels.map(_reelToStory).toList();
       } on ApiFailure {
         _stories = const [];
       }
@@ -43,7 +44,7 @@ class HomeViewModel extends BaseChangeNotifierViewModel {
   Future<void> refreshTimeline() async {
     try {
       final posts = await _timelineRepo.fetchTimeline();
-      _posts = posts.map(_timelinePostToHomeItem).toList();
+      _posts = posts.map(_timelinePostToPost).toList();
     } on ApiFailure catch (e) {
       DthFlushBar.instance.showError(message: e.message, title: "Failed");
       notifyListeners();
@@ -52,7 +53,7 @@ class HomeViewModel extends BaseChangeNotifierViewModel {
 
     try {
       final reels = await _timelineRepo.fetchTimelineReels();
-      _stories = reels.map(_reelToHomeStory).toList();
+      _stories = reels.map(_reelToStory).toList();
     } on ApiFailure catch (e) {
       DthFlushBar.instance.showError(message: e.message, title: "Reels");
     }
@@ -109,7 +110,7 @@ String _timeAgo(String createdAt) {
   }
 }
 
-HomePostItem _timelinePostToHomeItem(TimelinePost p) {
+Post _timelinePostToPost(TimelinePost p) {
   final parsed = _parseTitle(p.title);
   final authorName = parsed.$1;
   final withName = parsed.$2;
@@ -122,7 +123,7 @@ HomePostItem _timelinePostToHomeItem(TimelinePost p) {
     imageUrls.addAll(p.media!);
   }
 
-  return HomePostItem(
+  return Post(
     authorName: authorName,
     withName: withName,
     timeAgo: _timeAgo(p.createdAt),
@@ -130,12 +131,12 @@ HomePostItem _timelinePostToHomeItem(TimelinePost p) {
     likeCount: p.counts.reactions,
     commentCount: p.counts.comments,
     shareCount: p.counts.shares,
-    video: isVideo ? HomePostVideo(thumbnailUrl: thumb) : null,
+    video: isVideo ? PostVideo(thumbnailUrl: thumb) : null,
     imageUrls: imageUrls,
   );
 }
 
-HomeStoryItem _reelToHomeStory(TimelineReel r) {
+Story _reelToStory(TimelineReel r) {
   final thumb = r.media?.thumbnail?.trim();
   final videoThumb = r.videoThumbnail?.trim();
   final mediaUrl = r.media?.url?.trim();
@@ -145,7 +146,7 @@ HomeStoryItem _reelToHomeStory(TimelineReel r) {
       ? videoThumb
       : (mediaUrl ?? "");
   final label = r.title.trim().isNotEmpty ? r.title.trim() : "Reel";
-  return HomeStoryItem(imageUrl: imageUrl, label: label);
+  return Story(imageUrl: imageUrl, label: label);
 }
 
 final homeViewModelProvider = ChangeNotifierProvider<HomeViewModel>((ref) {

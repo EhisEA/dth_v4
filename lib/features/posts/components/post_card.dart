@@ -1,16 +1,16 @@
 import "package:dth_v4/core/core.dart";
-import "package:dth_v4/features/home/components/home_post_description.dart";
-import "package:dth_v4/features/home/components/home_post_media.dart";
-import "package:dth_v4/features/home/models/home_feed_models.dart";
+import "package:dth_v4/features/posts/components/post_description.dart";
+import "package:dth_v4/features/posts/components/post_media.dart";
+import "package:dth_v4/features/posts/models/post.dart";
 import "package:dth_v4/widgets/widgets.dart";
 import "package:flutter/material.dart";
 import "package:flutter_svg/svg.dart";
 import "package:flutter_utils/flutter_utils.dart";
 
-class HomePostCard extends StatelessWidget {
-  const HomePostCard({super.key, required this.post});
+class PostCard extends StatelessWidget {
+  const PostCard({super.key, required this.post});
 
-  final HomePostItem post;
+  final Post post;
 
   static const Color _muted = Color(0xff8F8F8F);
 
@@ -52,13 +52,12 @@ class HomePostCard extends StatelessWidget {
             ),
           ],
         ),
-        // Gap.h8,
         if (post.description.isNotEmpty) ...[
           Gap.h12,
-          HomePostDescription(text: post.description),
+          PostDescription(text: post.description),
         ],
         Gap.h12,
-        HomePostMedia(post: post),
+        PostMedia(post: post),
         Gap.h12,
         Row(
           children: [

@@ -1,5 +1,4 @@
 import 'package:dth_v4/core/core.dart';
-import 'package:dth_v4/features/home/home.dart';
 import 'package:dth_v4/features/stories/stories.dart';
 import 'package:dth_v4/widgets/widgets.dart';
 import 'package:flutter/material.dart';
@@ -8,24 +7,24 @@ import 'package:flutter_utils/flutter_utils.dart';
 class SearchTrendingReels extends StatelessWidget {
   const SearchTrendingReels({super.key});
 
-  static final List<HomeStoryItem> _mockStories = [
-    const HomeStoryItem(
+  static final List<Story> _mockStories = [
+    const Story(
       imageUrl: "https://picsum.photos/seed/dth1/200",
       label: "Day One: Auditi...",
     ),
-    const HomeStoryItem(
+    const Story(
       imageUrl: "https://picsum.photos/seed/dth2/200",
       label: "Behind scenes",
     ),
-    const HomeStoryItem(
+    const Story(
       imageUrl: "https://picsum.photos/seed/dth3/200",
       label: "Meet the judges",
     ),
-    const HomeStoryItem(
+    const Story(
       imageUrl: "https://picsum.photos/seed/dth2/200",
       label: "Behind scenes",
     ),
-    const HomeStoryItem(
+    const Story(
       imageUrl: "https://picsum.photos/seed/dth3/200",
       label: "Meet the judges",
     ),
@@ -38,7 +37,7 @@ class SearchTrendingReels extends StatelessWidget {
       children: [
         AppText.medium("Trending Reels", color: AppColors.black, fontSize: 12),
         Gap.h8,
-        HomeStoriesBar(
+        StoriesBar(
           stories: _mockStories,
           onStoryTap: (story) {
             MobileNavigationService.instance.push(

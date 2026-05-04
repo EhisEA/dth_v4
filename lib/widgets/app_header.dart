@@ -4,8 +4,8 @@ import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:flutter_utils/flutter_utils.dart';
 
-class HomeHeader extends StatelessWidget {
-  const HomeHeader({
+class AppHeader extends StatelessWidget {
+  const AppHeader({
     super.key,
     required this.onLiveTap,
     required this.onNotificationTap,

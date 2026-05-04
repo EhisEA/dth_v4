@@ -3,8 +3,8 @@ import "package:flutter/gestures.dart";
 import "package:flutter/material.dart";
 
 /// Up to two lines of body copy, then ellipsis and inline grey **Read more**.
-class HomePostDescription extends StatefulWidget {
-  const HomePostDescription({
+class PostDescription extends StatefulWidget {
+  const PostDescription({
     super.key,
     required this.text,
     this.onReadMore,
@@ -18,10 +18,10 @@ class HomePostDescription extends StatefulWidget {
   final Color linkColor;
 
   @override
-  State<HomePostDescription> createState() => _HomePostDescriptionState();
+  State<PostDescription> createState() => _PostDescriptionState();
 }
 
-class _HomePostDescriptionState extends State<HomePostDescription> {
+class _PostDescriptionState extends State<PostDescription> {
   late TapGestureRecognizer _readMoreTap;
 
   @override
@@ -32,7 +32,7 @@ class _HomePostDescriptionState extends State<HomePostDescription> {
   }
 
   @override
-  void didUpdateWidget(covariant HomePostDescription oldWidget) {
+  void didUpdateWidget(covariant PostDescription oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.onReadMore != widget.onReadMore) {
       _readMoreTap.onTap = () => widget.onReadMore?.call();

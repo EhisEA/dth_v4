@@ -4,7 +4,8 @@ import "package:dth_v4/core/core.dart";
 import "package:dth_v4/data/data.dart";
 import "package:dth_v4/features/application/views/application_view.dart";
 import "package:dth_v4/features/home/home.dart";
-import "package:dth_v4/features/stories/views/stories_view.dart";
+import "package:dth_v4/features/posts/posts.dart";
+import "package:dth_v4/features/stories/stories.dart";
 import "package:dth_v4/widgets/widgets.dart";
 import "package:flutter/material.dart";
 import "package:flutter_riverpod/flutter_riverpod.dart";
@@ -47,7 +48,7 @@ class _HomeViewState extends ConsumerState<HomeView> {
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     Gap.h14,
-                    HomeHeader(onLiveTap: () {}, onNotificationTap: () {}),
+                    AppHeader(onLiveTap: () {}, onNotificationTap: () {}),
                     Expanded(
                       child: vm.baseState.when(
                         busy: () => const Center(
@@ -96,7 +97,7 @@ class _HomeViewState extends ConsumerState<HomeView> {
                                             CrossAxisAlignment.stretch,
                                         children: [
                                           Gap.h16,
-                                          HomeStoriesBar(
+                                          StoriesBar(
                                             stories: vm.stories,
                                             onStoryTap: (story) {
                                               MobileNavigationService.instance
@@ -183,7 +184,7 @@ class _HomeViewState extends ConsumerState<HomeView> {
                                           top: index == 0 ? 12 : 0,
                                           bottom: isLast ? 0 : 28,
                                         ),
-                                        child: HomePostCard(post: post),
+                                        child: PostCard(post: post),
                                       );
                                     }, childCount: vm.posts.length),
                                   ),

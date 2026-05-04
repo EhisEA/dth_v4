@@ -1,16 +1,16 @@
 import "package:cached_network_image/cached_network_image.dart";
 import "package:dth_v4/core/core.dart";
-import "package:dth_v4/features/home/models/home_feed_models.dart";
+import "package:dth_v4/features/stories/models/story.dart";
 import "package:dth_v4/widgets/widgets.dart";
 import "package:flutter/material.dart";
 import "package:flutter_svg/svg.dart";
 import "package:flutter_utils/flutter_utils.dart";
 
-class HomeStoriesBar extends StatelessWidget {
-  const HomeStoriesBar({super.key, required this.stories, this.onStoryTap});
+class StoriesBar extends StatelessWidget {
+  const StoriesBar({super.key, required this.stories, this.onStoryTap});
 
-  final List<HomeStoryItem> stories;
-  final void Function(HomeStoryItem story)? onStoryTap;
+  final List<Story> stories;
+  final void Function(Story story)? onStoryTap;
 
   @override
   Widget build(BuildContext context) {
