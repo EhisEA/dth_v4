@@ -6,7 +6,15 @@ class ImageAssets {
   static const String imagePath = "assets/images";
   static const String logo = "$imagePath/logo.png";
   static const String logo2 = "$imagePath/logo2.png";
+  static const String line = "$imagePath/line.png";
+  static const String logoWhite = "$imagePath/logo_white.png";
   static const String updateIcon = "$imagePath/update_icon.png";
+
+  /////////////////////AUTH//////////////////////
+  ///
+  static const String authBg1 = "$imagePath/auth/1.png";
+  static const String authBg2 = "$imagePath/auth/2.png";
+  static const String authBg3 = "$imagePath/auth/3.png";
 
   /////////////////////HOME//////////////////////
   ///
