@@ -16,6 +16,12 @@ class ImageAssets {
   static const String authBg2 = "$imagePath/auth/2.png";
   static const String authBg3 = "$imagePath/auth/3.png";
 
+  /////////////////////SPLASH//////////////////////
+  ///
+  static const String splash1 = "$imagePath/splash/1.png";
+  static const String splash2 = "$imagePath/splash/2.png";
+  static const String splash3 = "$imagePath/splash/3.png";
+
   /////////////////////HOME//////////////////////
   ///
   static const String applyimg = "$imagePath/home/apply_img.png";

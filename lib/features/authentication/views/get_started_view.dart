@@ -122,7 +122,7 @@ class _GetStartedViewState extends ConsumerState<GetStartedView> {
         fit: StackFit.expand,
         children: [
           AnimatedSwitcher(
-            duration: const Duration(milliseconds: 800),
+            duration: const Duration(milliseconds: 1000),
             switchInCurve: Curves.easeInOut,
             switchOutCurve: Curves.easeInOut,
             child: Image.asset(
@@ -143,7 +143,7 @@ class _GetStartedViewState extends ConsumerState<GetStartedView> {
                   Center(
                     child: Image.asset(
                       ImageAssets.logoWhite,
-                      height: 48,
+                      height: 36,
                       fit: BoxFit.contain,
                       errorBuilder: (context, error, stackTrace) => Icon(
                         Icons.broken_image_outlined,

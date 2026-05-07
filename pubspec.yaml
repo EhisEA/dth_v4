@@ -85,6 +85,7 @@ flutter:
     - assets/images/auth/
     - assets/images/home/
     - assets/images/profile/
+    - assets/images/splash/
     - assets/images/subscription/
     - assets/images/application/
     - assets/svgs/

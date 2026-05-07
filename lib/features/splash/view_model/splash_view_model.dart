@@ -10,8 +10,7 @@ class SplashViewModel extends BaseChangeNotifierViewModel {
 
   final _log = const AppLogger(SplashViewModel);
 
-  Future<void> initialise() async {
-    await Future<void>.delayed(const Duration(seconds: 3));
+  Future<void> routeFromSplash() async {
     // _localCache.clearCache();
     _log.d(_localCache.getToken());
     _log.d(_localCache.getUserData());
