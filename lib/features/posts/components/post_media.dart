@@ -7,9 +7,14 @@ import "package:flutter/material.dart";
 import "package:flutter_svg/svg.dart";
 
 class PostMedia extends StatelessWidget {
-  const PostMedia({super.key, required this.post});
+  const PostMedia({super.key, required this.post, this.onPlayVideo});
 
   final Post post;
+
+  /// When non-null, tapping a video thumbnail invokes this. Use it on screens
+  /// that play videos inline (post detail). Leave null on cards — the parent's
+  /// outer tap (navigation) will pass through.
+  final VoidCallback? onPlayVideo;
 
   static const double _mediaHeight = 160;
   static const double _radius = 12;
@@ -21,6 +26,7 @@ class PostMedia extends StatelessWidget {
         thumbnailUrl: post.video!.thumbnailUrl,
         height: _mediaHeight,
         radius: _radius,
+        onPlay: onPlayVideo,
       );
     }
     final urls = post.imageUrls;
@@ -40,11 +46,13 @@ class _VideoBlock extends StatelessWidget {
     required this.thumbnailUrl,
     required this.height,
     required this.radius,
+    this.onPlay,
   });
 
   final String thumbnailUrl;
   final double height;
   final double radius;
+  final VoidCallback? onPlay;
 
   @override
   Widget build(BuildContext context) {
@@ -53,6 +61,7 @@ class _VideoBlock extends StatelessWidget {
       child: Material(
         color: Colors.black,
         child: InkWell(
+          onTap: onPlay,
           child: SizedBox(
             width: double.infinity,
             height: height,

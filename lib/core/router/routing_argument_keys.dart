@@ -6,6 +6,9 @@ class RoutingArgumentKey {
   static const String fullName = "fullName";
   static const String imageUrl = "imageUrl";
 
+  /// [PostDetailView] — uid of the timeline post to load.
+  static const String postUid = "postUid";
+
   /// `"login"` or `"register"` for [VerifyOtpView] / [VerifyOtpViewModel].
   static const String otpFlow = "otpFlow";
 

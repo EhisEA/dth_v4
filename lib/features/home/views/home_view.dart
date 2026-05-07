@@ -33,6 +33,13 @@ class _HomeViewState extends ConsumerState<HomeView> {
   Widget build(BuildContext context) {
     final bottomInset = MediaQuery.paddingOf(context).bottom + 100;
     final vm = ref.watch(homeViewModelProvider);
+    // The cache owns Post state; the VM owns order. Watching the cache here
+    // means a like-toggle on the detail screen rebuilds this view automatically.
+    final cache = ref.watch(postsCacheProvider);
+    final posts = vm.postUids
+        .map(cache.get)
+        .whereType<Post>()
+        .toList(growable: false);
     return ValueListenableBuilder(
       valueListenable: vm.userModel,
       builder: (context, value, child) {
@@ -151,7 +158,7 @@ class _HomeViewState extends ConsumerState<HomeView> {
                                       )
                                     : const SizedBox.shrink(),
                               ),
-                              if (vm.posts.isEmpty)
+                              if (posts.isEmpty)
                                 SliverFillRemaining(
                                   hasScrollBody: false,
                                   child: Padding(
@@ -176,17 +183,27 @@ class _HomeViewState extends ConsumerState<HomeView> {
                                       context,
                                       index,
                                     ) {
-                                      final post = vm.posts[index];
-                                      final isLast =
-                                          index == vm.posts.length - 1;
+                                      final post = posts[index];
+                                      final isLast = index == posts.length - 1;
                                       return Padding(
                                         padding: EdgeInsets.only(
                                           top: index == 0 ? 12 : 0,
                                           bottom: isLast ? 0 : 28,
                                         ),
-                                        child: PostCard(post: post),
+                                        child: PostCard(
+                                          post: post,
+                                          onTap: () => MobileNavigationService
+                                              .instance
+                                              .push(
+                                                PostDetailView.path,
+                                                extra: {
+                                                  RoutingArgumentKey.postUid:
+                                                      post.uid,
+                                                },
+                                              ),
+                                        ),
                                       );
-                                    }, childCount: vm.posts.length),
+                                    }, childCount: posts.length),
                                   ),
                                 ),
                             ],

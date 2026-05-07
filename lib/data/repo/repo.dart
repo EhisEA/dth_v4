@@ -5,3 +5,5 @@ export "app_modules/modules.dart";
 export "profile/profile.dart";
 export "subscription/subscription.dart";
 export "timeline/timeline.dart";
+export "post/post.dart";
+export "comment/comment.dart";

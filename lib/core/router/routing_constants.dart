@@ -16,6 +16,7 @@ class NavigatorRoutes {
   ///
   static const String home = "/home";
   static const String stories = "/stories";
+  static const String postDetail = "/post-detail";
 
   ////////////////SEARCH////////////////////
   ///

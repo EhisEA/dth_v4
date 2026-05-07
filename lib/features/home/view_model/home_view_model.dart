@@ -1,32 +1,40 @@
 import "package:dth_v4/data/data.dart";
-import "package:dth_v4/features/posts/models/post.dart";
+import "package:dth_v4/features/posts/models/post_mapper.dart";
+import "package:dth_v4/features/posts/view_model/posts_cache.dart";
 import "package:dth_v4/features/stories/models/story.dart";
 import "package:dth_v4/widgets/widgets.dart";
 import "package:flutter/material.dart";
 import "package:flutter_riverpod/flutter_riverpod.dart";
 import "package:flutter_utils/flutter_utils.dart";
-import "package:intl/intl.dart";
 
 class HomeViewModel extends BaseChangeNotifierViewModel {
-  HomeViewModel(this.userState, this._timelineRepo);
+  HomeViewModel(this.userState, this._timelineRepo, this._postsCache);
 
   final UserState userState;
   final TimelineRepo _timelineRepo;
+  final PostsCache _postsCache;
 
   ValueNotifier<UserModel?> get userModel => userState.user;
-  List<Post> _posts = const [];
+
+  /// Order-only. The actual `Post` objects live in [PostsCache] — the view
+  /// derives the list by mapping these uids through `cache.get(uid)`. This
+  /// keeps the cache as the single source of truth for post state, so a
+  /// like/comment-count mutation on the detail screen is visible here without
+  /// any sync code.
+  List<String> _postUids = const [];
+  List<String> get postUids => _postUids;
+
   List<Story> _stories = const [];
-
-  List<Post> get posts => _posts;
-
   List<Story> get stories => _stories;
 
   Future<void> loadTimeline() async {
     try {
       changeBaseState(const ViewModelState.busy());
 
-      final posts = await _timelineRepo.fetchTimeline();
-      _posts = posts.map(_timelinePostToPost).toList();
+      final raw = await _timelineRepo.fetchTimeline();
+      final posts = raw.map(postFromTimelinePost).toList();
+      _postsCache.upsertAll(posts);
+      _postUids = posts.map((p) => p.uid).toList();
 
       try {
         final reels = await _timelineRepo.fetchTimelineReels();
@@ -43,8 +51,10 @@ class HomeViewModel extends BaseChangeNotifierViewModel {
 
   Future<void> refreshTimeline() async {
     try {
-      final posts = await _timelineRepo.fetchTimeline();
-      _posts = posts.map(_timelinePostToPost).toList();
+      final raw = await _timelineRepo.fetchTimeline();
+      final posts = raw.map(postFromTimelinePost).toList();
+      _postsCache.upsertAll(posts);
+      _postUids = posts.map((p) => p.uid).toList();
     } on ApiFailure catch (e) {
       DthFlushBar.instance.showError(message: e.message, title: "Failed");
       notifyListeners();
@@ -60,80 +70,6 @@ class HomeViewModel extends BaseChangeNotifierViewModel {
 
     notifyListeners();
   }
-}
-
-(String, String?) _parseTitle(String title) {
-  final trimmed = title.trim();
-  if (trimmed.isEmpty) {
-    return ("", null);
-  }
-  final lower = trimmed.toLowerCase();
-  const sep = " with ";
-  final idx = lower.indexOf(sep);
-  if (idx == -1) {
-    return ("", trimmed);
-  }
-  final author = trimmed.substring(0, idx).trim();
-  final withPart = trimmed.substring(idx + sep.length).trim();
-  return (
-    author.isEmpty ? trimmed : author,
-    withPart.isEmpty ? null : withPart,
-  );
-}
-
-String _timeAgo(String createdAt) {
-  if (createdAt.trim().isEmpty) {
-    return "";
-  }
-  try {
-    final dt = DateTime.parse(createdAt).toLocal();
-    final now = DateTime.now();
-    final diff = now.difference(dt);
-    if (diff.isNegative) {
-      return DateFormat.yMMMd().format(dt);
-    }
-    if (diff.inMinutes < 1) {
-      return "Just now";
-    }
-    if (diff.inMinutes < 60) {
-      return "${diff.inMinutes}m ago";
-    }
-    if (diff.inHours < 24) {
-      return "${diff.inHours}h ago";
-    }
-    if (diff.inDays < 7) {
-      return "${diff.inDays}d ago";
-    }
-    return DateFormat.yMMMd().format(dt);
-  } on FormatException {
-    return "";
-  }
-}
-
-Post _timelinePostToPost(TimelinePost p) {
-  final parsed = _parseTitle(p.title);
-  final authorName = parsed.$1;
-  final withName = parsed.$2;
-  final typeLower = p.type.trim().toLowerCase();
-  final thumb = p.videoThumbnail?.trim() ?? "";
-  final isVideo = typeLower == "video" && thumb.isNotEmpty;
-
-  final imageUrls = <String>[];
-  if (!isVideo && p.media != null) {
-    imageUrls.addAll(p.media!);
-  }
-
-  return Post(
-    authorName: authorName,
-    withName: withName,
-    timeAgo: _timeAgo(p.createdAt),
-    description: p.description.trim(),
-    likeCount: p.counts.reactions,
-    commentCount: p.counts.comments,
-    shareCount: p.counts.shares,
-    video: isVideo ? PostVideo(thumbnailUrl: thumb) : null,
-    imageUrls: imageUrls,
-  );
 }
 
 Story _reelToStory(TimelineReel r) {
@@ -153,5 +89,6 @@ final homeViewModelProvider = ChangeNotifierProvider<HomeViewModel>((ref) {
   return HomeViewModel(
     ref.read(userStateProvider),
     ref.read(timelineRepositoryProvider),
+    ref.read(postsCacheProvider),
   );
 });

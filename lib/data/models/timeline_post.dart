@@ -61,6 +61,7 @@ class TimelinePost {
     this.videoThumbnail,
     this.media,
     required this.counts,
+    required this.viewerReacted,
     required this.createdAt,
   });
 
@@ -73,6 +74,7 @@ class TimelinePost {
   final String? videoThumbnail;
   final List<String>? media;
   final TimelinePostCounts counts;
+  final bool viewerReacted;
   final String createdAt;
 
   factory TimelinePost.fromJson(Map<String, dynamic> json) {
@@ -112,6 +114,7 @@ class TimelinePost {
       videoThumbnail: _timelineString(json["video_thumbnail"]),
       media: media,
       counts: counts,
+      viewerReacted: json["viewer_reacted"] == true,
       createdAt: _timelineString(json["created_at"]) ?? "",
     );
   }

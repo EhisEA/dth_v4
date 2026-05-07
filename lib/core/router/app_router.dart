@@ -10,6 +10,7 @@ import 'package:dth_v4/features/authentication/views/login_view.dart';
 import 'package:dth_v4/features/authentication/views/verify_otp_view.dart';
 import 'package:dth_v4/features/bottomNavBar/bottom_nav_bar.dart';
 import 'package:dth_v4/features/home/views/home_view.dart';
+import 'package:dth_v4/features/posts/views/post_detail_view.dart';
 import 'package:dth_v4/features/profile/personal_information/views/personal_infomation_view.dart';
 import 'package:dth_v4/features/profile/personal_information/views/profile_phone_verify_otp_view.dart';
 import 'package:dth_v4/features/stories/views/stories_view.dart';
@@ -85,6 +86,12 @@ class AppRouter {
           viewToShow: StoriesView(
             imageUrl: routeArgs[RoutingArgumentKey.imageUrl] as String? ?? "",
           ),
+        );
+      case PostDetailView.path:
+        final uid = routeArgs[RoutingArgumentKey.postUid] as String? ?? "";
+        return _getPageRoute(
+          settings: settings,
+          viewToShow: PostDetailView(uid: uid),
         );
       ////////////////SEARCH VIEW////////////////////
       case SearchView.path:

@@ -1,101 +1,51 @@
-import "package:dth_v4/core/core.dart";
+import "package:dth_v4/features/posts/components/post_actions.dart";
 import "package:dth_v4/features/posts/components/post_description.dart";
+import "package:dth_v4/features/posts/components/post_header.dart";
 import "package:dth_v4/features/posts/components/post_media.dart";
 import "package:dth_v4/features/posts/models/post.dart";
-import "package:dth_v4/widgets/widgets.dart";
 import "package:flutter/material.dart";
-import "package:flutter_svg/svg.dart";
 import "package:flutter_utils/flutter_utils.dart";
 
 class PostCard extends StatelessWidget {
-  const PostCard({super.key, required this.post});
+  const PostCard({
+    super.key,
+    required this.post,
+    this.onTap,
+    this.onLike,
+    this.onComment,
+    this.onShare,
+  });
 
   final Post post;
-
-  static const Color _muted = Color(0xff8F8F8F);
+  final VoidCallback? onTap;
+  final VoidCallback? onLike;
+  final VoidCallback? onComment;
+  final VoidCallback? onShare;
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        Row(
-          children: [
-            SvgPicture.asset(SvgAssets.primaryLogo, height: 28, width: 28),
-            Gap.w12,
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      SvgPicture.asset(SvgAssets.blackLogo, height: 16),
-                      Gap.w2,
-                      AppText.regular(
-                        "with",
-                        fontSize: 10,
-                        color: AppColors.blackTint20,
-                      ),
-                      Gap.w2,
-                      AppText.medium(
-                        post.withName ?? "",
-                        fontSize: 12,
-                        fontWeight: FontWeight.w500,
-                        color: AppColors.black,
-                      ),
-                    ],
-                  ),
-
-                  AppText.regular(post.timeAgo, fontSize: 10, color: _muted),
-                ],
-              ),
-            ),
+    return GestureDetector(
+      onTap: onTap,
+      behavior: HitTestBehavior.opaque,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          PostHeader(post: post),
+          if (post.description.isNotEmpty) ...[
+            Gap.h12,
+            PostDescription(text: post.description),
           ],
-        ),
-        if (post.description.isNotEmpty) ...[
           Gap.h12,
-          PostDescription(text: post.description),
+          PostMedia(post: post),
+          Gap.h12,
+          PostActions(
+            post: post,
+            onLike: onLike,
+            onComment: onComment,
+            onShare: onShare,
+          ),
         ],
-        Gap.h12,
-        PostMedia(post: post),
-        Gap.h12,
-        Row(
-          children: [
-            _ActionChip(icon: SvgAssets.favoriteBorder, count: post.likeCount),
-            Gap.w10,
-            _ActionChip(
-              icon: SvgAssets.messagesBorder,
-              count: post.commentCount,
-            ),
-            Gap.w10,
-            _ActionChip(icon: SvgAssets.share, count: post.shareCount),
-          ],
-        ),
-      ],
-    );
-  }
-}
-
-class _ActionChip extends StatelessWidget {
-  const _ActionChip({required this.icon, required this.count});
-
-  final String icon;
-  final int count;
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        SvgPicture.asset(
-          icon,
-          height: 14,
-          width: 14,
-          colorFilter: ColorFilter.mode(AppColors.blackTint20, BlendMode.srcIn),
-        ),
-        Gap.w4,
-        AppText.medium('$count', fontSize: 12, color: AppColors.tint25),
-      ],
+      ),
     );
   }
 }

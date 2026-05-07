@@ -49,5 +49,15 @@ class ApiRoute {
 
   ///TIMELINE
   static String get timeline => "$baseUrl/timeline-posts";
+  static String timelinePostDetail(String uid) =>
+      "$baseUrl/timeline-posts/$uid";
+  static String timelinePostReact(String uid) =>
+      "$baseUrl/timeline-posts/$uid/react";
+  static String timelinePostComments(String uid) =>
+      "$baseUrl/timeline-posts/$uid/comments";
+  static String timelineCommentReplies(String uid) =>
+      "$baseUrl/timeline-posts/comments/$uid/replies";
+  static String timelineCommentReact(String uid) =>
+      "$baseUrl/timeline-posts/comments/$uid/react";
   static String get timelineReels => "$baseUrl/timeline-reels";
 }
