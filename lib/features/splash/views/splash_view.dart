@@ -24,7 +24,7 @@ class _SplashViewState extends ConsumerState<SplashView>
   static const List<String> _splashImages = [
     ImageAssets.splash1,
     ImageAssets.splash2,
-    ImageAssets.logo,
+    ImageAssets.splash3,
   ];
 
   late final AnimationController _animationController;
