@@ -5,8 +5,8 @@ class Post {
   const Post({
     required this.uid,
     required this.authorName,
-    this.withName,
-    required this.timeAgo,
+    required this.title,
+    this.createdAt,
     required this.description,
     required this.likeCount,
     required this.commentCount,
@@ -19,8 +19,8 @@ class Post {
 
   final String uid;
   final String authorName;
-  final String? withName;
-  final String timeAgo;
+  final String title;
+  final String? createdAt;
   final String description;
   final int likeCount;
   final int commentCount;
@@ -35,7 +35,8 @@ class Post {
   Post copyWith({
     String? authorName,
     String? withName,
-    String? timeAgo,
+    String? createdAt,
+    String? title,
     String? description,
     int? likeCount,
     int? commentCount,
@@ -48,8 +49,8 @@ class Post {
     return Post(
       uid: uid,
       authorName: authorName ?? this.authorName,
-      withName: withName ?? this.withName,
-      timeAgo: timeAgo ?? this.timeAgo,
+      title: title ?? this.title,
+      createdAt: createdAt ?? this.createdAt,
       description: description ?? this.description,
       likeCount: likeCount ?? this.likeCount,
       commentCount: commentCount ?? this.commentCount,
@@ -64,11 +65,7 @@ class Post {
 
 @immutable
 class PostVideo {
-  const PostVideo({
-    required this.thumbnailUrl,
-    this.videoUrl,
-    this.provider,
-  });
+  const PostVideo({required this.thumbnailUrl, this.videoUrl, this.provider});
 
   final String thumbnailUrl;
   final String? videoUrl;

@@ -30,7 +30,7 @@ class PostCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          PostHeader(post: post),
+          PosTimelinetHeader(post: post),
           if (post.description.isNotEmpty) ...[
             Gap.h12,
             PostDescription(text: post.description),

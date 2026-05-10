@@ -56,6 +56,7 @@ class TimelinePost {
     required this.title,
     required this.description,
     required this.type,
+    required this.authorName,
     this.videoType,
     this.videoLink,
     this.videoThumbnail,
@@ -67,6 +68,7 @@ class TimelinePost {
 
   final String uid;
   final String title;
+  final String? authorName;
   final String description;
   final String type;
   final String? videoType;
@@ -111,6 +113,7 @@ class TimelinePost {
       type: _timelineString(json["type"]) ?? "",
       videoType: _timelineString(json["video_type"]),
       videoLink: _timelineString(json["video_link"]),
+      authorName: _timelineString(json["author_name"]),
       videoThumbnail: _timelineString(json["video_thumbnail"]),
       media: media,
       counts: counts,

@@ -67,9 +67,9 @@ Post postFromTimelinePost(TimelinePost p) {
 
   return Post(
     uid: p.uid,
-    authorName: authorName,
-    withName: withName,
-    timeAgo: formatTimeAgo(p.createdAt),
+    title: p.title.trim(),
+    authorName: p.authorName ?? withName ?? authorName,
+    createdAt: p.createdAt,
     description: p.description.trim(),
     likeCount: p.counts.reactions,
     commentCount: p.counts.comments,

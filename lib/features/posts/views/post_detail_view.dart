@@ -70,8 +70,7 @@ class PostDetailView extends ConsumerWidget {
                   onRefresh: () => vm.refresh(),
                   child: NotificationListener<ScrollNotification>(
                     onNotification: (n) {
-                      if (n.metrics.pixels >=
-                          n.metrics.maxScrollExtent - 400) {
+                      if (n.metrics.pixels >= n.metrics.maxScrollExtent - 400) {
                         unawaited(vm.loadMoreComments());
                       }
                       return false;
@@ -96,10 +95,7 @@ class PostDetailView extends ConsumerWidget {
                   ),
                 ),
               ),
-              CommentComposer(
-                submitting: vm.submitting,
-                onSubmit: vm.submit,
-              ),
+              CommentComposer(submitting: vm.submitting, onSubmit: vm.submit),
             ],
           );
         },
@@ -164,7 +160,7 @@ class _PostBlockState extends State<_PostBlock> {
                 : null,
           ),
         Gap.h16,
-        PostHeader(post: post),
+        PostDetailsHeader(post: post),
         if (post.description.isNotEmpty) ...[
           Gap.h12,
           AppText.regular(
