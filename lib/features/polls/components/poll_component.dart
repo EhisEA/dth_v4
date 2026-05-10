@@ -292,7 +292,7 @@ class _PollComponentState extends State<PollComponent> {
                 ),
                 Gap.w4,
                 AppText.regular(
-                  "Select one",
+                  poll.hasVoted ? "Vote submitted" : "Select one",
                   fontSize: 10,
                   color: AppColors.blackTint20,
                 ),

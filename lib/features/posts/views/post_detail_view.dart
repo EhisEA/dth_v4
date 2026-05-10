@@ -7,6 +7,7 @@ import "package:dth_v4/features/posts/components/comment_tile.dart";
 import "package:dth_v4/features/posts/components/post_actions.dart";
 import "package:dth_v4/features/posts/components/post_detail_skeleton.dart";
 import "package:dth_v4/features/posts/components/post_header.dart";
+import "package:dth_v4/features/posts/components/post_hero_image.dart";
 import "package:dth_v4/features/posts/components/post_media.dart";
 import "package:dth_v4/features/posts/components/youtube_player_embed.dart";
 import "package:dth_v4/features/posts/models/comment.dart";
@@ -16,6 +17,7 @@ import "package:dth_v4/features/posts/view_model/post_detail_view_model.dart";
 import "package:dth_v4/features/posts/views/comment_thread_view.dart";
 import "package:dth_v4/widgets/widgets.dart";
 import "package:flutter/material.dart";
+import "package:flutter/services.dart";
 import "package:flutter_riverpod/flutter_riverpod.dart";
 import "package:flutter_utils/flutter_utils.dart";
 
@@ -52,9 +54,15 @@ class PostDetailView extends ConsumerWidget {
         .whereType<Comment>()
         .toList(growable: false);
 
+    final isHero =
+        post != null && !post.isVideo && post.imageUrls.isNotEmpty;
+
     return Scaffold(
-      appBar: DthAppBar(backgroundColor: Colors.white),
-      backgroundColor: Color(0xffFCFCFC),
+      extendBodyBehindAppBar: isHero,
+      appBar: isHero
+          ? const _TransparentBackAppBar()
+          : DthAppBar(backgroundColor: Colors.white),
+      backgroundColor: const Color(0xffFCFCFC),
       body: vm.baseState.when(
         busy: () => const PostDetailSkeleton(),
         error: (Failure failure) =>
@@ -77,18 +85,30 @@ class PostDetailView extends ConsumerWidget {
                     },
                     child: ListView(
                       physics: const AlwaysScrollableScrollPhysics(),
-                      padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
+                      padding: EdgeInsets.zero,
                       children: [
-                        _PostBlock(
-                          post: post,
-                          onLike: vm.togglePostLike,
-                          onShare: () => _showComingSoon("Share"),
+                        if (isHero) PostHeroImage(urls: post.imageUrls),
+                        Padding(
+                          padding: EdgeInsets.fromLTRB(
+                            16,
+                            isHero ? 16 : 12,
+                            16,
+                            0,
+                          ),
+                          child: _PostBlock(
+                            post: post,
+                            renderMedia: !isHero,
+                            onLike: vm.togglePostLike,
+                            onShare: () => _showComingSoon("Share"),
+                          ),
                         ),
-                        Gap.h24,
-                        _CommentsSection(
-                          vm: vm,
-                          comments: comments,
-                          onOpenThread: _openThread,
+                        Padding(
+                          padding: const EdgeInsets.fromLTRB(16, 24, 16, 24),
+                          child: _CommentsSection(
+                            vm: vm,
+                            comments: comments,
+                            onOpenThread: _openThread,
+                          ),
                         ),
                       ],
                     ),
@@ -104,16 +124,57 @@ class PostDetailView extends ConsumerWidget {
   }
 }
 
+class _TransparentBackAppBar extends StatelessWidget
+    implements PreferredSizeWidget {
+  const _TransparentBackAppBar();
+
+  @override
+  Size get preferredSize => const Size.fromHeight(kToolbarHeight);
+
+  @override
+  Widget build(BuildContext context) {
+    return AppBar(
+      backgroundColor: Colors.transparent,
+      elevation: 0,
+      scrolledUnderElevation: 0,
+      systemOverlayStyle: SystemUiOverlayStyle.light,
+      leading: Padding(
+        padding: const EdgeInsets.only(left: 16),
+        child: GestureDetector(
+          onTap: () => Navigator.pop(context),
+          behavior: HitTestBehavior.opaque,
+          child: Container(
+            height: 40,
+            width: 40,
+            alignment: Alignment.center,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: Colors.black.withValues(alpha: 0.35),
+            ),
+            child: const Icon(
+              Icons.arrow_back_ios_new_rounded,
+              size: 18,
+              color: Colors.white,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
 class _PostBlock extends StatefulWidget {
   const _PostBlock({
     required this.post,
     required this.onLike,
     required this.onShare,
+    this.renderMedia = true,
   });
 
   final Post post;
   final VoidCallback onLike;
   final VoidCallback onShare;
+  final bool renderMedia;
 
   @override
   State<_PostBlock> createState() => _PostBlockState();
@@ -150,16 +211,18 @@ class _PostBlockState extends State<_PostBlock> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        if (_playing && canPlayInline)
-          YoutubePlayerEmbed(embedUrl: video!.videoUrl!)
-        else
-          PostMedia(
-            post: post,
-            onPlayVideo: canPlayInline
-                ? () => setState(() => _playing = true)
-                : null,
-          ),
-        Gap.h16,
+        if (widget.renderMedia) ...[
+          if (_playing && canPlayInline)
+            YoutubePlayerEmbed(embedUrl: video!.videoUrl!)
+          else
+            PostMedia(
+              post: post,
+              onPlayVideo: canPlayInline
+                  ? () => setState(() => _playing = true)
+                  : null,
+            ),
+          Gap.h16,
+        ],
         PostDetailsHeader(post: post),
         if (post.description.isNotEmpty) ...[
           Gap.h12,
