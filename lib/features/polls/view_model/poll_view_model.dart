@@ -29,27 +29,62 @@ class PollViewModel extends BaseChangeNotifierViewModel {
   }
 
   Future<void> vote(String optionUid) async {
-    final current = poll.value;
-    if (current == null ||
-        current.hasEnded ||
-        current.hasVoted ||
+    final previous = poll.value;
+    if (previous == null ||
+        previous.hasEnded ||
+        previous.hasVoted ||
         isVoteBusy ||
         optionUid.trim().isEmpty) {
       return;
     }
 
+    poll.value = _projectVote(previous, optionUid);
+    setState(_voteStateKey, const ViewModelState.busy());
+
     try {
-      setState(_voteStateKey, const ViewModelState.busy());
       final updated = await _pollRepo.submitVote(
-        pollUid: current.uid,
+        pollUid: previous.uid,
         optionUid: optionUid,
       );
       poll.value = updated;
       setState(_voteStateKey, const ViewModelState.idle());
     } on ApiFailure catch (e) {
+      poll.value = previous;
       setState(_voteStateKey, ViewModelState.error(e));
       DthFlushBar.instance.showError(message: e.message, title: "Failed");
     }
+  }
+
+  PollModel _projectVote(PollModel current, String optionUid) {
+    final newTotal = current.totalVotes + 1;
+    final projectedOptions = current.options.map((option) {
+      final isSelected = option.uid == optionUid;
+      final newVotes = isSelected ? option.votesCount + 1 : option.votesCount;
+      final newPercentage = newTotal == 0
+          ? 0
+          : ((newVotes / newTotal) * 100).round();
+      return PollOptionModel(
+        uid: option.uid,
+        name: option.name,
+        votesCount: newVotes,
+        percentage: newPercentage,
+      );
+    }).toList();
+
+    return PollModel(
+      uid: current.uid,
+      question: current.question,
+      description: current.description,
+      totalVotes: newTotal,
+      totalVotesDescription: current.totalVotesDescription,
+      status: current.status,
+      hasEnded: current.hasEnded,
+      timeLeft: current.timeLeft,
+      endsAt: current.endsAt,
+      hasVoted: true,
+      votedOptionUid: optionUid,
+      options: projectedOptions,
+    );
   }
 
   @override

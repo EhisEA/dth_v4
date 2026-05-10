@@ -56,10 +56,19 @@ class PollOptionTile extends StatelessWidget {
                       ),
                     )
                   : data.selected
-                  ? const Icon(
-                      Icons.check_rounded,
-                      size: 14,
-                      color: Colors.white,
+                  ? TweenAnimationBuilder<double>(
+                      tween: Tween(begin: 0, end: 1),
+                      duration: const Duration(milliseconds: 650),
+                      curve: Curves.elasticOut,
+                      builder: (context, value, child) => Transform.scale(
+                        scale: value,
+                        child: child,
+                      ),
+                      child: const Icon(
+                        Icons.check_rounded,
+                        size: 14,
+                        color: Colors.white,
+                      ),
                     )
                   : null,
             ),

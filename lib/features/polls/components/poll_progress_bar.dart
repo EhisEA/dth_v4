@@ -16,7 +16,6 @@ class PollProgressBar extends StatelessWidget {
     return LayoutBuilder(
       builder: (context, constraints) {
         final clampedProgress = progress.clamp(0.0, 1.0);
-        final barWidth = constraints.maxWidth * clampedProgress;
         return Container(
           height: 4,
           width: double.infinity,
@@ -26,11 +25,16 @@ class PollProgressBar extends StatelessWidget {
           ),
           child: Align(
             alignment: Alignment.centerLeft,
-            child: Container(
-              width: barWidth,
-              decoration: BoxDecoration(
-                color: isSelected ? AppColors.primary : AppColors.tint10,
-                borderRadius: BorderRadius.circular(100),
+            child: TweenAnimationBuilder<double>(
+              tween: Tween(begin: 0, end: clampedProgress),
+              duration: const Duration(milliseconds: 900),
+              curve: Curves.easeOutCubic,
+              builder: (context, value, _) => Container(
+                width: constraints.maxWidth * value,
+                decoration: BoxDecoration(
+                  color: isSelected ? AppColors.primary : AppColors.tint10,
+                  borderRadius: BorderRadius.circular(100),
+                ),
               ),
             ),
           ),
