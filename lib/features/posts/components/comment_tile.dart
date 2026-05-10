@@ -1,5 +1,6 @@
 import "package:cached_network_image/cached_network_image.dart";
 import "package:dth_v4/core/core.dart";
+import "package:dth_v4/features/posts/components/like_chip.dart";
 import "package:dth_v4/features/posts/models/comment.dart";
 import "package:dth_v4/widgets/widgets.dart";
 import "package:flutter/material.dart";
@@ -66,15 +67,12 @@ class CommentTile extends StatelessWidget {
               Gap.h8,
               Row(
                 children: [
-                  _Chip(
-                    icon: comment.viewerReacted
-                        ? SvgAssets.favorite
-                        : SvgAssets.favoriteBorder,
+                  LikeChip(
+                    liked: comment.viewerReacted,
                     count: comment.likeCount,
-                    tint: comment.viewerReacted
-                        ? const Color(0xffE74C3C)
-                        : null,
                     onTap: onLike,
+                    iconSize: 12,
+                    fontSize: 11,
                   ),
                   if (showReplyChip) ...[
                     Gap.w16,
@@ -141,16 +139,10 @@ class _Avatar extends StatelessWidget {
 }
 
 class _Chip extends StatelessWidget {
-  const _Chip({
-    required this.icon,
-    required this.count,
-    this.tint,
-    this.onTap,
-  });
+  const _Chip({required this.icon, required this.count, this.onTap});
 
   final String icon;
   final int count;
-  final Color? tint;
   final VoidCallback? onTap;
 
   @override
@@ -166,7 +158,7 @@ class _Chip extends StatelessWidget {
             height: 12,
             width: 12,
             colorFilter: ColorFilter.mode(
-              tint ?? AppColors.blackTint20,
+              AppColors.blackTint20,
               BlendMode.srcIn,
             ),
           ),

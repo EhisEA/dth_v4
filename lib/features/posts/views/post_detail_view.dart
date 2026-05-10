@@ -1,4 +1,5 @@
 import "dart:async";
+import "dart:ui";
 
 import "package:dth_v4/core/core.dart";
 import "package:dth_v4/features/posts/components/comment_composer.dart";
@@ -54,8 +55,7 @@ class PostDetailView extends ConsumerWidget {
         .whereType<Comment>()
         .toList(growable: false);
 
-    final isHero =
-        post != null && !post.isVideo && post.imageUrls.isNotEmpty;
+    final isHero = post != null && !post.isVideo && post.imageUrls.isNotEmpty;
 
     return Scaffold(
       extendBodyBehindAppBar: isHero,
@@ -143,18 +143,23 @@ class _TransparentBackAppBar extends StatelessWidget
         child: GestureDetector(
           onTap: () => Navigator.pop(context),
           behavior: HitTestBehavior.opaque,
-          child: Container(
-            height: 40,
-            width: 40,
-            alignment: Alignment.center,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: Colors.black.withValues(alpha: 0.35),
-            ),
-            child: const Icon(
-              Icons.arrow_back_ios_new_rounded,
-              size: 18,
-              color: Colors.white,
+          child: ClipOval(
+            child: BackdropFilter(
+              filter: ImageFilter.blur(sigmaX: 14, sigmaY: 14),
+              child: Container(
+                height: 40,
+                width: 40,
+                alignment: Alignment.center,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: Colors.black.withValues(alpha: 0.35),
+                ),
+                child: const Icon(
+                  Icons.arrow_back_ios_new_rounded,
+                  size: 18,
+                  color: Colors.white,
+                ),
+              ),
             ),
           ),
         ),

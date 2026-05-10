@@ -5,6 +5,7 @@ export "models/post_mapper.dart";
 export "components/comment_composer.dart";
 export "components/comment_sort_header.dart";
 export "components/comment_tile.dart";
+export "components/like_chip.dart";
 export "components/post_actions.dart";
 export "components/post_card.dart";
 export "components/post_description.dart";
