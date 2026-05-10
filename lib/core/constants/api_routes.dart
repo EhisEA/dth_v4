@@ -43,6 +43,7 @@ class ApiRoute {
   static String get profilePhoneVerifyOtp =>
       "$baseUrl/profile/phone/verify-otp";
   static String get profileUpdate => "$baseUrl/profile";
+  static String get profileDeleteAccount => "$baseUrl/profile/delete-account";
 
   ///MODULES
   static String get mobileAppModules => "$baseUrl/mobile/app/modules";
@@ -60,4 +61,8 @@ class ApiRoute {
   static String timelineCommentReact(String uid) =>
       "$baseUrl/timeline-posts/comments/$uid/react";
   static String get timelineReels => "$baseUrl/timeline-reels";
+
+  ///POLLS
+  static String get polls => "$baseUrl/polls";
+  static String pollVote(String pollUid) => "$baseUrl/polls/$pollUid";
 }

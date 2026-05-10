@@ -12,6 +12,8 @@ import 'package:dth_v4/features/bottomNavBar/bottom_nav_bar.dart';
 import 'package:dth_v4/features/home/views/home_view.dart';
 import 'package:dth_v4/features/posts/views/comment_thread_view.dart';
 import 'package:dth_v4/features/posts/views/post_detail_view.dart';
+import 'package:dth_v4/features/profile/delete_account/views/delete_account_consent_view.dart';
+import 'package:dth_v4/features/profile/delete_account/views/delete_account_otp_view.dart';
 import 'package:dth_v4/features/profile/personal_information/views/personal_infomation_view.dart';
 import 'package:dth_v4/features/profile/personal_information/views/profile_phone_verify_otp_view.dart';
 import 'package:dth_v4/features/stories/views/stories_view.dart';
@@ -141,7 +143,7 @@ class AppRouter {
           viewToShow: ApplicationReviewView(routeDraft: reviewDraft),
         );
 
-      ////////////////PERSONAL INFORMATION VIEW////////////////////
+      ////////////////PROFILE VIEW////////////////////
       case PersonalInfomationView.path:
         final user = routeArgs[RoutingArgumentKey.user] as UserModel;
         return _getPageRoute(
@@ -153,6 +155,18 @@ class AppRouter {
         return _getPageRoute(
           settings: settings,
           viewToShow: const ProfilePhoneVerifyOtpView(),
+        );
+
+      case DeleteAccountConsentView.path:
+        return _getPageRoute(
+          settings: settings,
+          viewToShow: const DeleteAccountConsentView(),
+        );
+
+      case DeleteAccountOtpView.path:
+        return _getPageRoute(
+          settings: settings,
+          viewToShow: const DeleteAccountOtpView(),
         );
 
       ////////////////SUBSCRIPTION VIEW////////////////////

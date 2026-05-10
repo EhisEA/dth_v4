@@ -7,3 +7,4 @@ export "subscription/subscription.dart";
 export "timeline/timeline.dart";
 export "post/post.dart";
 export "comment/comment.dart";
+export "poll/poll.dart";

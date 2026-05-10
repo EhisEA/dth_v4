@@ -6,7 +6,21 @@ class ImageAssets {
   static const String imagePath = "assets/images";
   static const String logo = "$imagePath/logo.png";
   static const String logo2 = "$imagePath/logo2.png";
+  static const String line = "$imagePath/line.png";
+  static const String logoWhite = "$imagePath/logo_white.png";
   static const String updateIcon = "$imagePath/update_icon.png";
+
+  /////////////////////AUTH//////////////////////
+  ///
+  static const String authBg1 = "$imagePath/auth/1.png";
+  static const String authBg2 = "$imagePath/auth/2.png";
+  static const String authBg3 = "$imagePath/auth/3.png";
+
+  /////////////////////SPLASH//////////////////////
+  ///
+  static const String splash1 = "$imagePath/splash/1.png";
+  static const String splash2 = "$imagePath/splash/2.png";
+  static const String splash3 = "$imagePath/splash/3.png";
 
   /////////////////////HOME//////////////////////
   ///
@@ -81,6 +95,8 @@ class SvgAssets {
   static const String social = "$svgPath/profile/social.svg";
   static const String terms = "$svgPath/profile/terms.svg";
   static const String cup = "$svgPath/profile/cup.svg";
+  static const String error = "$svgPath/profile/error.svg";
+  static const String doubleTick = "$svgPath/profile/double_tick.svg";
 
   /////////////////////APPLICATION//////////////////////
   ///

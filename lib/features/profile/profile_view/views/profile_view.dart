@@ -220,7 +220,14 @@ class _ProfileViewState extends ConsumerState<ProfileView> {
                         description: "Delete your account permanently",
                         icon: SvgAssets.delete,
                         isRed: true,
-                        onTap: () {},
+                        onTap: () {
+                          ref
+                              .read(deleteAccountViewModelProvider)
+                              .resetForNewFlow();
+                          MobileNavigationService.instance.navigateTo(
+                            DeleteAccountConsentView.path,
+                          );
+                        },
                       ),
                       Gap.h30,
                       Gap.h30,
