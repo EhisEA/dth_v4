@@ -1,10 +1,13 @@
+import "dart:math" as math;
+
 import "package:dth_v4/core/core.dart";
 import "package:dth_v4/widgets/widgets.dart";
 import "package:flutter/material.dart";
 import "package:flutter_svg/svg.dart";
 import "package:flutter_utils/flutter_utils.dart";
 
-/// Semicircular performance gauge (segmented track + progress arc).
+/// Semicircular performance gauge: **radial tick marks** along the upper arc
+/// (light gray empty track; filled portion uses [arcColor] from the left).
 class ApplicantPerformanceGauge extends StatelessWidget {
   const ApplicantPerformanceGauge({
     super.key,
@@ -29,11 +32,14 @@ class ApplicantPerformanceGauge extends StatelessWidget {
       children: [
         SizedBox(
           width: double.infinity,
-          height: 130,
+          height: 120,
           child: CustomPaint(
-            painter: _GaugePainter(progress: pct / 100.0, arcColor: arcColor),
+            painter: _RadialTickGaugePainter(
+              progress: pct / 100.0,
+              arcColor: arcColor,
+            ),
             child: Padding(
-              padding: const EdgeInsets.only(top: 32),
+              padding: const EdgeInsets.only(top: 38),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
@@ -41,32 +47,43 @@ class ApplicantPerformanceGauge extends StatelessWidget {
                     "$pct%",
                     fontSize: 44,
                     color: AppColors.black,
-                    height: 1.24,
+                    height: 1.1,
                   ),
                   AppText.bold(
                     "of $max",
                     fontSize: 16,
-                    letterSpacing: -0.6,
                     color: AppColors.tint15,
+                    height: 1.2,
                   ),
                 ],
               ),
             ),
           ),
         ),
-        Gap.h20,
-        AppText.medium(label, fontSize: 14, color: AppColors.black),
-
+        // Gap.h16,
+        AppText.semiBold(
+          label,
+          fontSize: 14,
+          color: AppColors.black,
+          textAlign: TextAlign.center,
+          centered: true,
+        ),
+        Gap.h6,
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            SvgPicture.asset(SvgAssets.infoOutline, width: 10, height: 10),
-            Gap.w2,
+            SvgPicture.asset(
+              SvgAssets.infoOutline,
+              width: 12,
+              height: 12,
+              colorFilter: ColorFilter.mode(AppColors.tint15, BlendMode.srcIn),
+            ),
+            Gap.w4,
             Flexible(
               child: AppText.regular(
                 caption,
-                fontSize: 10,
-                color: AppColors.blackTint20,
+                fontSize: 11,
+                color: AppColors.tint15,
                 textAlign: TextAlign.center,
                 maxLines: 2,
               ),
@@ -78,50 +95,53 @@ class ApplicantPerformanceGauge extends StatelessWidget {
   }
 }
 
-class _GaugePainter extends CustomPainter {
-  _GaugePainter({required this.progress, required this.arcColor});
+/// Draws many short **radial** strokes from an inner ring to the outer arc,
+/// like the reference segmented speedometer.
+class _RadialTickGaugePainter extends CustomPainter {
+  _RadialTickGaugePainter({required this.progress, required this.arcColor});
 
   final double progress;
   final Color arcColor;
 
-  static const int _segments = 48;
-  static const double _startAngle = 3.1415926535897932;
-  static const double _sweep = 3.1415926535897932;
+  /// Upper semicircle: π (left) → 2π (right), passing through the top.
+  static const double _start = math.pi;
+  static const double _sweep = math.pi;
+
+  static const int _tickCount = 64;
+  static const double _tickStrokeWidth = 2.5;
 
   @override
   void paint(Canvas canvas, Size size) {
     final w = size.width;
     final h = size.height;
-    final radius = w * 0.38;
-    final center = Offset(w / 2, h * 0.72);
-    final rect = Rect.fromCircle(center: center, radius: radius);
+    final radius = w * 0.40;
+    final center = Offset(w / 2, h * 0.78);
+    final tickLength = radius * 0.12;
 
-    final trackPaint = Paint()
-      ..color = AppColors.greyTint30
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 6
-      ..strokeCap = StrokeCap.round;
+    final trackColor = AppColors.greyTint30;
+    final p = progress.clamp(0.0, 1.0);
 
-    final segmentGap = _sweep / _segments;
-    final slot = segmentGap * 0.62;
-    for (var i = 0; i < _segments; i++) {
-      final start = _startAngle + i * segmentGap + (segmentGap - slot) / 2;
-      canvas.drawArc(rect, start, slot, false, trackPaint);
-    }
+    for (var i = 0; i < _tickCount; i++) {
+      final t = i / (_tickCount - 1);
+      final theta = _start + t * _sweep;
+      final dir = Offset(math.cos(theta), math.sin(theta));
+      final outer = center + dir * radius;
+      final inner = center + dir * (radius - tickLength);
 
-    final fillSweep = (_sweep * progress.clamp(0.0, 1.0)).clamp(0.0, _sweep);
-    if (fillSweep > 0.001) {
-      final fillPaint = Paint()
-        ..color = arcColor
-        ..style = PaintingStyle.stroke
-        ..strokeWidth = 6
-        ..strokeCap = StrokeCap.round;
-      canvas.drawArc(rect, _startAngle, fillSweep, false, fillPaint);
+      final filled = p > 0 && t <= p;
+      final color = filled ? arcColor : trackColor;
+
+      final paint = Paint()
+        ..color = color
+        ..strokeWidth = _tickStrokeWidth
+        ..strokeCap = StrokeCap.round
+        ..style = PaintingStyle.stroke;
+      canvas.drawLine(inner, outer, paint);
     }
   }
 
   @override
-  bool shouldRepaint(covariant _GaugePainter oldDelegate) {
+  bool shouldRepaint(covariant _RadialTickGaugePainter oldDelegate) {
     return oldDelegate.progress != progress || oldDelegate.arcColor != arcColor;
   }
 }

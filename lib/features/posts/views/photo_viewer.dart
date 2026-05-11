@@ -83,6 +83,7 @@ class _FullscreenImageViewerState extends State<FullscreenImageViewer>
     for (final c in _transformControllers) {
       c.dispose();
     }
+    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.dark);
     super.dispose();
   }
 

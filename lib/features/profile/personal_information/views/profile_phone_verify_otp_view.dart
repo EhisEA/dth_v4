@@ -95,9 +95,7 @@ class _ProfilePhoneVerifyOtpViewState
                   onCompleted: (code) async {
                     final ok = await vm.submitPhoneVerificationCode(code);
                     if (!mounted || !ok) return;
-                    MobileNavigationService.instance.popUntil(
-                      BottomNavBar.path,
-                    );
+                    MobileNavigationService.instance.goBack();
                   },
                 ),
                 Gap.h16,

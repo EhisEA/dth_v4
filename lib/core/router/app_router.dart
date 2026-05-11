@@ -146,10 +146,9 @@ class AppRouter {
 
       ////////////////PROFILE VIEW////////////////////
       case PersonalInfomationView.path:
-        final user = routeArgs[RoutingArgumentKey.user] as UserModel;
         return _getPageRoute(
           settings: settings,
-          viewToShow: PersonalInfomationView(user: user),
+          viewToShow: const PersonalInfomationView(),
         );
 
       case ProfilePhoneVerifyOtpView.path:

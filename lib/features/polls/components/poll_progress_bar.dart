@@ -6,16 +6,21 @@ class PollProgressBar extends StatelessWidget {
     super.key,
     required this.progress,
     required this.isSelected,
+    required this.pollHasVoted,
   });
 
   final double progress;
   final bool isSelected;
+  final bool pollHasVoted;
 
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constraints) {
         final clampedProgress = progress.clamp(0.0, 1.0);
+        final fillColor = !pollHasVoted
+            ? AppColors.primary
+            : (isSelected ? AppColors.primary : AppColors.tint10);
         return Container(
           height: 4,
           width: double.infinity,
@@ -32,7 +37,7 @@ class PollProgressBar extends StatelessWidget {
               builder: (context, value, _) => Container(
                 width: constraints.maxWidth * value,
                 decoration: BoxDecoration(
-                  color: isSelected ? AppColors.primary : AppColors.tint10,
+                  color: fillColor,
                   borderRadius: BorderRadius.circular(100),
                 ),
               ),

@@ -1,7 +1,5 @@
 import "package:dth_v4/core/core.dart";
 import "package:dth_v4/data/data.dart";
-import "package:dth_v4/features/application/views/application_view.dart";
-import "package:dth_v4/features/bottomNavBar/bottom_nav_bar.dart";
 import "package:dth_v4/widgets/widgets.dart";
 import "package:flutter/material.dart";
 import "package:flutter_riverpod/flutter_riverpod.dart";
@@ -29,6 +27,17 @@ class ApplicantDashboardViewModel extends BaseChangeNotifierViewModel {
       notifyListeners();
     } on ApiFailure {
       // Prefetch only — surface errors when the user opens the dashboard.
+    }
+  }
+
+  /// After a successful application submit — no role gate, no busy/toast (home may read this).
+  Future<void> refreshAfterApplicationSubmit() async {
+    try {
+      final response = await _applicationRepo.getApplicantDashboard();
+      _data = response.data;
+      notifyListeners();
+    } on ApiFailure {
+      // Silent; user can open dashboard for explicit retry.
     }
   }
 
@@ -91,7 +100,7 @@ class ApplicantDashboardViewModel extends BaseChangeNotifierViewModel {
   void handleBack(BuildContext context) {
     final action = _data?.header?.backAction;
     if (action == "navigate:home") {
-      MobileNavigationService.instance.navigateAndClearStack(BottomNavBar.path);
+      MobileNavigationService.instance.goBack();
     } else {
       Navigator.of(context).maybePop();
     }
@@ -102,7 +111,7 @@ class ApplicantDashboardViewModel extends BaseChangeNotifierViewModel {
     final target = cta.target.toLowerCase();
     final action = cta.action.toLowerCase();
     if (target == "application_form" || action == "submit") {
-      MobileNavigationService.instance.navigateTo(ApplicationView.path);
+      MobileNavigationService.instance.navigateTo(NavigatorRoutes.application);
     }
   }
 

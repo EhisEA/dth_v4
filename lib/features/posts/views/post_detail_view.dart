@@ -47,6 +47,7 @@ class _PostDetailViewState extends ConsumerState<PostDetailView> {
   @override
   void dispose() {
     _ytController?.dispose();
+    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.dark);
     super.dispose();
   }
 
