@@ -29,6 +29,9 @@ class ApiRoute {
   ////APPLICATION
   static String get application => "$baseUrl/application";
   static String get applicationProcess => "$baseUrl/application/process";
+  static String get applicantDashboard => "$baseUrl/applicant/dashboard";
+  static String get applicantInterviewSlots =>
+      "$baseUrl/applicant/interview-slots";
 
   ///SUBSCRIPTION
   static String get subscriptionPlans => "$baseUrl/subscription/plans";

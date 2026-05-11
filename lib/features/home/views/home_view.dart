@@ -2,7 +2,7 @@ import "dart:async";
 
 import "package:dth_v4/core/core.dart";
 import "package:dth_v4/data/data.dart";
-import "package:dth_v4/features/application/views/application_view.dart";
+import "package:dth_v4/features/application_dashboard/applicant_dashboard.dart";
 import "package:dth_v4/features/home/home.dart";
 import "package:dth_v4/features/posts/posts.dart";
 import "package:dth_v4/features/stories/stories.dart";
@@ -28,6 +28,9 @@ class _HomeViewState extends ConsumerState<HomeView> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       unawaited(ref.read(homeViewModelProvider).loadTimeline());
       unawaited(ref.read(pollViewModelProvider).loadPoll());
+      unawaited(
+        ref.read(applicantDashboardViewModelProvider).prefetchForHomeUser(),
+      );
     });
   }
 
@@ -155,9 +158,14 @@ class _HomeViewState extends ConsumerState<HomeView> {
                                             GestureDetector(
                                               behavior: HitTestBehavior.opaque,
                                               onTap: () {
+                                                // MobileNavigationService.instance
+                                                //     .navigateTo(
+                                                //       ApplicationView.path,
+                                                //     );
                                                 MobileNavigationService.instance
                                                     .navigateTo(
-                                                      ApplicationView.path,
+                                                      ApplicantDashboardView
+                                                          .path,
                                                     );
                                               },
                                               child: Container(

@@ -28,9 +28,28 @@ class ApplicationRepoImpl implements ApplicationRepo {
     final root = response.data as Map<String, dynamic>;
     final data = root["data"] as Map<String, dynamic>;
     final process = data["application_process"] as Map<String, dynamic>;
-    return ApiResponse(
-      data: ApplicationProcess.fromJson(process),
+    return ApiResponse(data: ApplicationProcess.fromJson(process));
+  }
+
+  @override
+  Future<ApiResponse<ApplicantDashboardData>> getApplicantDashboard() async {
+    final response = await _networkService.get(ApiRoute.applicantDashboard);
+    final root = response.data as Map<String, dynamic>;
+    final data = root["data"] as Map<String, dynamic>;
+    return ApiResponse(data: ApplicantDashboardData.fromJson(data));
+  }
+
+  @override
+  Future<ApiResponse<InterviewSlotsData>> getInterviewSlots({
+    required String date,
+  }) async {
+    final response = await _networkService.get(
+      ApiRoute.applicantInterviewSlots,
+      queryParams: <String, dynamic>{"date": date},
     );
+    final root = response.data as Map<String, dynamic>;
+    final data = root["data"] as Map<String, dynamic>;
+    return ApiResponse(data: InterviewSlotsData.fromJson(data));
   }
 }
 

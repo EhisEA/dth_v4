@@ -103,11 +103,14 @@ class SvgAssets {
   static const String support = "$svgPath/application/support.svg";
   static const String edit = "$svgPath/application/edit.svg";
   static const String calendarEdit = "$svgPath/application/calendar-edit.svg";
+  static const String infoOutline = "$svgPath/application/info-circle.svg";
+  static const String clock = "$svgPath/application/clock.svg";
+  static const String star = "$svgPath/application/star.svg";
 
   /////////////////////SEARCH//////////////////////
   ///
   static const String location = "$svgPath/search/location.svg";
-  static const String clock = "$svgPath/search/clock.svg";
+  static const String clockFilled = "$svgPath/search/clock.svg";
 
   /////////////////////TICKETS//////////////////////
   ///

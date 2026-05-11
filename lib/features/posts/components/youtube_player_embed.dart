@@ -53,7 +53,7 @@ class _YoutubePlayerEmbedState extends State<YoutubePlayerEmbed> {
       borderRadius: BorderRadius.circular(widget.radius),
       child: YoutubePlayer(
         controller: _controller,
-        
+
         showVideoProgressIndicator: true,
         aspectRatio: 16 / 9,
       ),

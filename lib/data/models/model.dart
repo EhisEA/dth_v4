@@ -1,3 +1,5 @@
+export "interview_slots_models.dart";
+export "applicant_dashboard_models.dart";
 export "app_textfield_state.dart";
 export "app_modules.dart";
 export "application_draft.dart";
