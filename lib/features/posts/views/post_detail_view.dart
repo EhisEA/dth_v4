@@ -1,5 +1,4 @@
 import "dart:async";
-import "dart:ui";
 
 import "package:dth_v4/core/core.dart";
 import "package:dth_v4/features/posts/components/comment_composer.dart";
@@ -70,8 +69,17 @@ class _PostDetailViewState extends ConsumerState<PostDetailView> {
             flags: const YoutubePlayerFlags(
               autoPlay: true,
               mute: true,
-              enableCaption: false,
-              forceHD: false,
+
+              // enableCaption: false,
+              // forceHD: false,
+              // // Don't render YT's red-play-button thumbnail before the
+              // // video starts — our black loading mask covers initial state.
+              // hideThumbnail: true,
+              // Loop on end so YouTube's "suggested videos" end-screen
+              // never has a chance to appear. YT removed the API ability
+              // to disable that overlay around 2018, so looping is the
+              // only way to suppress it.
+              // loop: true,
             ),
           );
   }
@@ -104,11 +112,16 @@ class _PostDetailViewState extends ConsumerState<PostDetailView> {
         .whereType<Comment>()
         .toList(growable: false);
 
-    final isHero = post != null && !post.isVideo && post.imageUrls.isNotEmpty;
+    final isImageHero =
+        post != null && !post.isVideo && post.imageUrls.isNotEmpty;
+    final isPinnedVideo = _ytController != null;
+    // Either case wants the transparent back-only app bar overlaying the
+    // media at the top of the screen.
+    final useTransparentBar = isImageHero || isPinnedVideo;
 
-    Widget buildScaffold(Widget? mediaSlot) => Scaffold(
-      extendBodyBehindAppBar: isHero,
-      appBar: isHero
+    Widget buildScaffold(Widget? pinnedMedia) => Scaffold(
+      extendBodyBehindAppBar: useTransparentBar,
+      appBar: useTransparentBar
           ? const _TransparentBackAppBar()
           : DthAppBar(backgroundColor: Colors.white),
       backgroundColor: const Color(0xffFCFCFC),
@@ -122,6 +135,9 @@ class _PostDetailViewState extends ConsumerState<PostDetailView> {
           }
           return Column(
             children: [
+              // Pinned media sits OUTSIDE the scroll area — the post body
+              // and comments scroll underneath, the video stays in place.
+              if (pinnedMedia != null) pinnedMedia,
               Expanded(
                 child: RefreshIndicator(
                   onRefresh: () => vm.refresh(),
@@ -136,18 +152,19 @@ class _PostDetailViewState extends ConsumerState<PostDetailView> {
                       physics: const AlwaysScrollableScrollPhysics(),
                       padding: EdgeInsets.zero,
                       children: [
-                        if (isHero) PostHeroImage(urls: post.imageUrls),
+                        if (isImageHero) PostHeroImage(urls: post.imageUrls),
                         Padding(
                           padding: EdgeInsets.fromLTRB(
                             16,
-                            isHero ? 16 : 12,
+                            isImageHero || isPinnedVideo ? 16 : 12,
                             16,
                             0,
                           ),
                           child: _PostBlock(
                             post: post,
-                            renderMedia: !isHero,
-                            mediaSlot: mediaSlot,
+                            // Hero (image) and pinned (video) both render
+                            // media themselves outside the post block.
+                            renderMedia: !isImageHero && !isPinnedVideo,
                             onLike: vm.togglePostLike,
                             onShare: () => _showComingSoon("Share"),
                           ),
@@ -179,13 +196,20 @@ class _PostDetailViewState extends ConsumerState<PostDetailView> {
           controller: controller,
           showVideoProgressIndicator: true,
           aspectRatio: 16 / 9,
+          // Strip the default top overlay row (video title, share, "more").
+          // We only want our control bar at the bottom and the video itself.
+          topActions: const [],
           onReady: () {
             if (mounted) setState(() => _ytReady = true);
           },
         ),
         builder: (context, player) => buildScaffold(
-          ClipRRect(
-            borderRadius: BorderRadius.circular(12),
+          // Full-bleed pinned video — flush to top under the transparent
+          // app bar / status bar, no rounded corners. Loading mask stacks
+          // on top until `onReady` fires.
+          Container(
+            color: Colors.black,
+            padding: EdgeInsets.only(top: MediaQuery.paddingOf(context).top),
             child: AspectRatio(
               aspectRatio: 16 / 9,
               child: Stack(
@@ -227,30 +251,40 @@ class _TransparentBackAppBar extends StatelessWidget
   @override
   Widget build(BuildContext context) {
     return AppBar(
-      backgroundColor: Colors.transparent,
+      backgroundColor: Colors.white.withValues(alpha: 0),
       elevation: 0,
       scrolledUnderElevation: 0,
       systemOverlayStyle: SystemUiOverlayStyle.light,
+      // Default leadingWidth is 56dp — same as (left padding 16) + (button 40).
+      // The AppBar's internal padding can then nibble the button. Bumping the
+      // slot keeps the button fully round.
+      leadingWidth: 60,
       leading: Padding(
-        padding: const EdgeInsets.only(left: 16),
+        padding: const EdgeInsets.only(left: 4),
         child: GestureDetector(
           onTap: () => Navigator.pop(context),
           behavior: HitTestBehavior.opaque,
-          child: ClipOval(
-            child: BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: 14, sigmaY: 14),
-              child: Container(
-                height: 40,
-                width: 40,
-                alignment: Alignment.center,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: Colors.black.withValues(alpha: 0.35),
-                ),
-                child: const Icon(
-                  Icons.arrow_back_ios_new_rounded,
-                  size: 18,
-                  color: Colors.white,
+          child: Center(
+            // ClipOval defines a circular region. The BackdropFilter is
+            // a Stack child sized via StackFit.expand so its blur reach
+            // matches the clip — otherwise the blur only covers whatever
+            // its direct child sizes to (the icon), and reads as a tiny
+            // square in the middle of the circle.
+            child: SizedBox(
+              width: 40,
+              height: 40,
+              child: ClipOval(
+                clipBehavior: Clip.hardEdge,
+                child: Material(
+                  color: Colors.black.withValues(alpha: 0.5),
+                  shape: const CircleBorder(),
+                  child: const Center(
+                    child: Icon(
+                      Icons.arrow_back_ios_new_rounded,
+                      size: 18,
+                      color: Colors.white,
+                    ),
+                  ),
                 ),
               ),
             ),
@@ -267,28 +301,19 @@ class _PostBlock extends StatelessWidget {
     required this.onLike,
     required this.onShare,
     this.renderMedia = true,
-    this.mediaSlot,
   });
 
   final Post post;
   final VoidCallback onLike;
   final VoidCallback onShare;
   final bool renderMedia;
-  // When provided (e.g. a YouTube player wired into YoutubePlayerBuilder
-  // at the Scaffold level), this widget renders in place of the inline
-  // media. Lets the parent own playback state without `_PostBlock` knowing
-  // anything about it.
-  final Widget? mediaSlot;
 
   @override
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        if (renderMedia) ...[
-          if (mediaSlot != null) mediaSlot! else PostMedia(post: post),
-          Gap.h16,
-        ],
+        if (renderMedia) ...[PostMedia(post: post), Gap.h16],
         PostDetailsHeader(post: post),
         if (post.description.isNotEmpty) ...[
           Gap.h12,

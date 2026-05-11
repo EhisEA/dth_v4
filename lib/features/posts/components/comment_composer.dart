@@ -73,10 +73,12 @@ class _CommentComposerState extends State<CommentComposer> {
         border: Border(top: BorderSide(color: AppColors.tint5, width: 0.5)),
       ),
       padding: EdgeInsets.fromLTRB(
-        16,
+        MediaQuery.paddingOf(context).left + 16,
         8,
         16,
-        MediaQuery.paddingOf(context).bottom + 8,
+        (MediaQuery.paddingOf(context).bottom > 0)
+            ? MediaQuery.paddingOf(context).bottom + 4
+            : MediaQuery.paddingOf(context).bottom + 16,
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,

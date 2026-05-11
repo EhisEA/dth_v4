@@ -222,6 +222,24 @@ class PostDetailViewModel extends BaseChangeNotifierViewModel {
   }
 
   final Set<String> _commentLikesPending = {};
+
+  // autoDispose.family disposes this VM when the user navigates back. Pending
+  // awaits (`_refresh`, `_loadComments`, etc.) can resume *after* dispose and
+  // try to call `notifyListeners()` — which throws on a disposed
+  // ChangeNotifier. Guarding here makes every post-await notify a no-op.
+  bool _disposed = false;
+
+  @override
+  void dispose() {
+    _disposed = true;
+    super.dispose();
+  }
+
+  @override
+  void notifyListeners() {
+    if (_disposed) return;
+    super.notifyListeners();
+  }
 }
 
 final postDetailViewModelProvider = ChangeNotifierProvider.autoDispose
