@@ -8,11 +8,19 @@ import "package:flutter_riverpod/flutter_riverpod.dart";
 import "package:flutter_utils/flutter_utils.dart";
 
 class HomeViewModel extends BaseChangeNotifierViewModel {
-  HomeViewModel(this.userState, this._timelineRepo, this._postsCache);
+  HomeViewModel(
+    this.userState,
+    this._timelineRepo,
+    this._postRepo,
+    this._postsCache,
+  );
 
   final UserState userState;
   final TimelineRepo _timelineRepo;
+  final PostRepo _postRepo;
   final PostsCache _postsCache;
+
+  final Set<String> _likePending = <String>{};
 
   ValueNotifier<UserModel?> get userModel => userState.user;
 
@@ -79,6 +87,32 @@ class HomeViewModel extends BaseChangeNotifierViewModel {
     notifyListeners();
   }
 
+  /// Optimistic like/unlike for any post in the feed. Mirrors the detail
+  /// screen's flow — flip the cache immediately, await the server response
+  /// for canonical counts, roll back + toast on failure.
+  Future<void> togglePostLike(String uid) async {
+    if (_likePending.contains(uid)) return;
+    final original = _postsCache.get(uid);
+    if (original == null) return;
+    _likePending.add(uid);
+    final wasReacted = original.viewerReacted;
+    _postsCache.upsert(
+      original.copyWith(
+        viewerReacted: !wasReacted,
+        likeCount: original.likeCount + (wasReacted ? -1 : 1),
+      ),
+    );
+    try {
+      final raw = await _postRepo.toggleReaction(uid);
+      _postsCache.upsert(postFromTimelinePost(raw));
+    } on ApiFailure catch (e) {
+      _postsCache.upsert(original);
+      DthFlushBar.instance.showError(message: e.message, title: "Like");
+    } finally {
+      _likePending.remove(uid);
+    }
+  }
+
   Future<void> loadMoreTimeline() async {
     if (!hasMore || _loadingMore) return;
     _loadingMore = true;
@@ -115,6 +149,7 @@ final homeViewModelProvider = ChangeNotifierProvider<HomeViewModel>((ref) {
   return HomeViewModel(
     ref.read(userStateProvider),
     ref.read(timelineRepositoryProvider),
+    ref.read(postRepositoryProvider),
     ref.read(postsCacheProvider),
   );
 });

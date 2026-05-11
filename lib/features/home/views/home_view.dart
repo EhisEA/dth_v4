@@ -241,6 +241,9 @@ class _HomeViewState extends ConsumerState<HomeView> {
                                           ),
                                           child: PostCard(
                                             post: post,
+                                            onLike: () => unawaited(
+                                              vm.togglePostLike(post.uid),
+                                            ),
                                             onTap: () => MobileNavigationService
                                                 .instance
                                                 .push(

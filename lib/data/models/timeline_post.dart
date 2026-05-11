@@ -112,7 +112,9 @@ class TimelinePost {
       description: _timelineString(json["description"]) ?? "",
       type: _timelineString(json["type"]) ?? "",
       videoType: _timelineString(json["video_type"]),
-      videoLink: _timelineString(json["video_link"]),
+      videoLink: _timelineString(json["video_link"]) != null
+          ? "https://www.youtube.com/watch?v=aAdAJEU8_E0"
+          : null,
       authorName: _timelineString(json["author_name"]),
       videoThumbnail: _timelineString(json["video_thumbnail"]),
       media: media,
