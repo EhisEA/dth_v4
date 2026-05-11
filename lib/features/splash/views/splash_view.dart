@@ -1,6 +1,7 @@
 import "dart:async";
 
 import "package:dth_v4/core/core.dart";
+import "package:dth_v4/data/data.dart";
 import "package:dth_v4/features/splash/view_model/splash_view_model.dart";
 import "package:flutter/material.dart";
 import "package:flutter_riverpod/flutter_riverpod.dart";
@@ -8,7 +9,10 @@ import "package:flutter_riverpod/flutter_riverpod.dart";
 final _splashViewModel = ChangeNotifierProvider.autoDispose<SplashViewModel>((
   ref,
 ) {
-  return SplashViewModel(ref.read(localCacheProvider));
+  return SplashViewModel(
+    ref.read(localCacheProvider),
+    ref.read(appModulesStateProvider),
+  );
 });
 
 class SplashView extends ConsumerStatefulWidget {
@@ -69,6 +73,9 @@ class _SplashViewState extends ConsumerState<SplashView>
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
       _animationController.forward(from: 0);
+      // Start fetching the modules in parallel with the splash animation
+      // so the bottom nav has its tab list ready by the time we navigate.
+      unawaited(ref.read(_splashViewModel).preloadModules());
     });
   }
 

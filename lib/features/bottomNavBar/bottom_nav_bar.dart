@@ -22,43 +22,96 @@ final bottomNavBarViewModel = ChangeNotifierProvider.autoDispose(
   ),
 );
 
-class _NavEntry {
-  const _NavEntry({
+class _NavBinding {
+  const _NavBinding({
     required this.label,
     required this.assetInactive,
     required this.assetActive,
+    required this.screen,
   });
   final String label;
   final String assetInactive;
   final String assetActive;
+  final Widget screen;
 }
 
-const List<_NavEntry> _kNavEntries = [
-  _NavEntry(
+/// Maps an `AppModuleNavItem.name` (server-controlled identifier) to its
+/// concrete tab UI: icons + screen widget. Items the server doesn't include
+/// are simply not rendered.
+_NavBinding? _bindNavItem(AppModuleNavItem item) {
+  switch (item.name) {
+    case 'timeline':
+      return _NavBinding(
+        label: item.label,
+        assetInactive: SvgAssets.home,
+        assetActive: SvgAssets.homeActive,
+        screen: const HomeView(),
+      );
+    case 'search':
+      return _NavBinding(
+        label: item.label,
+        assetInactive: SvgAssets.search,
+        assetActive: SvgAssets.searchActive,
+        screen: const SearchView(),
+      );
+    case 'tickets':
+      return _NavBinding(
+        label: item.label,
+        assetInactive: SvgAssets.ticket,
+        assetActive: SvgAssets.ticketActive,
+        screen: const TicketView(),
+      );
+    case 'subscriptions':
+      return _NavBinding(
+        label: item.label,
+        assetInactive: SvgAssets.verify,
+        assetActive: SvgAssets.verifyActive,
+        screen: const SubscriptionView(),
+      );
+    case 'profile':
+      return _NavBinding(
+        label: item.label,
+        assetInactive: SvgAssets.profile,
+        assetActive: SvgAssets.profileActive,
+        screen: const ProfileView(),
+      );
+    default:
+      return null;
+  }
+}
+
+/// Fallback used when the modules call hasn't returned yet or failed —
+/// matches the previous hard-coded layout so users never see a blank nav.
+final List<_NavBinding> _kFallbackBindings = [
+  _NavBinding(
     label: 'Home',
     assetInactive: SvgAssets.home,
     assetActive: SvgAssets.homeActive,
+    screen: const HomeView(),
   ),
-  _NavEntry(
+  _NavBinding(
     label: 'Search',
     assetInactive: SvgAssets.search,
     assetActive: SvgAssets.searchActive,
+    screen: const SearchView(),
   ),
-  _NavEntry(
+  _NavBinding(
     label: 'Tickets',
     assetInactive: SvgAssets.ticket,
     assetActive: SvgAssets.ticketActive,
+    screen: const TicketView(),
   ),
-  _NavEntry(
+  _NavBinding(
     label: 'Subscription',
     assetInactive: SvgAssets.verify,
     assetActive: SvgAssets.verifyActive,
+    screen: const SubscriptionView(),
   ),
-
-  _NavEntry(
+  _NavBinding(
     label: 'Profile',
     assetInactive: SvgAssets.profile,
     assetActive: SvgAssets.profileActive,
+    screen: const ProfileView(),
   ),
 ];
 
@@ -74,14 +127,19 @@ class BottomNavBar extends ConsumerStatefulWidget {
 }
 
 class BottomNavBarState extends ConsumerState<BottomNavBar> {
-  List<CustomNavBarScreen> _buildScreens() {
-    return [
-      CustomNavBarScreen(screen: HomeView()),
-      CustomNavBarScreen(screen: SearchView()),
-      CustomNavBarScreen(screen: TicketView()),
-      CustomNavBarScreen(screen: SubscriptionView()),
-      CustomNavBarScreen(screen: ProfileView()),
-    ];
+  /// Resolves the tab list from the server-provided `navigation` payload.
+  /// Falls back to the static set if modules haven't loaded yet — splash
+  /// awaits the call before navigating here, so this fallback is only a
+  /// safety net for retry/failure paths.
+  List<_NavBinding> _resolveBindings() {
+    final modules = ref.read(appModulesStateProvider).appModules.value;
+    final navItems = modules?.navigation ?? const <AppModuleNavItem>[];
+    if (navItems.isEmpty) return _kFallbackBindings;
+    final bindings = navItems
+        .map(_bindNavItem)
+        .whereType<_NavBinding>()
+        .toList(growable: false);
+    return bindings.isEmpty ? _kFallbackBindings : bindings;
   }
 
   final PersistentTabController _tabController = PersistentTabController(
@@ -92,7 +150,8 @@ class BottomNavBarState extends ConsumerState<BottomNavBar> {
   static const _exitWindow = Duration(seconds: 2);
 
   void changeTab(int newIndex) {
-    if (newIndex < 0 || newIndex >= _kNavEntries.length) return;
+    final bindings = _resolveBindings();
+    if (newIndex < 0 || newIndex >= bindings.length) return;
     _tabController.jumpToTab(newIndex);
   }
 
@@ -147,7 +206,7 @@ class BottomNavBarState extends ConsumerState<BottomNavBar> {
     });
   }
 
-  Widget _buildCustomNavBar() {
+  Widget _buildCustomNavBar(List<_NavBinding> bindings) {
     final bottomInset = MediaQuery.paddingOf(context).bottom;
     return Material(
       color: AppColors.white,
@@ -158,11 +217,11 @@ class BottomNavBarState extends ConsumerState<BottomNavBar> {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
-            for (var i = 0; i < _kNavEntries.length; i++)
+            for (var i = 0; i < bindings.length; i++)
               Expanded(
                 child: NavItem(
-                  icon: _kNavEntries[i].assetInactive,
-                  activeIcon: _kNavEntries[i].assetActive,
+                  icon: bindings[i].assetInactive,
+                  activeIcon: bindings[i].assetActive,
                   isActive: _tabController.index == i,
                   onTap: () {
                     setState(() {
@@ -180,24 +239,40 @@ class BottomNavBarState extends ConsumerState<BottomNavBar> {
   @override
   Widget build(BuildContext context) {
     final model = ref.watch(bottomNavBarViewModel);
+    // Watch the modules notifier so a late-arriving fetch (retry after a
+    // failed splash call) rebuilds the nav with the server's tab list.
+    final modulesState = ref.watch(appModulesStateProvider);
     return ValueListenableBuilder<UserModel?>(
       valueListenable: model.userModel,
       builder: (context, userModel, _) {
-        return PopScope(
-          canPop: false,
-          onPopInvokedWithResult: _onPopInvoked,
-          child: PersistentTabView.custom(
-            context,
-            backgroundColor: Colors.transparent,
-            controller: _tabController,
-            handleAndroidBackButtonPress: false,
-            screens: _buildScreens(),
-            confineToSafeArea: false,
-            navBarHeight: 84,
-            itemCount: _kNavEntries.length,
-            bottomScreenMargin: 0,
-            customWidget: _buildCustomNavBar(),
-          ),
+        return ValueListenableBuilder<AppModulesModel?>(
+          valueListenable: modulesState.appModules,
+          builder: (context, _, _) {
+            final bindings = _resolveBindings();
+            // Clamp the active index in case the server returned fewer
+            // tabs than the previous render had.
+            if (_tabController.index >= bindings.length) {
+              _tabController.index = 0;
+            }
+            return PopScope(
+              canPop: false,
+              onPopInvokedWithResult: _onPopInvoked,
+              child: PersistentTabView.custom(
+                context,
+                backgroundColor: Colors.transparent,
+                controller: _tabController,
+                handleAndroidBackButtonPress: false,
+                screens: [
+                  for (final b in bindings) CustomNavBarScreen(screen: b.screen),
+                ],
+                confineToSafeArea: false,
+                navBarHeight: 84,
+                itemCount: bindings.length,
+                bottomScreenMargin: 0,
+                customWidget: _buildCustomNavBar(bindings),
+              ),
+            );
+          },
         );
       },
     );

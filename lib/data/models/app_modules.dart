@@ -8,6 +8,7 @@ class AppModulesModel {
     required this.poll,
     required this.judges,
     required this.subscription,
+    required this.navigation,
   });
 
   final bool application;
@@ -18,17 +19,31 @@ class AppModulesModel {
   final bool poll;
   final bool judges;
   final bool subscription;
+  // Ordered list of tabs to render in the bottom nav. Driving this from
+  // the server means we can ship/hide tabs without releasing a new build.
+  final List<AppModuleNavItem> navigation;
 
   factory AppModulesModel.fromJson(Map<String, dynamic> json) {
+    final navRaw = json["navigation"];
+    final nav = navRaw is List<dynamic>
+        ? navRaw
+              .whereType<Map>()
+              .map(
+                (e) => AppModuleNavItem.fromJson(Map<String, dynamic>.from(e)),
+              )
+              .toList()
+        : const <AppModuleNavItem>[];
+
     return AppModulesModel(
-      application: json["application"],
-      livestream: json["livestream"],
-      timeline: json["timeline"],
-      ticket: json["ticket"],
-      voting: json["voting"],
-      poll: json["poll"],
-      judges: json["judges"],
-      subscription: json["subscription"],
+      application: json["application"] == true,
+      livestream: json["livestream"] == true,
+      timeline: json["timeline"] == true,
+      ticket: json["ticket"] == true,
+      voting: json["voting"] == true,
+      poll: json["poll"] == true,
+      judges: json["judges"] == true,
+      subscription: json["subscription"] == true,
+      navigation: nav,
     );
   }
 
@@ -41,5 +56,24 @@ class AppModulesModel {
     "poll": poll,
     "judges": judges,
     "subscription": subscription,
+    "navigation": navigation.map((n) => n.toJson()).toList(),
   };
+}
+
+class AppModuleNavItem {
+  const AppModuleNavItem({required this.name, required this.label});
+
+  /// Stable identifier (e.g. "timeline", "search", "tickets"). Use this for
+  /// routing/iconography decisions, not [label] which is display text.
+  final String name;
+  final String label;
+
+  factory AppModuleNavItem.fromJson(Map<String, dynamic> json) {
+    return AppModuleNavItem(
+      name: (json["name"] ?? "").toString(),
+      label: (json["label"] ?? "").toString(),
+    );
+  }
+
+  Map<String, dynamic> toJson() => {"name": name, "label": label};
 }
