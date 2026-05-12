@@ -1,4 +1,6 @@
 export "interview_slots_models.dart";
+export "applicant_current_interview_booking_models.dart";
+export "applicant_schedule_models.dart";
 export "applicant_dashboard_models.dart";
 export "app_textfield_state.dart";
 export "app_modules.dart";

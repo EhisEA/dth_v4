@@ -44,6 +44,9 @@ class ImageAssets {
   /////////////////////APPLICATION//////////////////////
   static const String applicationBg =
       "$imagePath/application/application_bg.png";
+  static const String blueBg = "$imagePath/application/blue_bg.png";
+  static const String greenBg = "$imagePath/application/green_bg.png";
+  static const String redBg = "$imagePath/application/red_bg.png";
 }
 
 class SvgAssets {

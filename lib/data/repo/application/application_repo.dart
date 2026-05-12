@@ -8,7 +8,18 @@ abstract class ApplicationRepo {
 
   Future<ApiResponse<ApplicantDashboardData>> getApplicantDashboard();
 
-  Future<ApiResponse<InterviewSlotsData>> getInterviewSlots({
-    required String date,
+  Future<ApiResponse<void>> postApplicantAuditionVideos({
+    required String videoLink,
+    required String socialMediaLink,
   });
+
+  Future<ApiResponse<InterviewPickerData>> getInterviewSlots();
+
+  Future<ApiResponse<InterviewBookingConfirmation>>
+  postApplicantInterviewBooking({required String slotUid});
+
+  Future<ApiResponse<ApplicantSchedulePayload>> getApplicantSchedule();
+
+  Future<ApiResponse<CurrentInterviewBookingPayload>>
+  getCurrentInterviewBooking();
 }

@@ -14,9 +14,12 @@ class ApplicantJourneyProgressBar extends StatelessWidget {
 
   final JourneyProgress progress;
 
-  static const double _barHeight = 12;
-  static const double _segmentWidth = 4;
-  static const double _gap = 2;
+  static const double _barHeight = 6;
+
+  /// Target geometry for slot count; actual segment width is stretched so slots
+  /// span the full width (Figma: many thin vertical strokes + narrow white gaps).
+  static const double _segmentWidthTarget = 2;
+  static const double _gap = 1.5;
 
   @override
   Widget build(BuildContext context) {
@@ -43,7 +46,7 @@ class ApplicantJourneyProgressBar extends StatelessWidget {
                     height: _barHeight,
                     fraction: frac,
                     fillColor: fillColor,
-                    segmentWidth: _segmentWidth,
+                    segmentWidthTarget: _segmentWidthTarget,
                     gap: _gap,
                   ),
                 ),
@@ -63,15 +66,15 @@ class ApplicantJourneyProgressBar extends StatelessWidget {
   }
 }
 
-/// Filled portion = first [fraction] of segment slots; each slot is a short
-/// stadium (rounded) column; [gap] is unpainted (shows card white behind).
+/// Filled portion = first [fraction] of segment slots. Vertical rects with
+/// fixed [gap] (card white); outer silhouette is a stadium clip like Figma.
 class _DiscreteSegmentBarPainter extends CustomPainter {
   _DiscreteSegmentBarPainter({
     required this.width,
     required this.height,
     required this.fraction,
     required this.fillColor,
-    required this.segmentWidth,
+    required this.segmentWidthTarget,
     required this.gap,
   });
 
@@ -79,7 +82,7 @@ class _DiscreteSegmentBarPainter extends CustomPainter {
   final double height;
   final double fraction;
   final Color fillColor;
-  final double segmentWidth;
+  final double segmentWidthTarget;
   final double gap;
 
   @override
@@ -88,30 +91,38 @@ class _DiscreteSegmentBarPainter extends CustomPainter {
     final h = size.height;
     if (w <= 0 || h <= 0) return;
 
-    final unit = segmentWidth + gap;
+    final unit = segmentWidthTarget + gap;
     if (unit <= 0) return;
 
     final maxSlots = math.max(1, ((w + gap) / unit).floor());
+    final totalGapWidth = (maxSlots - 1) * gap;
+    final segW = (w - totalGapWidth) / maxSlots;
+    if (segW <= 0) return;
+
     final filledSlots = (maxSlots * fraction.clamp(0.0, 1.0)).round().clamp(
       0,
       maxSlots,
     );
     if (filledSlots == 0) return;
 
-    final r = math.min(segmentWidth, h) / 2;
     final paint = Paint()..color = fillColor;
+    final clipRRect = RRect.fromRectAndRadius(
+      Rect.fromLTWH(0, 0, w, h),
+      Radius.circular(h * 0.5),
+    );
+
+    canvas.save();
+    canvas.clipRRect(clipRRect);
 
     for (var i = 0; i < filledSlots; i++) {
-      final left = i * unit;
+      final left = i * (segW + gap);
       if (left >= w) break;
-      final segW = math.min(segmentWidth, w - left);
-      if (segW <= 0) break;
-      final rr = RRect.fromRectAndRadius(
-        Rect.fromLTWH(left, 0, segW, h),
-        Radius.circular(r),
-      );
-      canvas.drawRRect(rr, paint);
+      final drawW = math.min(segW, w - left);
+      if (drawW <= 0) break;
+      canvas.drawRect(Rect.fromLTWH(left, 0, drawW, h), paint);
     }
+
+    canvas.restore();
   }
 
   @override
@@ -120,7 +131,7 @@ class _DiscreteSegmentBarPainter extends CustomPainter {
         oldDelegate.height != height ||
         oldDelegate.fraction != fraction ||
         oldDelegate.fillColor != fillColor ||
-        oldDelegate.segmentWidth != segmentWidth ||
+        oldDelegate.segmentWidthTarget != segmentWidthTarget ||
         oldDelegate.gap != gap;
   }
 }

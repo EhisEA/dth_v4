@@ -159,6 +159,7 @@ Color dashboardSemanticColor(String key) {
     case "neutral":
     case "grey":
     case "gray":
+    case "muted":
       return AppColors.greyTint55;
     case "amber":
     case "orange":
@@ -167,7 +168,7 @@ Color dashboardSemanticColor(String key) {
     case "blue":
       return AppColors.secondaryBlue;
     default:
-      return AppColors.tint15;
+      return AppColors.black;
   }
 }
 

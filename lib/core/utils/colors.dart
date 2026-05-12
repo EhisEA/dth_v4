@@ -58,6 +58,9 @@ class AppColors {
   // EBEBEB
   static Color greyTint35 = const Color(0xffEBEBEB);
 
+  // 787878
+  static Color greyTint50 = const Color(0xff787878);
+
   // 505050
   static Color greyTint55 = const Color(0xff505050);
 

@@ -35,6 +35,7 @@ class AppButton extends StatelessWidget {
     this.disableSubtitleColor,
     this.subtitleFontSize,
     this.fontSize,
+    this.shrinkWrap = false,
   });
   AppButton.primary({
     super.key,
@@ -64,6 +65,7 @@ class AppButton extends StatelessWidget {
     this.disableSubtitleColor,
     this.subtitleFontSize,
     this.fontSize,
+    this.shrinkWrap = false,
   }) : color = AppColors.primary,
        disableBorderColor = disableBorderColor ?? const Color(0xFFDBDBDB),
        disableBGColor =
@@ -100,6 +102,7 @@ class AppButton extends StatelessWidget {
     this.disableSubtitleColor,
     this.subtitleFontSize,
     this.fontSize,
+    this.shrinkWrap = false,
   }) : // color = AppColors.primaryColor .withValues(alpha:0.25),
        disableBorderColor = disableBorderColor ?? const Color(0xFFDBDBDB),
        disableBGColor =
@@ -140,6 +143,7 @@ class AppButton extends StatelessWidget {
     this.disableSubtitleColor,
     this.subtitleFontSize,
     this.fontSize,
+    this.shrinkWrap = false,
   });
   //  borderColor = AppColors.primary;
 
@@ -172,10 +176,13 @@ class AppButton extends StatelessWidget {
   final double? subtitleFontSize;
   final double? fontSize;
 
+  /// When true, horizontal size follows label (plus icons); [width] may stay null.
+  final bool shrinkWrap;
+
   Widget _buildLabel() {
     final title = AppText.regular(
       text ?? "",
-      fontSize: fontSize ?? (isShort ? 16 : 14),
+      fontSize: fontSize ?? (isShort ? 16 : 12),
       fontWeight: fontWeight ?? FontWeight.w400,
       color: enabled ? textColor : disableTextColor ?? AppColors.tint15,
       centered: true,
@@ -213,9 +220,10 @@ class AppButton extends StatelessWidget {
   Widget build(BuildContext context) {
     // Keep normal button chrome while loading (callers often set enabled: false).
     final showEnabledChrome = enabled || isLoading;
+    final looseWidth = transparent || shrinkWrap;
     return AnimatedContainer(
       duration: const Duration(milliseconds: 350),
-      width: width ?? (transparent ? null : double.infinity),
+      width: width ?? (looseWidth ? null : double.infinity),
       height: height ?? (transparent ? null : (52)),
       decoration: BoxDecoration(
         image: image != null
@@ -249,6 +257,12 @@ class AppButton extends StatelessWidget {
                 padding: EdgeInsets.zero,
                 tapTargetSize: MaterialTapTargetSize.shrinkWrap,
               )
+            : shrinkWrap
+            ? TextButton.styleFrom(
+                minimumSize: Size.zero,
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+              )
             : null,
         onPressed: () {
           enabled && !isLoading ? press?.call() : null;
@@ -267,19 +281,26 @@ class AppButton extends StatelessWidget {
                 ),
               )
             : Row(
-                mainAxisSize: MainAxisSize.max,
+                mainAxisSize: shrinkWrap ? MainAxisSize.min : MainAxisSize.max,
                 children: [
                   if (prefixIcon != null) ...[prefixIcon!, Gap.w8],
-                  Expanded(
-                    child: Align(
+                  if (shrinkWrap)
+                    FittedBox(
+                      fit: BoxFit.scaleDown,
                       alignment: Alignment.center,
-                      child: FittedBox(
-                        fit: BoxFit.scaleDown,
+                      child: widget ?? _buildLabel(),
+                    )
+                  else
+                    Expanded(
+                      child: Align(
                         alignment: Alignment.center,
-                        child: widget ?? _buildLabel(),
+                        child: FittedBox(
+                          fit: BoxFit.scaleDown,
+                          alignment: Alignment.center,
+                          child: widget ?? _buildLabel(),
+                        ),
                       ),
                     ),
-                  ),
                   if (suffixIcon != null) ...[Gap.w8, suffixIcon!],
                 ],
               ),

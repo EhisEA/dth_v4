@@ -35,49 +35,58 @@ class _ApplicantDashboardViewState
     final vm = ref.watch(applicantDashboardViewModelProvider);
     final title = vm.appBarTitle(vm.data);
 
-    return Scaffold(
-      backgroundColor: AppColors.white,
-      appBar: DthAppBar(title: title, onBack: () => vm.handleBack(context)),
-      body: vm.baseState.when(
-        busy: () => const Center(child: CircularProgressIndicator.adaptive()),
-        error: (Failure failure) => Center(
-          child: ListView(
-            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 48),
-            children: [
-              AppText.semiBold(
-                "Could not load dashboard",
-                fontSize: 16,
-                color: AppColors.mainBlack,
-                textAlign: TextAlign.center,
-              ),
-              Gap.h12,
-              AppText.regular(
-                failure.message,
-                fontSize: 14,
-                color: AppColors.blackTint20,
-                textAlign: TextAlign.center,
-              ),
-              Gap.h24,
-              Center(
-                child: AppButton.primary(
-                  text: "Retry",
-                  height: 48,
-                  press: () => unawaited(vm.loadDashboard()),
-                ),
-              ),
-            ],
-          ),
+    return Container(
+      decoration: BoxDecoration(
+        image: DecorationImage(
+          image: AssetImage(ImageAssets.greenBg),
+          fit: BoxFit.fill,
+          alignment: Alignment.topCenter,
         ),
-        idle: () {
-          final data = vm.data;
-          if (data != null) {
-            return Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: ApplicantDashboardScrollBody(data: data, viewModel: vm),
-            );
-          }
-          return const Center(child: CircularProgressIndicator.adaptive());
-        },
+      ),
+      child: Scaffold(
+        // backgroundColor: AppColors.redTint35,
+        appBar: DthAppBar(title: title, onBack: () => vm.handleBack(context)),
+        body: vm.baseState.when(
+          busy: () => const Center(child: CircularProgressIndicator.adaptive()),
+          error: (Failure failure) => Center(
+            child: ListView(
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 48),
+              children: [
+                AppText.semiBold(
+                  "Could not load dashboard",
+                  fontSize: 16,
+                  color: AppColors.mainBlack,
+                  textAlign: TextAlign.center,
+                ),
+                Gap.h12,
+                AppText.regular(
+                  failure.message,
+                  fontSize: 14,
+                  color: AppColors.blackTint20,
+                  textAlign: TextAlign.center,
+                ),
+                Gap.h24,
+                Center(
+                  child: AppButton.primary(
+                    text: "Retry",
+                    height: 48,
+                    press: () => unawaited(vm.loadDashboard()),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          idle: () {
+            final data = vm.data;
+            if (data != null) {
+              return Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: ApplicantDashboardScrollBody(data: data, viewModel: vm),
+              );
+            }
+            return const Center(child: CircularProgressIndicator.adaptive());
+          },
+        ),
       ),
     );
   }

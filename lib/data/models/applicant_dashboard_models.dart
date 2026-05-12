@@ -210,6 +210,7 @@ class JourneyCta {
     required this.target,
     required this.enabled,
     required this.variant,
+    this.isLoading = false,
   });
 
   final String label;
@@ -217,6 +218,7 @@ class JourneyCta {
   final String target;
   final bool enabled;
   final String variant;
+  final bool isLoading;
 
   factory JourneyCta.fromJson(Map<String, dynamic>? json) {
     if (json == null) {
@@ -228,12 +230,15 @@ class JourneyCta {
         variant: "primary",
       );
     }
+    final rawLoading = json["is_loading"] ?? json["isLoading"];
+    final loading = rawLoading is bool ? rawLoading : false;
     return JourneyCta(
       label: json["label"] as String? ?? "",
       action: json["action"] as String? ?? "",
       target: json["target"] as String? ?? "",
       enabled: json["enabled"] as bool? ?? false,
       variant: json["variant"] as String? ?? "primary",
+      isLoading: loading,
     );
   }
 

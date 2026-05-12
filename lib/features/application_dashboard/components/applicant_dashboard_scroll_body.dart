@@ -75,7 +75,22 @@ class ApplicantDashboardScrollBody extends StatelessWidget {
                           child: ApplicantJourneyCard(
                             card: rows[r][0]!,
                             width: cellWidth,
-                            onCta: viewModel.handleJourneyCta,
+                            ctaFetchBusy:
+                                viewModel.interviewSlotsFetchBusyFor(
+                                  rows[r][0]!.key,
+                                ) ||
+                                viewModel.interviewLinkFetchBusyFor(
+                                  rows[r][0]!.key,
+                                ),
+                            scheduleFetchBusy: viewModel.scheduleFetchBusyFor(
+                              rows[r][0]!.key,
+                            ),
+                            onCardTap:
+                                rows[r][0]!.key.toLowerCase() == "schedule"
+                                ? () => viewModel.openScheduleSheet(context)
+                                : null,
+                            onCta: (c) =>
+                                viewModel.handleJourneyCta(context, c),
                           ),
                         ),
                         SizedBox(width: spacing),
@@ -85,7 +100,23 @@ class ApplicantDashboardScrollBody extends StatelessWidget {
                               ? ApplicantJourneyCard(
                                   card: rows[r][1]!,
                                   width: cellWidth,
-                                  onCta: viewModel.handleJourneyCta,
+                                  ctaFetchBusy:
+                                      viewModel.interviewSlotsFetchBusyFor(
+                                        rows[r][1]!.key,
+                                      ) ||
+                                      viewModel.interviewLinkFetchBusyFor(
+                                        rows[r][1]!.key,
+                                      ),
+                                  scheduleFetchBusy: viewModel
+                                      .scheduleFetchBusyFor(rows[r][1]!.key),
+                                  onCardTap:
+                                      rows[r][1]!.key.toLowerCase() ==
+                                          "schedule"
+                                      ? () =>
+                                            viewModel.openScheduleSheet(context)
+                                      : null,
+                                  onCta: (c) =>
+                                      viewModel.handleJourneyCta(context, c),
                                 )
                               : SizedBox(width: cellWidth),
                         ),
@@ -110,6 +141,7 @@ class ApplicantDashboardScrollBody extends StatelessWidget {
             ),
           ],
           Gap.h24,
+          Gap.h32,
         ],
       ),
     );

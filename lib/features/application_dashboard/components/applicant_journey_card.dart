@@ -14,11 +14,23 @@ class ApplicantJourneyCard extends StatelessWidget {
     required this.card,
     required this.width,
     this.onCta,
+    this.onCardTap,
+    this.scheduleFetchBusy = false,
+    this.ctaFetchBusy = false,
   });
 
   final JourneyCard card;
   final double width;
-  final void Function(JourneyCta cta)? onCta;
+  final void Function(JourneyCard card)? onCta;
+
+  /// Whole-card tap (e.g. schedule journey opens sheet). Does not replace [onCta].
+  final VoidCallback? onCardTap;
+
+  /// Shown while [ApplicantDashboardViewModel.openScheduleSheet] is loading.
+  final bool scheduleFetchBusy;
+
+  /// Client-side busy (e.g. prefetching interview slots before opening sheet).
+  final bool ctaFetchBusy;
 
   static Color _chipForeground(JourneyStatusChip chip) {
     final v = (chip.variant ?? chip.tone ?? "").trim().toLowerCase();
@@ -67,7 +79,7 @@ class ApplicantJourneyCard extends StatelessWidget {
     final cta = card.cta;
     final progress = _progressWidget(card.progress);
 
-    return Container(
+    final Widget inner = Container(
       width: width,
       height: 220,
       padding: const EdgeInsets.all(16),
@@ -109,16 +121,10 @@ class ApplicantJourneyCard extends StatelessWidget {
           const Spacer(),
           if (progress != null) ...[Gap.h8, progress],
           if (foot != null && !foot.isEmpty) ...[
-            AppText.regular(
-              foot.label.trim(),
-              fontSize: 10,
-              color: _footerTextColor(foot),
-              maxLines: 3,
-              multiText: true,
-            ),
+            InlineTaggedText(foot.label, color: _footerTextColor(foot)),
             Gap.h8,
           ],
-          if (cta != null && cta.enabled && cta.label.isNotEmpty) ...[
+          if (cta != null && cta.label.trim().isNotEmpty) ...[
             Gap.h6,
             AppButton.primary(
               text: cta.label,
@@ -126,7 +132,13 @@ class ApplicantJourneyCard extends StatelessWidget {
               fontSize: 12,
               height: 36,
               radius: 100,
-              press: () => onCta?.call(cta),
+              enabled: cta.enabled && !cta.isLoading && !ctaFetchBusy,
+              disableBGColor: AppColors.greyTint20,
+              disableTextColor: AppColors.greyTint50,
+              isLoading: cta.isLoading || ctaFetchBusy,
+              press: cta.enabled && !cta.isLoading && !ctaFetchBusy
+                  ? () => onCta?.call(card)
+                  : null,
             ),
           ] else if (chip != null && !chip.isEmpty) ...[
             Gap.h6,
@@ -147,6 +159,43 @@ class ApplicantJourneyCard extends StatelessWidget {
         ],
       ),
     );
+
+    Widget wrapped = inner;
+    if (scheduleFetchBusy) {
+      wrapped = ClipRRect(
+        borderRadius: BorderRadius.circular(12),
+        child: Stack(
+          alignment: Alignment.center,
+          children: [
+            wrapped,
+            Positioned.fill(
+              child: ColoredBox(
+                color: AppColors.white.withValues(alpha: 0.55),
+                child: const Center(
+                  child: SizedBox(
+                    width: 28,
+                    height: 28,
+                    child: CircularProgressIndicator.adaptive(strokeWidth: 2),
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
+    if (onCardTap != null) {
+      return Material(
+        type: MaterialType.transparency,
+        child: InkWell(
+          borderRadius: BorderRadius.circular(12),
+          onTap: scheduleFetchBusy ? null : onCardTap,
+          child: wrapped,
+        ),
+      );
+    }
+    return wrapped;
   }
 
   static String chipSvgAsset(String? icon) {
@@ -158,7 +207,7 @@ class ApplicantJourneyCard extends StatelessWidget {
       case "success":
         return SvgAssets.check;
       case "info":
-        return SvgAssets.infoOutline;
+        return SvgAssets.clock;
       default:
         return SvgAssets.rightArrow;
     }

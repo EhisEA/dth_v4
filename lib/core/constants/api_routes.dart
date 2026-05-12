@@ -32,6 +32,13 @@ class ApiRoute {
   static String get applicantDashboard => "$baseUrl/applicant/dashboard";
   static String get applicantInterviewSlots =>
       "$baseUrl/applicant/interview-slots";
+  static String get applicantInterviewBookings =>
+      "$baseUrl/applicant/interview-bookings";
+  static String get applicantInterviewBookingCurrent =>
+      "$baseUrl/applicant/interview-bookings/current";
+  static String get applicantSchedule => "$baseUrl/applicant/schedule";
+  static String get applicantAuditionVideos =>
+      "$baseUrl/applicant/audition-videos";
 
   ///SUBSCRIPTION
   static String get subscriptionPlans => "$baseUrl/subscription/plans";

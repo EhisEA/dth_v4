@@ -208,30 +208,42 @@ class BottomNavBarState extends ConsumerState<BottomNavBar> {
 
   Widget _buildCustomNavBar(List<_NavBinding> bindings) {
     final bottomInset = MediaQuery.paddingOf(context).bottom;
+    final bottomPad = bottomInset > 0 ? 4.0 : 8.0;
     return Material(
       color: AppColors.white,
       elevation: 8,
       shadowColor: Colors.black26,
-      child: Padding(
-        padding: EdgeInsets.only(bottom: bottomInset > 0 ? 4 : 8),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: [
-            for (var i = 0; i < bindings.length; i++)
-              Expanded(
-                child: NavItem(
-                  icon: bindings[i].assetInactive,
-                  activeIcon: bindings[i].assetActive,
-                  isActive: _tabController.index == i,
-                  onTap: () {
-                    setState(() {
-                      _tabController.index = i;
-                    });
-                  },
-                ),
+      child: LayoutBuilder(
+        builder: (context, c) {
+          final outerH = c.maxHeight.isFinite ? c.maxHeight : 84.0;
+          final innerH = (outerH - bottomPad).clamp(1.0, 400.0);
+          return Padding(
+            padding: EdgeInsets.only(bottom: bottomPad),
+            child: SizedBox(
+              height: innerH,
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  for (var i = 0; i < bindings.length; i++)
+                    Expanded(
+                      child: NavItem(
+                        icon: bindings[i].assetInactive,
+                        activeIcon: bindings[i].assetActive,
+                        isActive: _tabController.index == i,
+                        semanticLabel: bindings[i].label,
+                        onTap: () {
+                          setState(() {
+                            _tabController.index = i;
+                          });
+                        },
+                      ),
+                    ),
+                ],
               ),
-          ],
-        ),
+            ),
+          );
+        },
       ),
     );
   }
@@ -263,7 +275,8 @@ class BottomNavBarState extends ConsumerState<BottomNavBar> {
                 controller: _tabController,
                 handleAndroidBackButtonPress: false,
                 screens: [
-                  for (final b in bindings) CustomNavBarScreen(screen: b.screen),
+                  for (final b in bindings)
+                    CustomNavBarScreen(screen: b.screen),
                 ],
                 confineToSafeArea: false,
                 navBarHeight: 84,
