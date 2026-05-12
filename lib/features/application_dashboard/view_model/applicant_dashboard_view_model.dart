@@ -325,6 +325,7 @@ class ApplicantDashboardViewModel extends BaseChangeNotifierViewModel {
         final payload = await _loadCurrentInterviewBookingPayload();
         if (!context.mounted) return;
         Navigator.of(context).pop();
+        await refreshDashboard();
         if (!context.mounted) return;
         await showCurrentInterviewLinkSheet(context, payload: payload);
       } on ApiFailure catch (e) {
