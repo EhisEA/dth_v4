@@ -18,7 +18,7 @@ class ContestantDashboardTile extends StatelessWidget {
   final ParticipationRole role;
   final VoidCallback onTap;
 
-  static const _title = "Contestant Dashboard";
+  static const _title = "Applicant Dashboard";
 
   String get _subtitle {
     switch (role) {

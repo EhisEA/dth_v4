@@ -89,26 +89,30 @@ class ApplicantPerformanceInfo {
 class ApplicantDashboardBanner {
   const ApplicantDashboardBanner({
     required this.variant,
-    required this.title,
+    this.title,
     required this.body,
   });
 
   final String variant;
-  final String title;
+  final String? title;
   final String body;
 
   factory ApplicantDashboardBanner.fromJson(Map<String, dynamic>? json) {
     if (json == null) {
-      return const ApplicantDashboardBanner(variant: "", title: "", body: "");
+      return const ApplicantDashboardBanner(variant: "", body: "");
     }
     return ApplicantDashboardBanner(
       variant: json["variant"] as String? ?? "",
-      title: json["title"] as String? ?? "",
+      title: json["title"] as String?,
       body: json["body"] as String? ?? "",
     );
   }
 
-  bool get isEmpty => title.isEmpty && body.isEmpty;
+  bool get isEmpty {
+    final t = title?.trim() ?? "";
+    final b = body.trim();
+    return t.isEmpty && b.isEmpty;
+  }
 }
 
 class JourneyStatusChip {
@@ -137,6 +141,66 @@ class JourneyStatusChip {
   }
 
   bool get isEmpty => label.isEmpty;
+}
+
+/// Journey card `footer` object: `{ "label": "...", "tone": "danger" | "success" }`.
+/// Legacy payloads may send `footer` as a plain string.
+class JourneyCardFooter {
+  const JourneyCardFooter({required this.label, this.tone});
+
+  final String label;
+  final String? tone;
+
+  bool get isEmpty => label.trim().isEmpty;
+
+  factory JourneyCardFooter.fromJson(Map<String, dynamic> json) {
+    return JourneyCardFooter(
+      label: json["label"] as String? ?? "",
+      tone: json["tone"] as String?,
+    );
+  }
+
+  /// Plain string footer (no tone).
+  factory JourneyCardFooter.plain(String text) {
+    return JourneyCardFooter(label: text, tone: null);
+  }
+}
+
+class JourneyProgress {
+  const JourneyProgress({
+    required this.type,
+    required this.value,
+    required this.max,
+    required this.label,
+    required this.color,
+  });
+
+  final String type;
+  final int value;
+  final int max;
+  final String label;
+  final String color;
+
+  String get typeNormalized => type.trim().toLowerCase();
+
+  bool get isRenderable {
+    final t = typeNormalized;
+    return t == "bar" || t == "stars";
+  }
+
+  factory JourneyProgress.fromJson(Map<String, dynamic> json) {
+    final rawValue = json["value"];
+    final value = rawValue is num ? rawValue.round() : 0;
+    final rawMax = json["max"];
+    final max = rawMax is num ? rawMax.round() : 0;
+    return JourneyProgress(
+      type: json["type"] as String? ?? "",
+      value: value,
+      max: max,
+      label: json["label"] as String? ?? "",
+      color: json["color"] as String? ?? "neutral",
+    );
+  }
 }
 
 class JourneyCta {
@@ -186,6 +250,8 @@ class JourneyCard {
     this.body,
     this.statusChip,
     this.cta,
+    this.progress,
+    this.footer,
   });
 
   final String key;
@@ -196,6 +262,8 @@ class JourneyCard {
   final String? body;
   final JourneyStatusChip? statusChip;
   final JourneyCta? cta;
+  final JourneyProgress? progress;
+  final JourneyCardFooter? footer;
 
   factory JourneyCard.fromJson(Map<String, dynamic> json) {
     JourneyStatusChip? chip;
@@ -212,6 +280,23 @@ class JourneyCard {
       if (cta.isEmpty) cta = null;
     }
 
+    JourneyProgress? progress;
+    final rawProgress = json["progress"];
+    if (rawProgress is Map<String, dynamic>) {
+      final p = JourneyProgress.fromJson(rawProgress);
+      if (p.type.trim().isNotEmpty) progress = p;
+    }
+
+    JourneyCardFooter? footer;
+    final rawFooter = json["footer"];
+    if (rawFooter is String) {
+      final s = rawFooter.trim();
+      if (s.isNotEmpty) footer = JourneyCardFooter.plain(s);
+    } else if (rawFooter is Map<String, dynamic>) {
+      final f = JourneyCardFooter.fromJson(rawFooter);
+      if (!f.isEmpty) footer = f;
+    }
+
     final rawOrder = json["order"];
     final order = rawOrder is num ? rawOrder.toInt() : 0;
 
@@ -224,16 +309,21 @@ class JourneyCard {
       body: json["body"] as String?,
       statusChip: chip,
       cta: cta,
+      progress: progress,
+      footer: footer,
     );
   }
 
   bool get hasDisplayableContent {
     final t = title?.trim() ?? "";
     final b = body?.trim() ?? "";
+    final f = footer?.label.trim() ?? "";
     return t.isNotEmpty ||
         b.isNotEmpty ||
+        f.isNotEmpty ||
         cta != null ||
-        (statusChip != null && !statusChip!.isEmpty);
+        (statusChip != null && !statusChip!.isEmpty) ||
+        (progress != null && progress!.isRenderable);
   }
 }
 

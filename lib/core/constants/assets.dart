@@ -101,6 +101,7 @@ class SvgAssets {
   /////////////////////APPLICATION//////////////////////
   ///
   static const String support = "$svgPath/application/support.svg";
+  static const String copyOutline = "$svgPath/application/copy_outline.svg";
   static const String edit = "$svgPath/application/edit.svg";
   static const String calendarEdit = "$svgPath/application/calendar-edit.svg";
   static const String infoOutline = "$svgPath/application/info-circle.svg";

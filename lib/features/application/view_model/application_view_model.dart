@@ -1,5 +1,5 @@
 import "package:dth_v4/data/data.dart";
-import "package:dth_v4/features/application_dashboard/view_model/applicant_dashboard_view_model.dart";
+import "package:dth_v4/features/application_dashboard/applicant_dashboard.dart";
 import "package:dth_v4/widgets/widgets.dart";
 import "package:flutter_riverpod/flutter_riverpod.dart";
 import "package:flutter_utils/flutter_utils.dart";
@@ -128,6 +128,7 @@ class ApplicationViewModel extends BaseChangeNotifierViewModel {
       accountName: source.accountName.trim(),
       accountNumber: source.accountNumber.trim(),
       isFinalStep: isFinalStep,
+      includeBankDetails: _applicationProcess?.collectBankDetails ?? false,
     );
   }
 
@@ -156,6 +157,10 @@ class ApplicationViewModel extends BaseChangeNotifierViewModel {
       await _userProfileState.updateUserDataFromServer();
       await _applicantDashboardViewModel.refreshAfterApplicationSubmit();
       setState(_submitApplicationKey, const ViewModelState.idle());
+      DthFlushBar.instance.showSuccess(
+        title: "Success",
+        message: "Application submitted successfully!",
+      );
       onSuccess?.call();
     } on ApiFailure catch (e) {
       setState(_submitApplicationKey, ViewModelState.error(e));

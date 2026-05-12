@@ -25,16 +25,18 @@ class ApplicationView extends ConsumerStatefulWidget {
 }
 
 class _ApplicationViewState extends ConsumerState<ApplicationView> {
-  static const int _totalSteps = 5;
-
-  late final PageController _pageController;
   final List<GlobalKey<FormState>> _formKeys = List.generate(
-    _totalSteps,
+    5,
     (_) => GlobalKey<FormState>(),
   );
-  final List<void Function()?> _persistFns = List.filled(_totalSteps, null);
+  final List<void Function()?> _persistFns = List.filled(5, null);
+
+  late final PageController _pageController;
 
   int _currentIndex = 0;
+
+  static int _stepCount(ApplicationProcess p) =>
+      p.collectBankDetails ? 5 : 4;
 
   @override
   void initState() {
@@ -99,19 +101,10 @@ class _ApplicationViewState extends ConsumerState<ApplicationView> {
   }
 
   String _primaryButtonLabel() {
-    switch (_currentIndex) {
-      case 0:
-      case 1:
-      case 2:
-      case 3:
-      case 4:
-        return 'Proceed';
-      default:
-        return 'Proceed';
-    }
+    return 'Proceed';
   }
 
-  String _primaryButtonSubtitle() {
+  String _primaryButtonSubtitle(ApplicationProcess process) {
     switch (_currentIndex) {
       case 0:
         return '(Contact Information)';
@@ -120,7 +113,7 @@ class _ApplicationViewState extends ConsumerState<ApplicationView> {
       case 2:
         return '(Audition Video)';
       case 3:
-        return '(Bank Details)';
+        return process.collectBankDetails ? '(Bank Details)' : '(Review)';
       case 4:
         return '(Review)';
       default:
@@ -243,7 +236,7 @@ class _ApplicationViewState extends ConsumerState<ApplicationView> {
                   Expanded(
                     child: ApplicationSegmentedProgress(
                       currentStepIndex: _currentIndex,
-                      totalSteps: _totalSteps,
+                      totalSteps: _stepCount(process),
                     ),
                   ),
                   Gap.w24,
@@ -282,11 +275,12 @@ class _ApplicationViewState extends ConsumerState<ApplicationView> {
                     formKey: _formKeys[3],
                     onRegisterPersist: (fn) => _registerPersist(3, fn),
                   ),
-                  BankDetailsStep(
-                    formKey: _formKeys[4],
-                    onRegisterPersist: (fn) => _registerPersist(4, fn),
-                    applicationProcess: process,
-                  ),
+                  if (process.collectBankDetails)
+                    BankDetailsStep(
+                      formKey: _formKeys[4],
+                      onRegisterPersist: (fn) => _registerPersist(4, fn),
+                      applicationProcess: process,
+                    ),
                 ],
               ),
             ),
@@ -294,8 +288,8 @@ class _ApplicationViewState extends ConsumerState<ApplicationView> {
               padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
               child: AppButton.primary(
                 text: _primaryButtonLabel(),
-                press: _onProceed,
-                subtitle: _primaryButtonSubtitle(),
+                press: () => _onProceed(process),
+                subtitle: _primaryButtonSubtitle(process),
               ),
             ),
             Padding(
@@ -333,13 +327,14 @@ class _ApplicationViewState extends ConsumerState<ApplicationView> {
     );
   }
 
-  Future<void> _onProceed() async {
+  Future<void> _onProceed(ApplicationProcess process) async {
     FocusScope.of(context).unfocus();
+    final steps = _stepCount(process);
     final form = _formKeys[_currentIndex].currentState;
     if (form == null || !form.validate()) return;
     _persistFns[_currentIndex]?.call();
 
-    if (_currentIndex < _totalSteps - 1) {
+    if (_currentIndex < steps - 1) {
       await _pageController.animateToPage(
         _currentIndex + 1,
         duration: const Duration(milliseconds: 280),
@@ -353,7 +348,7 @@ class _ApplicationViewState extends ConsumerState<ApplicationView> {
       );
       if (!mounted) return;
       if (result == null) return;
-      if (result is int && result >= 0 && result < _totalSteps) {
+      if (result is int && result >= 0 && result < steps) {
         _pageController.jumpToPage(result);
         setState(() => _currentIndex = result);
       }

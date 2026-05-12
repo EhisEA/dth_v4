@@ -1,2 +1,9 @@
 export 'view_model/applicant_dashboard_view_model.dart';
+export 'view_model/interview_slots_view_model.dart';
 export 'views/applicant_dashboard_view.dart';
+export 'components/applicant_performance_gauge.dart';
+export 'components/applicant_dashboard_scroll_body.dart';
+export 'components/applicant_dashboard_inline_banner.dart';
+export 'components/applicant_journey_progress_bar.dart';
+export 'components/applicant_journey_progress_stars.dart';
+export 'components/applicant_journey_card.dart';

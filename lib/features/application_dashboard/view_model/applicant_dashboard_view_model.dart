@@ -56,6 +56,17 @@ class ApplicantDashboardViewModel extends BaseChangeNotifierViewModel {
     }
   }
 
+  /// Pull-to-refresh: does not set global busy (keeps current body visible).
+  Future<void> refreshDashboard() async {
+    try {
+      final response = await _applicationRepo.getApplicantDashboard();
+      _data = response.data;
+      notifyListeners();
+    } on ApiFailure catch (e) {
+      DthFlushBar.instance.showError(message: e.message, title: "Failed");
+    }
+  }
+
   /// When opening the screen with no cached payload yet (e.g. prefetch skipped or failed).
   Future<void> ensureScreenLoaded() async {
     if (_data != null) return;
@@ -94,6 +105,41 @@ class ApplicantDashboardViewModel extends BaseChangeNotifierViewModel {
         return AppColors.redTint35.withValues(alpha: 0.08);
       default:
         return AppColors.greyTint20;
+    }
+  }
+
+  String iconForVariant(String variant) {
+    switch (variant.toLowerCase()) {
+      case "success":
+        return SvgAssets.check;
+      case "danger":
+        return SvgAssets.infoOutline;
+      default:
+        return SvgAssets.check;
+    }
+  }
+
+  Color bannerBorderForVariant(String variant) {
+    switch (variant.toLowerCase()) {
+      case "success":
+        return AppColors.primary.withValues(alpha: 0.35);
+      case "danger":
+      case "error":
+        return AppColors.redTint35.withValues(alpha: 0.4);
+      default:
+        return AppColors.greyTint35;
+    }
+  }
+
+  Color bannerBodyTextColorForVariant(String variant) {
+    switch (variant.toLowerCase()) {
+      case "success":
+        return AppColors.primaryMedium;
+      case "danger":
+      case "error":
+        return AppColors.redTint35;
+      default:
+        return AppColors.blackTint20;
     }
   }
 

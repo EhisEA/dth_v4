@@ -146,14 +146,21 @@ class _RadialTickGaugePainter extends CustomPainter {
   }
 }
 
-Color applicantPerformanceArcColor(String colorKey) {
-  switch (colorKey.toLowerCase()) {
-    case "green":
+/// Maps API semantic strings (`green`, `amber`, `success`, `danger`, …) to UI colors
+/// for journey progress, status chips, and the performance gauge arc.
+Color dashboardSemanticColor(String key) {
+  switch (key.trim().toLowerCase()) {
     case "success":
+    case "green":
       return AppColors.primary;
-    case "red":
     case "danger":
+    case "red":
       return AppColors.redTint35;
+    case "neutral":
+    case "grey":
+    case "gray":
+      return AppColors.greyTint55;
+    case "amber":
     case "orange":
     case "warning":
       return AppColors.secondaryOrange;
@@ -162,4 +169,8 @@ Color applicantPerformanceArcColor(String colorKey) {
     default:
       return AppColors.tint15;
   }
+}
+
+Color applicantPerformanceArcColor(String colorKey) {
+  return dashboardSemanticColor(colorKey);
 }

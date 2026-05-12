@@ -179,20 +179,28 @@ class _ProfileViewState extends ConsumerState<ProfileView> {
                           );
                         },
                       ),
-                      Gap.h28,
-                      ProfileTlle(
-                        title: "Social Media Community",
-                        description:
-                            "Connect with our community and stay updated",
-                        icon: SvgAssets.social,
-                        onTap: () {},
-                      ),
+                      // Gap.h28,
+                      // ProfileTlle(
+                      //   title: "Social Media Community",
+                      //   description:
+                      //       "Connect with our community and stay updated",
+                      //   icon: SvgAssets.social,
+                      //   onTap: () {},
+                      // ),
                       Gap.h28,
                       ProfileTlle(
                         title: "Learn More",
                         description: "Discover more about De9jaTalenthunt",
                         icon: SvgAssets.learn,
-                        onTap: () {},
+                        onTap: () {
+                          MobileNavigationService.instance.navigateTo(
+                            AppWebView.path,
+                            extra: {
+                              RoutingArgumentKey.title: "Learn More",
+                              RoutingArgumentKey.initialURl: AppLink.dthWebsite,
+                            },
+                          );
+                        },
                       ),
                       Gap.h32,
                       AppText.medium(

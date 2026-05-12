@@ -1,8 +1,7 @@
 import "dart:async";
 
 import "package:dth_v4/core/core.dart";
-import "package:dth_v4/features/application_dashboard/view_model/applicant_dashboard_view_model.dart";
-import "package:dth_v4/features/application_dashboard/widgets/applicant_dashboard_scroll_body.dart";
+import "package:dth_v4/features/application_dashboard/applicant_dashboard.dart";
 import "package:dth_v4/widgets/widgets.dart";
 import "package:flutter/material.dart";
 import "package:flutter_riverpod/flutter_riverpod.dart";
