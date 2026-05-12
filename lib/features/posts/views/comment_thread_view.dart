@@ -5,6 +5,7 @@ import "package:dth_v4/core/core.dart";
 import "package:dth_v4/features/posts/components/comment_composer.dart";
 import "package:dth_v4/features/posts/components/comment_sort_header.dart";
 import "package:dth_v4/features/posts/components/comment_tile.dart";
+import "package:dth_v4/features/posts/components/like_chip.dart";
 import "package:dth_v4/features/posts/models/comment.dart";
 import "package:dth_v4/features/posts/view_model/comment_thread_view_model.dart";
 import "package:dth_v4/features/posts/view_model/comments_cache.dart";
@@ -34,10 +35,7 @@ class CommentThreadView extends ConsumerWidget {
         .toList(growable: false);
 
     return Scaffold(
-      appBar: const DthAppBar(
-        backgroundColor: Colors.white,
-        title: "Comments",
-      ),
+      appBar: const DthAppBar(backgroundColor: Colors.white, title: "Comments"),
       backgroundColor: const Color(0xffFCFCFC),
       body: Column(
         children: [
@@ -55,7 +53,8 @@ class CommentThreadView extends ConsumerWidget {
                   physics: const AlwaysScrollableScrollPhysics(),
                   padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
                   children: [
-                    if (parent != null) _ParentCommentBlock(comment: parent, vm: vm),
+                    if (parent != null)
+                      _ParentCommentBlock(comment: parent, vm: vm),
                     Gap.h16,
                     Container(height: 1, color: const Color(0xffEFEFEF)),
                     Gap.h16,
@@ -224,41 +223,38 @@ class _ParentActions extends StatelessWidget {
     return Row(
       children: [
         Container(
-          padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 12),
+          // padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 12),
           decoration: BoxDecoration(
             color: const Color(0xFFF7F7F7),
             borderRadius: BorderRadius.circular(20),
           ),
           child: Row(
             children: [
-              _ActionChip(
-                icon: comment.viewerReacted
-                    ? SvgAssets.favorite
-                    : SvgAssets.favoriteBorder,
+              LikeChip(
+                padding: EdgeInsets.fromLTRB(12, 10, 10, 10),
+
+                liked: comment.viewerReacted,
                 count: comment.likeCount,
-                tint: comment.viewerReacted
-                    ? const Color(0xffE74C3C)
-                    : null,
                 onTap: onLike,
               ),
-              Gap.w10,
               Container(width: 1, height: 14, color: const Color(0xffEBEBEB)),
-              Gap.w10,
               _ActionChip(
                 icon: SvgAssets.messagesBorder,
                 count: comment.replyCount,
+                padding: EdgeInsets.fromLTRB(10, 6, 12, 6),
+                // onTap: onComment,
               ),
             ],
           ),
         ),
         Gap.w10,
         Container(
-          padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
           decoration: BoxDecoration(
             color: const Color(0xFFF7F7F7),
             borderRadius: BorderRadius.circular(20),
           ),
           child: _ActionChip(
+            padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
             icon: SvgAssets.share,
             count: comment.shareCount,
           ),
@@ -272,12 +268,14 @@ class _ActionChip extends StatelessWidget {
   const _ActionChip({
     required this.icon,
     required this.count,
+    this.padding,
     this.tint,
     this.onTap,
   });
 
   final String icon;
   final int count;
+  final EdgeInsets? padding;
   final Color? tint;
   final VoidCallback? onTap;
 
@@ -286,21 +284,24 @@ class _ActionChip extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       behavior: HitTestBehavior.opaque,
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          SvgPicture.asset(
-            icon,
-            height: 14,
-            width: 14,
-            colorFilter: ColorFilter.mode(
-              tint ?? AppColors.blackTint20,
-              BlendMode.srcIn,
+      child: Container(
+        padding: padding,
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            SvgPicture.asset(
+              icon,
+              height: 14,
+              width: 14,
+              colorFilter: ColorFilter.mode(
+                tint ?? AppColors.blackTint20,
+                BlendMode.srcIn,
+              ),
             ),
-          ),
-          Gap.w4,
-          AppText.medium('$count', fontSize: 12, color: AppColors.tint25),
-        ],
+            Gap.w4,
+            AppText.medium('$count', fontSize: 12, color: AppColors.tint25),
+          ],
+        ),
       ),
     );
   }

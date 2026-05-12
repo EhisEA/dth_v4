@@ -15,11 +15,13 @@ class LikeChip extends StatefulWidget {
     super.key,
     required this.liked,
     required this.count,
+    this.padding,
     this.onTap,
     this.iconSize = 14,
     this.fontSize = 12,
   });
 
+  final EdgeInsets? padding;
   final bool liked;
   final int count;
   final VoidCallback? onTap;
@@ -65,14 +67,15 @@ class _LikeChipState extends State<LikeChip> with TickerProviderStateMixin {
       ),
     ]).animate(_pop);
 
-    _burst = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 850),
-    )..addStatusListener((status) {
-      if (status == AnimationStatus.completed && mounted) {
-        setState(() => _particles = const []);
-      }
-    });
+    _burst =
+        AnimationController(
+          vsync: this,
+          duration: const Duration(milliseconds: 850),
+        )..addStatusListener((status) {
+          if (status == AnimationStatus.completed && mounted) {
+            setState(() => _particles = const []);
+          }
+        });
 
     _colorTween = AnimationController(
       vsync: this,
@@ -107,8 +110,11 @@ class _LikeChipState extends State<LikeChip> with TickerProviderStateMixin {
         return _BurstParticle(
           angle: angle,
           distance:
-              widget.iconSize * 2 + _random.nextDouble() * widget.iconSize * 1.6,
-          size: widget.iconSize * 0.5 + _random.nextDouble() * widget.iconSize * 0.5,
+              widget.iconSize * 2 +
+              _random.nextDouble() * widget.iconSize * 1.6,
+          size:
+              widget.iconSize * 0.5 +
+              _random.nextDouble() * widget.iconSize * 0.5,
           delay: _random.nextDouble() * 0.18,
         );
       });
@@ -130,79 +136,82 @@ class _LikeChipState extends State<LikeChip> with TickerProviderStateMixin {
     return GestureDetector(
       onTap: widget.onTap,
       behavior: HitTestBehavior.opaque,
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          SizedBox(
-            width: s,
-            height: s,
-            child: Stack(
-              clipBehavior: Clip.none,
-              alignment: Alignment.center,
-              children: [
-                for (final p in _particles)
-                  _BurstParticleWidget(
-                    particle: p,
-                    controller: _burst,
-                    color: _activeColor,
-                    origin: s / 2,
-                  ),
-                ScaleTransition(
-                  scale: _popScale,
-                  child: AnimatedBuilder(
-                    animation: _colorTween,
-                    builder: (_, _) {
-                      final t = _colorTween.value;
-                      return Stack(
-                        alignment: Alignment.center,
-                        children: [
-                          Opacity(
-                            opacity: 1 - t,
-                            child: SvgPicture.asset(
-                              SvgAssets.favoriteBorder,
-                              height: s,
-                              width: s,
-                              colorFilter: ColorFilter.mode(
-                                AppColors.blackTint20,
-                                BlendMode.srcIn,
+      child: Container(
+        padding: widget.padding,
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            SizedBox(
+              width: s,
+              height: s,
+              child: Stack(
+                clipBehavior: Clip.none,
+                alignment: Alignment.center,
+                children: [
+                  for (final p in _particles)
+                    _BurstParticleWidget(
+                      particle: p,
+                      controller: _burst,
+                      color: _activeColor,
+                      origin: s / 2,
+                    ),
+                  ScaleTransition(
+                    scale: _popScale,
+                    child: AnimatedBuilder(
+                      animation: _colorTween,
+                      builder: (_, _) {
+                        final t = _colorTween.value;
+                        return Stack(
+                          alignment: Alignment.center,
+                          children: [
+                            Opacity(
+                              opacity: 1 - t,
+                              child: SvgPicture.asset(
+                                SvgAssets.favoriteBorder,
+                                height: s,
+                                width: s,
+                                colorFilter: ColorFilter.mode(
+                                  AppColors.blackTint20,
+                                  BlendMode.srcIn,
+                                ),
                               ),
                             ),
-                          ),
-                          Opacity(
-                            opacity: t,
-                            child: SvgPicture.asset(
-                              SvgAssets.favorite,
-                              height: s,
-                              width: s,
-                              colorFilter: const ColorFilter.mode(
-                                _activeColor,
-                                BlendMode.srcIn,
+                            Opacity(
+                              opacity: t,
+                              child: SvgPicture.asset(
+                                SvgAssets.favorite,
+                                height: s,
+                                width: s,
+                                colorFilter: const ColorFilter.mode(
+                                  _activeColor,
+                                  BlendMode.srcIn,
+                                ),
                               ),
                             ),
-                          ),
-                        ],
-                      );
-                    },
+                          ],
+                        );
+                      },
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
-          Gap.w4,
-          TweenAnimationBuilder<double>(
-            tween: Tween<double>(
-              begin: widget.count.toDouble(),
-              end: widget.count.toDouble(),
+            Gap.w4,
+            TweenAnimationBuilder<double>(
+              tween: Tween<double>(
+                begin: widget.count.toDouble(),
+                end: widget.count.toDouble(),
+              ),
+              duration: const Duration(milliseconds: 320),
+              curve: Curves.easeOut,
+              builder: (_, value, _) => AppText.medium(
+                '${value.round()}',
+                fontSize: widget.fontSize,
+                color: AppColors.tint25,
+              ),
             ),
-            duration: const Duration(milliseconds: 320),
-            curve: Curves.easeOut,
-            builder: (_, value, _) => AppText.medium(
-              '${value.round()}',
-              fontSize: widget.fontSize,
-              color: AppColors.tint25,
-            ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
