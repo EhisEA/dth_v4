@@ -71,6 +71,14 @@ class PostVideo {
   final String? videoUrl;
   final String? provider;
 
-  bool get isYoutube => provider?.trim().toLowerCase() == "youtube";
+  bool get isYoutube {
+    if (provider?.trim().toLowerCase() == "youtube") return true;
+    final u = videoUrl?.trim();
+    if (u == null || u.isEmpty) return false;
+    final host = Uri.tryParse(u)?.host.toLowerCase() ?? "";
+    return host == "youtu.be" ||
+        host.endsWith("youtube.com") ||
+        host.endsWith("youtube-nocookie.com");
+  }
   bool get isPlayable => videoUrl != null && videoUrl!.trim().isNotEmpty;
 }

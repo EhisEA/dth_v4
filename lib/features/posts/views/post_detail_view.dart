@@ -47,6 +47,9 @@ class _PostDetailViewState extends ConsumerState<PostDetailView> {
   @override
   void dispose() {
     _ytController?.dispose();
+    // [_TransparentBackAppBar] uses SystemUiOverlayStyle.light; without a
+    // reset, that style outlives this route because home uses no AppBar.
+    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.dark);
     super.dispose();
   }
 
