@@ -34,18 +34,25 @@ class _ApplicantDashboardViewState
   Widget build(BuildContext context) {
     final vm = ref.watch(applicantDashboardViewModelProvider);
     final title = vm.appBarTitle(vm.data);
+    final headerBg = vm.applicantDashboardHeaderBackgroundAsset(vm.data);
 
     return Container(
+      height: double.infinity,
+      width: double.infinity,
       decoration: BoxDecoration(
         image: DecorationImage(
-          image: AssetImage(ImageAssets.greenBg),
+          image: AssetImage(headerBg),
           fit: BoxFit.fill,
           alignment: Alignment.topCenter,
         ),
       ),
       child: Scaffold(
-        // backgroundColor: AppColors.redTint35,
-        appBar: DthAppBar(title: title, onBack: () => vm.handleBack(context)),
+        backgroundColor: Colors.transparent,
+        appBar: DthAppBar(
+          title: title,
+          onBack: () => vm.handleBack(context),
+          backgroundColor: Colors.transparent,
+        ),
         body: vm.baseState.when(
           busy: () => const Center(child: CircularProgressIndicator.adaptive()),
           error: (Failure failure) => Center(

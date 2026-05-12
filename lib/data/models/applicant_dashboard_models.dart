@@ -185,7 +185,7 @@ class JourneyProgress {
 
   bool get isRenderable {
     final t = typeNormalized;
-    return t == "bar" || t == "stars";
+    return t == "bar" || t == "stars" || t == "gauge";
   }
 
   factory JourneyProgress.fromJson(Map<String, dynamic> json) {

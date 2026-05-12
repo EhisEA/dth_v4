@@ -153,6 +153,19 @@ class ApplicantDashboardViewModel extends BaseChangeNotifierViewModel {
     }
   }
 
+  /// Top background image behind the app bar; follows [footerBanner.variant].
+  /// `danger` / `error` → red, `success` → green, otherwise (incl. no banner) → blue.
+  String applicantDashboardHeaderBackgroundAsset(ApplicantDashboardData? d) {
+    final v = (d?.footerBanner?.variant ?? "").trim().toLowerCase();
+    if (v == "danger" || v == "error") {
+      return ImageAssets.redBg;
+    }
+    if (v == "success") {
+      return ImageAssets.greenBg;
+    }
+    return ImageAssets.blueBg;
+  }
+
   void handleBack(BuildContext context) {
     final action = _data?.header?.backAction;
     if (action == "navigate:home") {
