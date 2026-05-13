@@ -31,7 +31,7 @@ class _SearchTrendingReelsState extends ConsumerState<SearchTrendingReels> {
           .fetchTimelineReels();
       if (!mounted) return;
       setState(() {
-        _stories = result.items.map(_reelToStory).toList();
+        _stories = result.items.map(storyFromTimelineReel).toList();
         _isLoading = false;
       });
     } on ApiFailure {
@@ -62,24 +62,15 @@ class _SearchTrendingReelsState extends ConsumerState<SearchTrendingReels> {
           onStoryTap: (story) {
             MobileNavigationService.instance.push(
               StoriesView.path,
-              extra: {RoutingArgumentKey.imageUrl: story.imageUrl},
+              extra: {
+                RoutingArgumentKey.imageUrl: story.imageUrl,
+                RoutingArgumentKey.reelVideoUrl: story.videoUrl,
+                RoutingArgumentKey.reelVideoType: story.videoType,
+              },
             );
           },
         ),
       ],
     );
   }
-}
-
-Story _reelToStory(TimelineReel reel) {
-  final thumb = reel.media?.thumbnail?.trim();
-  final videoThumb = reel.videoThumbnail?.trim();
-  final mediaUrl = reel.media?.url?.trim();
-  final imageUrl = (thumb != null && thumb.isNotEmpty)
-      ? thumb
-      : (videoThumb != null && videoThumb.isNotEmpty)
-      ? videoThumb
-      : (mediaUrl ?? "");
-  final label = reel.title.trim().isNotEmpty ? reel.title.trim() : "Reel";
-  return Story(imageUrl: imageUrl, label: label);
 }

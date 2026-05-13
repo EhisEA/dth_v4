@@ -39,10 +39,6 @@ class _PostDetailViewState extends ConsumerState<PostDetailView> {
   // entire screen.
   YoutubePlayerController? _ytController;
   String? _ytVideoId;
-  // Until the IFrame player calls back as "ready", we overlay a black mask
-  // with our own spinner — otherwise YouTube's own iframe loading chrome
-  // (logo + branding) flashes for a beat before our control bar takes over.
-  bool _ytReady = false;
 
   @override
   void dispose() {
@@ -64,7 +60,6 @@ class _PostDetailViewState extends ConsumerState<PostDetailView> {
     if (newId == _ytVideoId) return;
     _ytController?.dispose();
     _ytVideoId = newId;
-    _ytReady = false;
     _ytController = newId == null
         ? null
         : YoutubePlayerController(
@@ -152,6 +147,8 @@ class _PostDetailViewState extends ConsumerState<PostDetailView> {
                       return false;
                     },
                     child: ListView(
+                      keyboardDismissBehavior:
+                          ScrollViewKeyboardDismissBehavior.onDrag,
                       physics: const AlwaysScrollableScrollPhysics(),
                       padding: EdgeInsets.zero,
                       children: [
@@ -202,41 +199,46 @@ class _PostDetailViewState extends ConsumerState<PostDetailView> {
           // Strip the default top overlay row (video title, share, "more").
           // We only want our control bar at the bottom and the video itself.
           topActions: const [],
-          onReady: () {
-            if (mounted) setState(() => _ytReady = true);
-          },
         ),
-        builder: (context, player) => buildScaffold(
-          // Full-bleed pinned video — flush to top under the transparent
-          // app bar / status bar, no rounded corners. Loading mask stacks
-          // on top until `onReady` fires.
-          Container(
-            color: Colors.black,
-            padding: EdgeInsets.only(top: MediaQuery.paddingOf(context).top),
-            child: AspectRatio(
-              aspectRatio: 16 / 9,
-              child: Stack(
-                fit: StackFit.expand,
-                children: [
-                  player,
-                  if (!_ytReady)
-                    const ColoredBox(
-                      color: Colors.black,
-                      child: Center(
-                        child: SizedBox(
-                          width: 28,
-                          height: 28,
-                          child: CircularProgressIndicator(
-                            strokeWidth: 2,
-                            color: Colors.white,
+        builder: (context, player) => ListenableBuilder(
+          listenable: controller,
+          builder: (context, _) {
+            final v = controller.value;
+            // Drop the mask when the iframe errors — otherwise it sits above
+            // the player forever and blocks play/pause and WebView touches.
+            final showLoadingMask = !v.isReady && !v.hasError;
+            return buildScaffold(
+              Container(
+                color: Colors.black,
+                padding: EdgeInsets.only(
+                  top: MediaQuery.paddingOf(context).top,
+                ),
+                child: AspectRatio(
+                  aspectRatio: 16 / 9,
+                  child: Stack(
+                    fit: StackFit.expand,
+                    children: [
+                      player,
+                      if (showLoadingMask)
+                        const ColoredBox(
+                          color: Colors.black,
+                          child: Center(
+                            child: SizedBox(
+                              width: 28,
+                              height: 28,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                color: Colors.white,
+                              ),
+                            ),
                           ),
                         ),
-                      ),
-                    ),
-                ],
+                    ],
+                  ),
+                ),
               ),
-            ),
-          ),
+            );
+          },
         ),
       );
     }

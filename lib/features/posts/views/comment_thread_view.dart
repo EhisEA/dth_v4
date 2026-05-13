@@ -201,15 +201,7 @@ class _ParentCommentBlock extends StatelessWidget {
     return parts.join(" · ");
   }
 
-  String _formatCount(int n) {
-    if (n >= 1000000) {
-      return "${(n / 1000000).toStringAsFixed(n % 1000000 == 0 ? 0 : 1)}M views";
-    }
-    if (n >= 1000) {
-      return "${(n / 1000).toStringAsFixed(n % 1000 == 0 ? 0 : 1)}k views";
-    }
-    return "$n views";
-  }
+  String _formatCount(int n) => "${formatCount(n)} views";
 }
 
 class _ParentActions extends StatelessWidget {
@@ -299,7 +291,11 @@ class _ActionChip extends StatelessWidget {
               ),
             ),
             Gap.w4,
-            AppText.medium('$count', fontSize: 12, color: AppColors.tint25),
+            AppText.medium(
+              formatCount(count),
+              fontSize: 12,
+              color: AppColors.tint25,
+            ),
           ],
         ),
       ),

@@ -66,7 +66,7 @@ class CommentTile extends StatelessWidget {
                   ),
                   Gap.w4,
                   AppText.medium(
-                    "${comment.likes}",
+                    formatCount(comment.likes),
                     fontSize: 12,
                     color: AppColors.blackTint20,
                   ),
@@ -82,7 +82,7 @@ class CommentTile extends StatelessWidget {
                   ),
                   Gap.w4,
                   AppText.medium(
-                    "${comment.replies}",
+                    formatCount(comment.replies),
                     fontSize: 12,
                     color: AppColors.blackTint20,
                   ),
@@ -98,7 +98,7 @@ class CommentTile extends StatelessWidget {
                   ),
                   Gap.w4,
                   AppText.medium(
-                    "${comment.shares}",
+                    formatCount(comment.shares),
                     fontSize: 12,
                     color: AppColors.blackTint20,
                   ),

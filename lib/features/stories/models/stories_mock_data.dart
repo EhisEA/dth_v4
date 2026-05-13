@@ -1,3 +1,4 @@
+import "package:dth_v4/core/utils/format_count.dart";
 import "package:dth_v4/features/stories/models/mock_comment.dart";
 
 const storyTitle = "An Electrifying Performance by Publicity";
@@ -13,12 +14,7 @@ const storyCommentCount = 315;
 
 final List<MockComment> storyMockComments = mockComments;
 
-String formatStoryCount(int n) {
-  if (n >= 1000000) return "${(n / 1000000).toStringAsFixed(1)}M";
-  if (n >= 1000) return "${(n / 1000).toStringAsFixed(0)}K";
-  return "$n";
-}
-
+String formatStoryCount(int n) => formatCount(n);
 
 String storyCaptionPreview({int maxChars = 96}) {
   if (storyCaption.length <= maxChars) return storyCaption;

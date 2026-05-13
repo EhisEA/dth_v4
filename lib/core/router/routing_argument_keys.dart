@@ -6,6 +6,12 @@ class RoutingArgumentKey {
   static const String fullName = "fullName";
   static const String imageUrl = "imageUrl";
 
+  /// [StoriesView] — optional reel playback URL (YouTube or direct MP4/HLS).
+  static const String reelVideoUrl = "reelVideoUrl";
+
+  /// [StoriesView] — `"youtube"` or `"file"` when [reelVideoUrl] is set.
+  static const String reelVideoType = "reelVideoType";
+
   /// [PostDetailView] — uid of the timeline post to load.
   static const String postUid = "postUid";
 

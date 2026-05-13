@@ -1,5 +1,6 @@
 export "models/stories_mock_data.dart";
 export "models/story.dart";
+export "models/timeline_reel_story_mapper.dart";
 export "views/stories_view.dart";
 export "components/chat_split_body.dart";
 export "components/full_reel_body.dart";

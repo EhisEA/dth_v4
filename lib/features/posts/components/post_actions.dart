@@ -102,7 +102,11 @@ class _ActionChip extends StatelessWidget {
               ),
             ),
             Gap.w4,
-            AppText.medium('$count', fontSize: 12, color: AppColors.tint25),
+            AppText.medium(
+              formatCount(count),
+              fontSize: 12,
+              color: AppColors.tint25,
+            ),
           ],
         ),
       ),

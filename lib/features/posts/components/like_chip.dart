@@ -19,6 +19,9 @@ class LikeChip extends StatefulWidget {
     this.onTap,
     this.iconSize = 14,
     this.fontSize = 12,
+    this.inactiveColor,
+    this.countColor,
+    this.countLabel,
   });
 
   final EdgeInsets? padding;
@@ -27,6 +30,16 @@ class LikeChip extends StatefulWidget {
   final VoidCallback? onTap;
   final double iconSize;
   final double fontSize;
+
+  /// Heart color when [liked] is false. Defaults to [AppColors.blackTint20].
+  final Color? inactiveColor;
+
+  /// Count text color. Defaults to [AppColors.tint25].
+  final Color? countColor;
+
+  /// Pre-formatted count override (e.g. `"16k"`). When set, replaces the
+  /// numeric tween display.
+  final String? countLabel;
 
   @override
   State<LikeChip> createState() => _LikeChipState();
@@ -171,7 +184,7 @@ class _LikeChipState extends State<LikeChip> with TickerProviderStateMixin {
                                 height: s,
                                 width: s,
                                 colorFilter: ColorFilter.mode(
-                                  AppColors.blackTint20,
+                                  widget.inactiveColor ?? AppColors.blackTint20,
                                   BlendMode.srcIn,
                                 ),
                               ),
@@ -197,18 +210,10 @@ class _LikeChipState extends State<LikeChip> with TickerProviderStateMixin {
               ),
             ),
             Gap.w4,
-            TweenAnimationBuilder<double>(
-              tween: Tween<double>(
-                begin: widget.count.toDouble(),
-                end: widget.count.toDouble(),
-              ),
-              duration: const Duration(milliseconds: 320),
-              curve: Curves.easeOut,
-              builder: (_, value, _) => AppText.medium(
-                '${value.round()}',
-                fontSize: widget.fontSize,
-                color: AppColors.tint25,
-              ),
+            AppText.medium(
+              widget.countLabel ?? formatCount(widget.count),
+              fontSize: widget.fontSize,
+              color: widget.countColor ?? AppColors.tint25,
             ),
           ],
         ),

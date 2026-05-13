@@ -1,6 +1,6 @@
 import "dart:ui";
 
-import "package:cached_network_image/cached_network_image.dart";
+import "package:dth_v4/features/stories/components/reel_backdrop_media.dart";
 import "package:dth_v4/core/core.dart";
 import "package:dth_v4/features/stories/models/stories_mock_data.dart";
 import "package:dth_v4/features/tickets/tickets.dart";
@@ -14,19 +14,27 @@ class FullReelBody extends StatelessWidget {
   const FullReelBody({
     super.key,
     required this.imageUrl,
+    this.videoUrl,
+    this.videoType,
     required this.topPad,
     required this.bottomPad,
     required this.onBack,
     required this.onChatTap,
     required this.readMoreTap,
+
+    /// When true, skip [ReelBackdropMedia] — parent already paints the reel.
+    this.excludeBackdrop = false,
   });
 
   final String imageUrl;
+  final String? videoUrl;
+  final String? videoType;
   final double topPad;
   final double bottomPad;
   final VoidCallback onBack;
   final VoidCallback onChatTap;
   final TapGestureRecognizer readMoreTap;
+  final bool excludeBackdrop;
 
   static Widget _whiteSvg(String asset, {double size = 28}) {
     return SvgPicture.asset(
@@ -42,18 +50,14 @@ class FullReelBody extends StatelessWidget {
     return Stack(
       fit: StackFit.expand,
       children: [
-        Positioned.fill(
-          child: CachedNetworkImage(
-            imageUrl: imageUrl,
-            fit: BoxFit.cover,
-            placeholder: (context, url) =>
-                ColoredBox(color: AppColors.baseShimmer(context)),
-            errorWidget: (context, url, error) => ColoredBox(
-              color: AppColors.baseShimmer(context),
-              child: Icon(Icons.broken_image_outlined, color: AppColors.tint15),
+        if (!excludeBackdrop)
+          Positioned.fill(
+            child: ReelBackdropMedia(
+              posterUrl: imageUrl,
+              videoUrl: videoUrl,
+              videoType: videoType,
             ),
           ),
-        ),
         Positioned.fill(
           child: Container(
             decoration: BoxDecoration(
@@ -69,11 +73,19 @@ class FullReelBody extends StatelessWidget {
           ),
         ),
         Positioned(
-          top: topPad + 10,
-          left: 16,
+          top: topPad + 8,
+          left: 12,
           child: CircleBlurIconButton(
             onTap: onBack,
             child: _whiteSvg(SvgAssets.backArrow, size: 20),
+          ),
+        ),
+        Positioned(
+          top: topPad + 8,
+          right: 12,
+          child: CircleBlurIconButton(
+            onTap: onChatTap,
+            child: _whiteSvg(SvgAssets.messagesBorder, size: 20),
           ),
         ),
 
@@ -173,28 +185,42 @@ class FullReelBody extends StatelessWidget {
             ],
           ),
         ),
-        Center(
-          child: ClipOval(
-            child: BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: 14, sigmaY: 14),
-              child: Container(
-                width: 44,
-                height: 44,
-                alignment: Alignment.center,
-                color: Colors.black.withValues(alpha: 0.40),
-                child: SvgPicture.asset(
-                  SvgAssets.play,
-                  width: 24,
-                  height: 24,
-                  colorFilter: const ColorFilter.mode(
-                    Colors.white,
-                    BlendMode.srcIn,
+        if (videoUrl == null || videoUrl!.trim().isEmpty)
+          Center(
+            child: Material(
+              color: Colors.transparent,
+              child: InkWell(
+                customBorder: const CircleBorder(),
+                onTap: () {},
+                child: SizedBox(
+                  width: kMinInteractiveDimension,
+                  height: kMinInteractiveDimension,
+                  child: Center(
+                    child: ClipOval(
+                      child: BackdropFilter(
+                        filter: ImageFilter.blur(sigmaX: 14, sigmaY: 14),
+                        child: Container(
+                          width: 44,
+                          height: 44,
+                          alignment: Alignment.center,
+                          color: Colors.black.withValues(alpha: 0.40),
+                          child: SvgPicture.asset(
+                            SvgAssets.play,
+                            width: 24,
+                            height: 24,
+                            colorFilter: const ColorFilter.mode(
+                              Colors.white,
+                              BlendMode.srcIn,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
                   ),
                 ),
               ),
             ),
           ),
-        ),
       ],
     );
   }
