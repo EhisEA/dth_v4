@@ -25,7 +25,9 @@ class _ApplicantDashboardViewState
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
       unawaited(
-        ref.read(applicantDashboardViewModelProvider).ensureScreenLoaded(),
+        ref
+            .read(applicantDashboardViewModelProvider)
+            .bootstrapDashboardSilently(),
       );
     });
   }
@@ -77,7 +79,7 @@ class _ApplicantDashboardViewState
                   child: AppButton.primary(
                     text: "Retry",
                     height: 48,
-                    press: () => unawaited(vm.loadDashboard()),
+                    press: () => unawaited(vm.bootstrapDashboardSilently()),
                   ),
                 ),
               ],
@@ -91,7 +93,7 @@ class _ApplicantDashboardViewState
                 child: ApplicantDashboardScrollBody(data: data, viewModel: vm),
               );
             }
-            return const Center(child: CircularProgressIndicator.adaptive());
+            return const SizedBox.expand();
           },
         ),
       ),

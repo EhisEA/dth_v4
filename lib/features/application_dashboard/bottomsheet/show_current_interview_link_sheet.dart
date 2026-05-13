@@ -157,7 +157,7 @@ class _InterviewCredentialCell extends StatelessWidget {
                 onTap: () {
                   Clipboard.setData(ClipboardData(text: value));
                   HapticFeedback.lightImpact();
-                  DthFlushBar.instance.showSuccess(
+                  DthFlushBar.instance.showCopySuccess(
                     title: "Copied",
                     message: copiedMessage,
                   );
@@ -279,7 +279,7 @@ class _CurrentInterviewLinkSheetBody extends StatelessWidget {
                       onTap: () {
                         Clipboard.setData(ClipboardData(text: join));
                         HapticFeedback.lightImpact();
-                        DthFlushBar.instance.showSuccess(
+                        DthFlushBar.instance.showCopySuccess(
                           title: "Copied",
                           message: "Interview link copied to clipboard.",
                         );

@@ -47,6 +47,8 @@ class ImageAssets {
   static const String blueBg = "$imagePath/application/blue_bg.png";
   static const String greenBg = "$imagePath/application/green_bg.png";
   static const String redBg = "$imagePath/application/red_bg.png";
+  static const String applicantBanner =
+      "$imagePath/application/applicant_banner.png";
 }
 
 class SvgAssets {
@@ -97,6 +99,7 @@ class SvgAssets {
   static const String privacy = "$svgPath/profile/privacy.svg";
   static const String social = "$svgPath/profile/social.svg";
   static const String terms = "$svgPath/profile/terms.svg";
+  static const String profileEdit = "$svgPath/profile/profile_edit.svg";
   static const String cup = "$svgPath/profile/cup.svg";
   static const String error = "$svgPath/profile/error.svg";
   static const String doubleTick = "$svgPath/profile/double_tick.svg";
