@@ -4,6 +4,7 @@ import 'package:dth_v4/features/app_web_view/app_web_view.dart';
 import 'package:dth_v4/features/application/views/application_landing_view.dart';
 import 'package:dth_v4/features/application/views/application_review_view.dart';
 import 'package:dth_v4/features/application/views/application_view.dart';
+import 'package:dth_v4/features/application_dashboard/applicant_dashboard.dart';
 import 'package:dth_v4/features/authentication/views/create_account_view.dart';
 import 'package:dth_v4/features/authentication/views/get_started_view.dart';
 import 'package:dth_v4/features/authentication/views/login_view.dart';
@@ -145,10 +146,9 @@ class AppRouter {
 
       ////////////////PROFILE VIEW////////////////////
       case PersonalInfomationView.path:
-        final user = routeArgs[RoutingArgumentKey.user] as UserModel;
         return _getPageRoute(
           settings: settings,
-          viewToShow: PersonalInfomationView(user: user),
+          viewToShow: const PersonalInfomationView(),
         );
 
       case ProfilePhoneVerifyOtpView.path:
@@ -220,6 +220,12 @@ class AppRouter {
                 routeArgs[RoutingArgumentKey.eventStatusLabel] as String? ??
                 "Upcoming",
           ),
+        );
+      ////////////////APPLICANT DASHBOARD VIEW////////////////////
+      case ApplicantDashboardView.path:
+        return _getPageRoute(
+          settings: settings,
+          viewToShow: const ApplicantDashboardView(),
         );
 
       default:

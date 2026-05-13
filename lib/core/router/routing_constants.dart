@@ -1,6 +1,10 @@
 class NavigatorRoutes {
   static const String bottomNavBar = "/bottom-nav-bar";
 
+  ////////////////APPLICANT DASHBOARD////////////////////
+  ///
+  static const String applicantDashboard = "/applicant-dashboard";
+
   ////////////////SPLASH////////////////////
   ///
   static const String splash = "/splash";

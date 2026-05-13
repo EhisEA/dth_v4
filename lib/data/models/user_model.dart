@@ -116,6 +116,7 @@ class UserModel {
     return other is UserModel &&
         other.uid == uid &&
         other.email == email &&
+        other.fullName == fullName &&
         other.phoneNumber == phoneNumber &&
         other.isoCode == isoCode &&
         other.avatar == avatar &&
@@ -131,6 +132,7 @@ class UserModel {
   int get hashCode => Object.hash(
     uid,
     email,
+    fullName,
     phoneNumber,
     isoCode,
     avatar,

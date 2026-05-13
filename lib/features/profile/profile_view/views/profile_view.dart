@@ -2,6 +2,7 @@ import 'package:dth_v4/core/core.dart';
 import 'package:dth_v4/data/data.dart';
 import 'package:dth_v4/features/app_web_view/app_web_view.dart';
 import 'package:dth_v4/features/application/views/application_view.dart';
+import 'package:dth_v4/features/application_dashboard/applicant_dashboard.dart';
 import 'package:dth_v4/features/profile/logout/logout.dart';
 import 'package:dth_v4/features/profile/profile.dart';
 import 'package:dth_v4/widgets/widgets.dart';
@@ -103,11 +104,9 @@ class _ProfileViewState extends ConsumerState<ProfileView> {
                       ContestantDashboardTile(
                         role: user?.participationRole ?? ParticipationRole.user,
                         onTap: () {
-                          // if (user?.participationRole ==
-                          //     ParticipationRole.user) {
-                          //   _navigationService.navigateTo(ApplicationView.path);
-                          // }
-                          // null;
+                          _navigationService.navigateTo(
+                            ApplicantDashboardView.path,
+                          );
                         },
                       ),
                       Gap.h32,
@@ -137,7 +136,6 @@ class _ProfileViewState extends ConsumerState<ProfileView> {
                           if (user == null) return;
                           _navigationService.navigateTo(
                             PersonalInfomationView.path,
-                            extra: {RoutingArgumentKey.user: user},
                           );
                         },
                       ),
@@ -181,20 +179,28 @@ class _ProfileViewState extends ConsumerState<ProfileView> {
                           );
                         },
                       ),
-                      Gap.h28,
-                      ProfileTlle(
-                        title: "Social Media Community",
-                        description:
-                            "Connect with our community and stay updated",
-                        icon: SvgAssets.social,
-                        onTap: () {},
-                      ),
+                      // Gap.h28,
+                      // ProfileTlle(
+                      //   title: "Social Media Community",
+                      //   description:
+                      //       "Connect with our community and stay updated",
+                      //   icon: SvgAssets.social,
+                      //   onTap: () {},
+                      // ),
                       Gap.h28,
                       ProfileTlle(
                         title: "Learn More",
                         description: "Discover more about De9jaTalenthunt",
                         icon: SvgAssets.learn,
-                        onTap: () {},
+                        onTap: () {
+                          MobileNavigationService.instance.navigateTo(
+                            AppWebView.path,
+                            extra: {
+                              RoutingArgumentKey.title: "Learn More",
+                              RoutingArgumentKey.initialURl: AppLink.dthWebsite,
+                            },
+                          );
+                        },
                       ),
                       Gap.h32,
                       AppText.medium(

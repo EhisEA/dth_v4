@@ -104,6 +104,7 @@ class PollOptionTile extends StatelessWidget {
               PollProgressBar(
                 progress: data.progress,
                 isSelected: data.selected,
+                pollHasVoted: data.pollHasVoted,
               ),
             ],
           ),

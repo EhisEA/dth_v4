@@ -13,8 +13,9 @@ class AppLink {
       "https://play.google.com/store/apps/details?id=com.dth.dth";
 
   static const String vent = "https://vent.africa";
-  static const String privacyPolicy = "https://dth.ng/#";
-  static const String termsAndConditions = "https://dth.ng/#";
+  static const String privacyPolicy = "https://dth.ng/privacy";
+  static const String termsAndConditions = "https://dth.ng/terms";
+  static const String dthWebsite = "https://dth.ng";
 }
 
 class AppInfo {

@@ -44,6 +44,11 @@ class ImageAssets {
   /////////////////////APPLICATION//////////////////////
   static const String applicationBg =
       "$imagePath/application/application_bg.png";
+  static const String blueBg = "$imagePath/application/blue_bg.png";
+  static const String greenBg = "$imagePath/application/green_bg.png";
+  static const String redBg = "$imagePath/application/red_bg.png";
+  static const String applicantBanner =
+      "$imagePath/application/applicant_banner.png";
 }
 
 class SvgAssets {
@@ -94,6 +99,7 @@ class SvgAssets {
   static const String privacy = "$svgPath/profile/privacy.svg";
   static const String social = "$svgPath/profile/social.svg";
   static const String terms = "$svgPath/profile/terms.svg";
+  static const String profileEdit = "$svgPath/profile/profile_edit.svg";
   static const String cup = "$svgPath/profile/cup.svg";
   static const String error = "$svgPath/profile/error.svg";
   static const String doubleTick = "$svgPath/profile/double_tick.svg";
@@ -101,13 +107,17 @@ class SvgAssets {
   /////////////////////APPLICATION//////////////////////
   ///
   static const String support = "$svgPath/application/support.svg";
+  static const String copyOutline = "$svgPath/application/copy_outline.svg";
   static const String edit = "$svgPath/application/edit.svg";
   static const String calendarEdit = "$svgPath/application/calendar-edit.svg";
+  static const String infoOutline = "$svgPath/application/info-circle.svg";
+  static const String clock = "$svgPath/application/clock.svg";
+  static const String star = "$svgPath/application/star.svg";
 
   /////////////////////SEARCH//////////////////////
   ///
   static const String location = "$svgPath/search/location.svg";
-  static const String clock = "$svgPath/search/clock.svg";
+  static const String clockFilled = "$svgPath/search/clock.svg";
 
   /////////////////////TICKETS//////////////////////
   ///

@@ -5,6 +5,7 @@ class PollOptionData {
     required this.percentage,
     required this.progress,
     this.selected = false,
+    required this.pollHasVoted,
   });
 
   final String uid;
@@ -12,4 +13,5 @@ class PollOptionData {
   final int percentage;
   final double progress;
   final bool selected;
+  final bool pollHasVoted;
 }

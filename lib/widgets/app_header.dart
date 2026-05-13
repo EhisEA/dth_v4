@@ -2,16 +2,16 @@ import 'package:dth_v4/core/core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:flutter_utils/flutter_utils.dart';
+// import 'package:flutter_utils/flutter_utils.dart';
 
 class AppHeader extends StatelessWidget {
   const AppHeader({
     super.key,
     required this.onLiveTap,
-    required this.onNotificationTap,
+    // required this.onNotificationTap,
   });
   final VoidCallback onLiveTap;
-  final VoidCallback onNotificationTap;
+  // final VoidCallback onNotificationTap;
 
   @override
   Widget build(BuildContext context) {
@@ -29,14 +29,14 @@ class AppHeader extends StatelessWidget {
               behavior: HitTestBehavior.opaque,
               child: SvgPicture.asset(SvgAssets.live),
             ),
-            Gap.w16,
-            GestureDetector(
-              onTap: () {
-                onNotificationTap();
-                HapticFeedback.lightImpact();
-              },
-              child: SvgPicture.asset(SvgAssets.notification),
-            ),
+            // Gap.w16,
+            // GestureDetector(
+            //   onTap: () {
+            //     onNotificationTap();
+            //     HapticFeedback.lightImpact();
+            //   },
+            //   child: SvgPicture.asset(SvgAssets.notification),
+            // ),
           ],
         ),
       ],

@@ -161,17 +161,16 @@ class _PollComponentState extends State<PollComponent> {
         if (poll == null) return const SizedBox.shrink();
 
         final canVote = !poll.hasEnded && !poll.hasVoted && !widget.isVoteBusy;
-        final showResults = poll.hasVoted;
+        final hasVoted = poll.hasVoted;
         final options = poll.options
             .map(
               (option) => PollOptionData(
                 uid: option.uid,
                 title: option.name,
                 percentage: option.percentage,
-                progress: showResults
-                    ? (option.percentage / 100).clamp(0.0, 1.0)
-                    : 0,
-                selected: showResults && poll.votedOptionUid == option.uid,
+                progress: (option.percentage / 100).clamp(0.0, 1.0),
+                selected: hasVoted && poll.votedOptionUid == option.uid,
+                pollHasVoted: hasVoted,
               ),
             )
             .toList();
