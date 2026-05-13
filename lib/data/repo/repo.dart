@@ -8,3 +8,5 @@ export "timeline/timeline.dart";
 export "post/post.dart";
 export "comment/comment.dart";
 export "poll/poll.dart";
+export "events/events.dart";
+export "tickets/tickets.dart";

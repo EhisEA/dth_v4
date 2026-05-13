@@ -90,6 +90,7 @@ flutter:
     - assets/images/splash/
     - assets/images/subscription/
     - assets/images/application/
+    - assets/images/empty_state/
     - assets/svgs/
     - assets/svgs/application/
     - assets/svgs/auth/

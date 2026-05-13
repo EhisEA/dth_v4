@@ -4,6 +4,7 @@ import "package:dth_v4/features/tickets/tickets.dart";
 import "package:dth_v4/widgets/text/textstyles.dart";
 import "package:dth_v4/widgets/widgets.dart";
 import "package:flutter/material.dart";
+import "package:flutter_svg/svg.dart";
 import "package:flutter_utils/flutter_utils.dart";
 
 class BookedShowsComponent extends StatelessWidget {
@@ -60,7 +61,7 @@ class BookedShowsComponent extends StatelessWidget {
                     ),
                   ),
                 ),
-                Gap.w8,
+                Gap.w16,
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -90,14 +91,28 @@ class BookedShowsComponent extends StatelessWidget {
                                 color: AppColors.tint25,
                               ),
                               children: [
-                                TextSpan(
-                                  text: "QTY: ",
-                                  style: AppTextStyle.semiBold.copyWith(
-                                    fontSize: 10,
-                                    color: AppColors.tint25,
+                                WidgetSpan(
+                                  child: Padding(
+                                    padding: const EdgeInsets.only(right: 2),
+                                    child: SvgPicture.asset(
+                                      SvgAssets.clockOutline,
+                                      width: 11,
+                                      height: 11,
+                                      colorFilter: ColorFilter.mode(
+                                        AppColors.blackTint20,
+                                        BlendMode.srcIn,
+                                      ),
+                                    ),
                                   ),
                                 ),
-                                TextSpan(text: "$ticketQuantity Tickets"),
+
+                                TextSpan(
+                                  text: scheduleLabel,
+                                  style: AppTextStyle.regular.copyWith(
+                                    fontSize: 10,
+                                    color: AppColors.blackTint20,
+                                  ),
+                                ),
                               ],
                             ),
                           ),
@@ -105,23 +120,25 @@ class BookedShowsComponent extends StatelessWidget {
                             TextSpan(
                               style: AppTextStyle.regular.copyWith(
                                 fontSize: 10,
-                                color: AppColors.tint25,
+                                color: AppColors.blackTint20,
                               ),
                               children: [
-                                TextSpan(
-                                  text: "Schedule: ",
-                                  style: AppTextStyle.semiBold.copyWith(
-                                    fontSize: 10,
-                                    color: AppColors.tint25,
+                                WidgetSpan(
+                                  child: Padding(
+                                    padding: const EdgeInsets.only(right: 2),
+                                    child: SvgPicture.asset(
+                                      SvgAssets.ticket,
+                                      width: 11,
+                                      height: 11,
+                                      colorFilter: ColorFilter.mode(
+                                        AppColors.blackTint20,
+                                        BlendMode.srcIn,
+                                      ),
+                                    ),
                                   ),
                                 ),
-                                TextSpan(
-                                  text: scheduleLabel,
-                                  style: AppTextStyle.regular.copyWith(
-                                    fontSize: 10,
-                                    color: AppColors.tint25,
-                                  ),
-                                ),
+
+                                TextSpan(text: "$ticketQuantity Tickets"),
                               ],
                             ),
                           ),
@@ -132,15 +149,21 @@ class BookedShowsComponent extends StatelessWidget {
                 ),
               ],
             ),
-            Gap.h16,
-            AppButton.onBorder(
-              text: "View tickets",
-              height: 48,
-              radius: 100,
-              fontSize: 14,
-              borderColor: AppColors.primary,
-              textColor: AppColors.primary,
-              press: onViewTickets,
+            // Gap.h16,
+            // AppButton.onBorder(
+            //   text: "View tickets",
+            //   height: 48,
+            //   radius: 100,
+            //   fontSize: 14,
+            //   borderColor: AppColors.primary,
+            //   textColor: AppColors.primary,
+            //   press: onViewTickets,
+            // ),
+            Gap.h20,
+            Container(
+              height: 1,
+              width: double.infinity,
+              color: AppColors.greyTint15,
             ),
           ],
         ),

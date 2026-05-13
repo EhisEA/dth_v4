@@ -18,3 +18,7 @@ export "subscription_purchase_init.dart";
 export "timeline_comment.dart";
 export "timeline_post.dart";
 export "timeline_reel.dart";
+export "event_list_item.dart";
+export "event_seat_type.dart";
+export "purchased_ticket_model.dart";
+export "event_detail_model.dart";

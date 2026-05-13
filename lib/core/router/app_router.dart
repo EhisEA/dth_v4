@@ -186,40 +186,11 @@ class AppRouter {
         );
 
       case ShowView.path:
-        final ticketsLeft =
-            routeArgs[RoutingArgumentKey.ticketsAvailable] as int? ?? 546;
+        final eventUid =
+            routeArgs[RoutingArgumentKey.eventUid] as String? ?? "";
         return _getPageRoute(
           settings: settings,
-          viewToShow: ShowView(
-            heroImageUrl:
-                routeArgs[RoutingArgumentKey.imageUrl] as String? ??
-                "https://images.pexels.com/photos/37054685/pexels-photo-37054685.jpeg",
-            eventTitle:
-                routeArgs[RoutingArgumentKey.title] as String? ??
-                "Week 3: DTH Tradition Royalty Week",
-            eventLocation:
-                routeArgs[RoutingArgumentKey.eventLocation] as String? ??
-                "Calabar Int'l Event Center",
-            eventDateTimeLine:
-                routeArgs[RoutingArgumentKey.eventDateTimeDisplay] as String? ??
-                "9 Sept, 2026 02:30AM",
-            aboutBody:
-                routeArgs[RoutingArgumentKey.aboutEventBody] as String? ??
-                ShowView.kDefaultAboutBody,
-            detailDate:
-                routeArgs[RoutingArgumentKey.eventDetailDate] as String? ??
-                "9 September, 2026",
-            detailTime:
-                routeArgs[RoutingArgumentKey.eventDetailTime] as String? ??
-                "9 AM",
-            detailVenue:
-                routeArgs[RoutingArgumentKey.eventDetailVenue] as String? ??
-                "Calabar International Event Center, Calabar",
-            ticketsAvailable: ticketsLeft,
-            statusLabel:
-                routeArgs[RoutingArgumentKey.eventStatusLabel] as String? ??
-                "Upcoming",
-          ),
+          viewToShow: ShowView(eventUid: eventUid),
         );
       ////////////////APPLICANT DASHBOARD VIEW////////////////////
       case ApplicantDashboardView.path:
