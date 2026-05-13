@@ -17,6 +17,7 @@ class ShowEventQuickInfoRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Row(
+      // crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         SvgPicture.asset(
           SvgAssets.location,
@@ -25,19 +26,33 @@ class ShowEventQuickInfoRow extends StatelessWidget {
           colorFilter: ColorFilter.mode(AppColors.blackTint20, BlendMode.srcIn),
         ),
         Gap.w4,
-        AppText.regular(location, fontSize: 12, color: AppColors.blackTint20),
-        Gap.w8,
-        SvgPicture.asset(
-          SvgAssets.clock,
-          width: 12,
-          height: 12,
-          colorFilter: ColorFilter.mode(AppColors.blackTint20, BlendMode.srcIn),
+        Flexible(
+          child: AppText.regular(
+            location,
+            fontSize: 12,
+            color: AppColors.blackTint20,
+            maxLines: 1,
+          ),
         ),
-        Gap.w4,
-        AppText.regular(
-          dateTimeLine,
-          fontSize: 12,
-          color: AppColors.blackTint20,
+        Gap.w8,
+        Row(
+          children: [
+            SvgPicture.asset(
+              SvgAssets.clockOutline,
+              width: 12,
+              height: 12,
+              colorFilter: ColorFilter.mode(
+                AppColors.blackTint20,
+                BlendMode.srcIn,
+              ),
+            ),
+            Gap.w4,
+            AppText.regular(
+              dateTimeLine,
+              fontSize: 12,
+              color: AppColors.blackTint20,
+            ),
+          ],
         ),
       ],
     );
