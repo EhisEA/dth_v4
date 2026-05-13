@@ -127,6 +127,7 @@ Post postFromTimelinePost(TimelinePost p) {
   return Post(
     uid: p.uid,
     title: p.title.trim(),
+    subtitle: p.subtitle?.trim().isNotEmpty == true ? p.subtitle!.trim() : null,
     authorName: p.authorName ?? withName ?? authorName,
     createdAt: p.createdAt,
     description: p.description.trim(),
