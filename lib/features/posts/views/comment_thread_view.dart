@@ -257,24 +257,15 @@ class _ParentActions extends StatelessWidget {
 }
 
 class _ActionChip extends StatelessWidget {
-  const _ActionChip({
-    required this.icon,
-    required this.count,
-    this.padding,
-    this.tint,
-    this.onTap,
-  });
+  const _ActionChip({required this.icon, required this.count, this.padding});
 
   final String icon;
   final int count;
   final EdgeInsets? padding;
-  final Color? tint;
-  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: onTap,
       behavior: HitTestBehavior.opaque,
       child: Container(
         padding: padding,
@@ -286,7 +277,7 @@ class _ActionChip extends StatelessWidget {
               height: 14,
               width: 14,
               colorFilter: ColorFilter.mode(
-                tint ?? AppColors.blackTint20,
+                AppColors.blackTint20,
                 BlendMode.srcIn,
               ),
             ),
