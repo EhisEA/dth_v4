@@ -2,7 +2,6 @@ import "package:dth_v4/data/data.dart";
 import "package:dth_v4/features/posts/models/comment.dart";
 import "package:dth_v4/features/posts/models/comment_mapper.dart";
 import "package:dth_v4/features/posts/view_model/comments_cache.dart";
-import "package:dth_v4/widgets/widgets.dart";
 import "package:flutter_riverpod/flutter_riverpod.dart";
 import "package:flutter_utils/flutter_utils.dart";
 
@@ -82,8 +81,8 @@ class CommentThreadViewModel extends BaseChangeNotifierViewModel {
       _commentsCache.upsertAll(replies);
       _replyUids = [..._replyUids, ...replies.map((r) => r.uid)];
       _nextCursor = result.nextCursor;
-    } on ApiFailure catch (e) {
-      DthFlushBar.instance.showError(message: e.message, title: "Load more");
+    } on ApiFailure {
+      // Pagination failure — list just doesn't advance.
     } finally {
       _loadingMore = false;
       notifyListeners();
@@ -113,8 +112,9 @@ class CommentThreadViewModel extends BaseChangeNotifierViewModel {
       _replyUids = [reply.uid, ..._replyUids];
       _bumpParentReplyCount(1);
       return true;
-    } on ApiFailure catch (e) {
-      DthFlushBar.instance.showError(message: e.message, title: "Failed");
+    } on ApiFailure {
+      // Reply didn't appear AND the composer didn't clear — both signal
+      // failure without a toast.
       return false;
     } finally {
       _submitting = false;
@@ -162,9 +162,9 @@ class CommentThreadViewModel extends BaseChangeNotifierViewModel {
           replyCount: fresh.replyCount,
         ),
       );
-    } on ApiFailure catch (e) {
+    } on ApiFailure {
+      // Optimistic rollback above is the user-visible signal — no toast.
       _commentsCache.upsert(c);
-      DthFlushBar.instance.showError(message: e.message, title: "Like");
     } finally {
       _likesPending.remove(c.uid);
       notifyListeners();

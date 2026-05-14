@@ -1,5 +1,4 @@
 import "package:dth_v4/data/data.dart";
-import "package:dth_v4/widgets/widgets.dart";
 import "package:flutter/material.dart";
 import "package:flutter_riverpod/flutter_riverpod.dart";
 import "package:flutter_utils/flutter_utils.dart";
@@ -23,8 +22,9 @@ class PollViewModel extends BaseChangeNotifierViewModel {
     try {
       final result = await _pollRepo.fetchPoll();
       poll.value = result;
-    } on ApiFailure catch (e) {
-      DthFlushBar.instance.showError(message: e.message, title: "Failed");
+    } on ApiFailure {
+      // Background fetch on home — fail silently. The poll module is
+      // optional and the UI degrades gracefully when [poll.value] stays null.
     }
   }
 
@@ -49,9 +49,10 @@ class PollViewModel extends BaseChangeNotifierViewModel {
       poll.value = updated;
       setState(_voteStateKey, const ViewModelState.idle());
     } on ApiFailure catch (e) {
+      // Rolling the optimistic vote back is the user-visible failure
+      // signal — no toast needed.
       poll.value = previous;
       setState(_voteStateKey, ViewModelState.error(e));
-      DthFlushBar.instance.showError(message: e.message, title: "Failed");
     }
   }
 

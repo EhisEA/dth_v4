@@ -4,7 +4,6 @@ import "package:dth_v4/features/posts/view_model/posts_cache.dart";
 import "package:dth_v4/features/stories/models/story.dart";
 import "package:dth_v4/features/stories/models/timeline_reel_story_mapper.dart";
 import "package:dth_v4/features/stories/view_model/reels_cache.dart";
-import "package:dth_v4/widgets/widgets.dart";
 import "package:flutter/material.dart";
 import "package:flutter_riverpod/flutter_riverpod.dart";
 import "package:flutter_utils/flutter_utils.dart";
@@ -76,8 +75,9 @@ class HomeViewModel extends BaseChangeNotifierViewModel {
       _postsCache.upsertAll(posts);
       _postUids = posts.map((p) => p.uid).toList();
       _nextCursor = result.nextCursor;
-    } on ApiFailure catch (e) {
-      DthFlushBar.instance.showError(message: e.message, title: "Failed");
+    } on ApiFailure {
+      // Pull-to-refresh failure — user can pull again. The existing list
+      // stays on screen unchanged, so they can see it didn't update.
       notifyListeners();
       return;
     }
@@ -85,8 +85,8 @@ class HomeViewModel extends BaseChangeNotifierViewModel {
     try {
       final reelsResult = await _timelineRepo.fetchTimelineReels();
       _stories = reelsResult.items.map(storyFromTimelineReel).toList();
-    } on ApiFailure catch (e) {
-      DthFlushBar.instance.showError(message: e.message, title: "Reels");
+    } on ApiFailure {
+      // Reels are a secondary strip — silent on refresh failure.
     }
 
     notifyListeners();
@@ -110,9 +110,9 @@ class HomeViewModel extends BaseChangeNotifierViewModel {
     try {
       final raw = await _postRepo.toggleReaction(uid);
       _postsCache.upsert(postFromTimelinePost(raw));
-    } on ApiFailure catch (e) {
+    } on ApiFailure {
+      // Optimistic rollback above is the user-visible signal — no toast.
       _postsCache.upsert(original);
-      DthFlushBar.instance.showError(message: e.message, title: "Like");
     } finally {
       _likePending.remove(uid);
     }
@@ -128,8 +128,9 @@ class HomeViewModel extends BaseChangeNotifierViewModel {
       _postsCache.upsertAll(posts);
       _postUids = [..._postUids, ...posts.map((p) => p.uid)];
       _nextCursor = result.nextCursor;
-    } on ApiFailure catch (e) {
-      DthFlushBar.instance.showError(message: e.message, title: "Load more");
+    } on ApiFailure {
+      // Pagination failure — the loading spinner just clears, list doesn't
+      // advance. User can scroll again to retry.
     } finally {
       _loadingMore = false;
       notifyListeners();

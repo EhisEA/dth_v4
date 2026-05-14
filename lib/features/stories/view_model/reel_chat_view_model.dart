@@ -2,7 +2,6 @@ import "package:dth_v4/data/data.dart";
 import "package:dth_v4/features/posts/models/comment.dart";
 import "package:dth_v4/features/posts/models/comment_mapper.dart";
 import "package:dth_v4/features/stories/view_model/reels_cache.dart";
-import "package:dth_v4/widgets/widgets.dart";
 import "package:flutter_riverpod/flutter_riverpod.dart";
 import "package:flutter_utils/flutter_utils.dart";
 
@@ -80,10 +79,8 @@ class ReelChatViewModel extends BaseChangeNotifierViewModel {
     } on ApiFailure catch (e) {
       if (reel == null) {
         changeBaseState(ViewModelState.error(e));
-      } else {
-        // Reel is already cached; treat the refresh failure as non-fatal.
-        DthFlushBar.instance.showError(message: e.message, title: "Reel");
       }
+      // Else: reel is already on screen from the cache — silent refresh.
     }
   }
 
@@ -114,7 +111,7 @@ class ReelChatViewModel extends BaseChangeNotifierViewModel {
       _nextCursor = result.nextCursor;
       setState(_loadMoreKey, const ViewModelState.idle());
     } on ApiFailure catch (e) {
-      DthFlushBar.instance.showError(message: e.message, title: "Load more");
+      // Pagination failure — list just doesn't advance.
       setState(_loadMoreKey, ViewModelState.error(e));
     }
   }
@@ -132,7 +129,8 @@ class ReelChatViewModel extends BaseChangeNotifierViewModel {
       setState(_submitKey, const ViewModelState.idle());
       return true;
     } on ApiFailure catch (e) {
-      DthFlushBar.instance.showError(message: e.message, title: "Comment");
+      // Comment didn't appear AND the composer didn't clear — both signal
+      // failure without a toast.
       setState(_submitKey, ViewModelState.error(e));
       return false;
     }
@@ -163,9 +161,9 @@ class ReelChatViewModel extends BaseChangeNotifierViewModel {
           replyCount: fresh.replyCount,
         ),
       );
-    } on ApiFailure catch (e) {
+    } on ApiFailure {
+      // Optimistic rollback above is the user-visible signal — no toast.
       _replace(c);
-      DthFlushBar.instance.showError(message: e.message, title: "Like");
     } finally {
       removeState(key);
     }
@@ -190,9 +188,9 @@ class ReelChatViewModel extends BaseChangeNotifierViewModel {
     try {
       final updated = await _reelCommentRepo.toggleReelReaction(reelUid);
       _reelsCache.upsert(updated);
-    } on ApiFailure catch (e) {
+    } on ApiFailure {
+      // Optimistic rollback above is the user-visible signal — no toast.
       _reelsCache.upsert(current);
-      DthFlushBar.instance.showError(message: e.message, title: "Like");
     } finally {
       removeState(_reelLikeKey);
     }
