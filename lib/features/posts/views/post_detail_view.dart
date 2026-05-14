@@ -15,6 +15,7 @@ import "package:dth_v4/features/posts/view_model/comments_cache.dart";
 import "package:dth_v4/features/posts/view_model/post_detail_view_model.dart";
 import "package:dth_v4/features/posts/views/comment_thread_view.dart";
 import "package:dth_v4/widgets/widgets.dart";
+import "package:flutter/foundation.dart";
 import "package:flutter/material.dart";
 import "package:flutter/services.dart";
 import "package:flutter_riverpod/flutter_riverpod.dart";
@@ -47,10 +48,39 @@ class _PostDetailViewState extends ConsumerState<PostDetailView> {
   bool _hasBeenReady = false;
   VoidCallback? _ytListener;
 
+  /// YouTube-style metadata collapse: as the comments list scrolls down past
+  /// the pinned video, [_metaProgress] ramps 0 → 1 over the first
+  /// [_metaCollapseDistance] pixels. Used to fade + slide out the post header
+  /// and description and to lift the video by a few pixels.
+  final ScrollController _scrollController = ScrollController();
+  final ValueNotifier<double> _metaProgress = ValueNotifier<double>(0);
+  static const double _metaCollapseDistance = 120;
+  static const double _videoLiftPx = 6;
+  static const double _metaSlidePx = 16;
+
+  @override
+  void initState() {
+    super.initState();
+    _scrollController.addListener(_onScroll);
+  }
+
+  void _onScroll() {
+    if (!_scrollController.hasClients) return;
+    final raw = _scrollController.offset.clamp(0.0, _metaCollapseDistance);
+    final next = raw / _metaCollapseDistance;
+    // Skip imperceptible deltas so the ValueNotifier doesn't churn every
+    // pixel — keeps the Opacity / Transform rebuilds cheap during fast flings.
+    if ((next - _metaProgress.value).abs() < 0.005) return;
+    _metaProgress.value = next;
+  }
+
   @override
   void dispose() {
     _detachYtListener();
     _ytController?.dispose();
+    _scrollController.removeListener(_onScroll);
+    _scrollController.dispose();
+    _metaProgress.dispose();
     // [_TransparentBackAppBar] uses SystemUiOverlayStyle.light; without a
     // reset, that style outlives this route because home uses no AppBar.
     SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.dark);
@@ -180,6 +210,7 @@ class _PostDetailViewState extends ConsumerState<PostDetailView> {
                       return false;
                     },
                     child: ListView(
+                      controller: _scrollController,
                       keyboardDismissBehavior:
                           ScrollViewKeyboardDismissBehavior.onDrag,
                       physics: const AlwaysScrollableScrollPhysics(),
@@ -200,6 +231,10 @@ class _PostDetailViewState extends ConsumerState<PostDetailView> {
                             renderMedia: !isImageHero && !isPinnedVideo,
                             onLike: vm.togglePostLike,
                             onShare: () => _showComingSoon("Share"),
+                            // Only the pinned-video layout has a sticky media
+                            // strip above the scroll — that's where the
+                            // YouTube-style fade makes sense.
+                            metaProgress: isPinnedVideo ? _metaProgress : null,
                           ),
                         ),
                         Padding(
@@ -243,32 +278,48 @@ class _PostDetailViewState extends ConsumerState<PostDetailView> {
             // come back on top of YT's retry / replay overlay.
             final showLoadingMask = !_hasBeenReady && !v.hasError;
             return buildScaffold(
-              Container(
+              // Outer ColoredBox stays at the layout-allocated slot so the
+              // 6px lift doesn't reveal the (light) scaffold colour beneath
+              // the video — the bottom strip that briefly appears as the
+              // inner Container translates upward stays black.
+              ColoredBox(
                 color: Colors.black,
-                padding: EdgeInsets.only(
-                  top: MediaQuery.paddingOf(context).top,
-                ),
-                child: AspectRatio(
-                  aspectRatio: 16 / 9,
-                  child: Stack(
-                    fit: StackFit.expand,
-                    children: [
-                      player,
-                      if (showLoadingMask)
-                        const ColoredBox(
-                          color: Colors.black,
-                          child: Center(
-                            child: SizedBox(
-                              width: 28,
-                              height: 28,
-                              child: CircularProgressIndicator(
-                                strokeWidth: 2,
-                                color: Colors.white,
+                child: ValueListenableBuilder<double>(
+                  valueListenable: _metaProgress,
+                  builder: (context, t, child) {
+                    return Transform.translate(
+                      offset: Offset(0, -t * _videoLiftPx),
+                      child: child,
+                    );
+                  },
+                  child: Container(
+                    color: Colors.black,
+                    padding: EdgeInsets.only(
+                      top: MediaQuery.paddingOf(context).top,
+                    ),
+                    child: AspectRatio(
+                      aspectRatio: 16 / 9,
+                      child: Stack(
+                        fit: StackFit.expand,
+                        children: [
+                          player,
+                          if (showLoadingMask)
+                            const ColoredBox(
+                              color: Colors.black,
+                              child: Center(
+                                child: SizedBox(
+                                  width: 28,
+                                  height: 28,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                    color: Colors.white,
+                                  ),
+                                ),
                               ),
                             ),
-                          ),
-                        ),
-                    ],
+                        ],
+                      ),
+                    ),
                   ),
                 ),
               ),
@@ -341,6 +392,7 @@ class _PostBlock extends StatelessWidget {
     required this.onLike,
     required this.onShare,
     this.renderMedia = true,
+    this.metaProgress,
   });
 
   final Post post;
@@ -348,12 +400,16 @@ class _PostBlock extends StatelessWidget {
   final VoidCallback onShare;
   final bool renderMedia;
 
+  /// When non-null, the header + description section fades and slides upward
+  /// as the value moves 0 → 1. Drives the YouTube-style metadata collapse
+  /// when there's a pinned video above the scroll. Actions stay visible.
+  final ValueListenable<double>? metaProgress;
+
   @override
   Widget build(BuildContext context) {
-    return Column(
+    final headerAndDescription = Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        if (renderMedia) ...[PostMedia(post: post), Gap.h16],
         PostDetailsHeader(post: post),
         if (post.description.isNotEmpty) ...[
           Gap.h12,
@@ -364,6 +420,31 @@ class _PostBlock extends StatelessWidget {
             color: const Color(0xff202020),
           ),
         ],
+      ],
+    );
+
+    final progress = metaProgress;
+    final meta = progress == null
+        ? headerAndDescription
+        : ValueListenableBuilder<double>(
+            valueListenable: progress,
+            builder: (context, t, child) {
+              return Opacity(
+                opacity: (1 - t).clamp(0.0, 1.0),
+                child: Transform.translate(
+                  offset: Offset(0, -t * _PostDetailViewState._metaSlidePx),
+                  child: child,
+                ),
+              );
+            },
+            child: headerAndDescription,
+          );
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        if (renderMedia) ...[PostMedia(post: post), Gap.h16],
+        meta,
         Gap.h18,
         PostActions(
           post: post,

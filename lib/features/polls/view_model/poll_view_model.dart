@@ -31,7 +31,7 @@ class PollViewModel extends BaseChangeNotifierViewModel {
   Future<void> vote(String optionUid) async {
     final previous = poll.value;
     if (previous == null ||
-        previous.hasEnded ||
+        previous.isClosed ||
         previous.hasVoted ||
         isVoteBusy ||
         optionUid.trim().isEmpty) {
