@@ -93,6 +93,7 @@ class CommentThreadView extends ConsumerWidget {
                           padding: const EdgeInsets.only(bottom: 20),
                           child: CommentTile(
                             comment: r,
+                            
                             onLike: () => vm.toggleReplyLike(r),
                           ),
                         ),

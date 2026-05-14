@@ -235,7 +235,7 @@ class _HomeViewState extends ConsumerState<HomeView> {
                                       return Padding(
                                         padding: EdgeInsets.only(
                                           top: index == 0 ? 12 : 0,
-                                          bottom: isLast ? 0 : 28,
+                                          bottom: isLast ? 0 : 12,
                                         ),
                                         child: PostCard(
                                           post: post,

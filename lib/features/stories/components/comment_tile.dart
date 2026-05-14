@@ -66,7 +66,7 @@ class CommentTile extends StatelessWidget {
                   ),
                 ],
               ),
-              Gap.h8,
+              // Gap.h8,
               AppText.regular(
                 comment.body,
                 fontSize: 12,

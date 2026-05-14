@@ -164,7 +164,7 @@ class _FullReelBodyState extends State<FullReelBody> {
                                 ),
                                 Gap.w4,
                                 AppText.regular(
-                                  "With",
+                                  "with",
                                   fontSize: 12,
                                   fontWeight: FontWeight.w400,
                                   color: AppColors.tint5,
