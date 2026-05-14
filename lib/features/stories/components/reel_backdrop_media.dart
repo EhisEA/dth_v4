@@ -91,6 +91,7 @@ class _ReelBackdropMediaState extends State<ReelBackdropMedia> {
     _youtube = null;
     _youtubeListener = null;
     widget.controller?.clearToggleHandler();
+    widget.controller?.clearSeekHandler();
   }
 
   @override
@@ -132,6 +133,7 @@ class _ReelBackdropMediaState extends State<ReelBackdropMedia> {
       _youtube = yt;
       _attachYoutubeListener(yt);
       widget.controller?.registerToggleHandler(_toggleYoutube);
+      widget.controller?.registerSeekHandler(_seekYoutube);
       if (mounted) setState(() {});
       return;
     }
@@ -148,6 +150,7 @@ class _ReelBackdropMediaState extends State<ReelBackdropMedia> {
       await c.play();
       _attachVideoListener(c);
       widget.controller?.registerToggleHandler(_toggleVideo);
+      widget.controller?.registerSeekHandler(_seekVideo);
       widget.controller?.updateReady(true);
       widget.controller?.updatePlaying(true);
       setState(() {});
@@ -213,6 +216,25 @@ class _ReelBackdropMediaState extends State<ReelBackdropMedia> {
     } else {
       c.play();
     }
+  }
+
+  void _seekVideo(double fraction) {
+    final c = _video;
+    if (c == null || !c.value.isInitialized) return;
+    final totalMs = c.value.duration.inMilliseconds;
+    if (totalMs <= 0) return;
+    c.seekTo(Duration(milliseconds: (totalMs * fraction).round()));
+  }
+
+  void _seekYoutube(double fraction) {
+    final c = _youtube;
+    if (c == null) return;
+    final totalMs = c.value.metaData.duration.inMilliseconds;
+    if (totalMs <= 0) return;
+    c.seekTo(
+      Duration(milliseconds: (totalMs * fraction).round()),
+      allowSeekAhead: true,
+    );
   }
 
   String _ensureHttpScheme(String url) {

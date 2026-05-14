@@ -31,7 +31,7 @@ class PosTimelinetHeader extends StatelessWidget {
                     color: AppColors.black,
                     fontWeight: FontWeight.w500,
                   ),
-                  Gap.h2,
+                  // Gap.h2,
                   Wrap(
                     children: [
                       SvgPicture.asset(SvgAssets.blackLogo, height: 16),

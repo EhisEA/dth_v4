@@ -22,6 +22,9 @@ class FullReelBody extends StatefulWidget {
     this.progress = 0,
     this.isPlaying = false,
     this.hasVideo = false,
+    this.onSeekStart,
+    this.onSeek,
+    this.onSeekEnd,
 
     /// When true, skip [ReelBackdropMedia] — parent already paints the reel.
     this.excludeBackdrop = false,
@@ -42,6 +45,13 @@ class FullReelBody extends StatefulWidget {
   final double progress;
   final bool isPlaying;
   final bool hasVideo;
+
+  /// Seek-bar gesture callbacks. [onSeek] receives a normalized 0..1 target.
+  /// [onSeekStart] / [onSeekEnd] bracket a drag so the parent can suppress
+  /// player-side progress updates while the user is dragging.
+  final VoidCallback? onSeekStart;
+  final ValueChanged<double>? onSeek;
+  final VoidCallback? onSeekEnd;
 
   /// Caption character budget for the truncated state; "Read more" appears
   /// only when [description] exceeds this length.
@@ -233,16 +243,11 @@ class _FullReelBodyState extends State<FullReelBody> {
               ),
               Gap.h16,
               if (widget.hasVideo)
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(2),
-                  child: LinearProgressIndicator(
-                    value: widget.progress.clamp(0.0, 1.0),
-                    minHeight: 2,
-                    backgroundColor: AppColors.white.withValues(alpha: 0.3),
-                    valueColor: const AlwaysStoppedAnimation<Color>(
-                      AppColors.primary,
-                    ),
-                  ),
+                _ReelSeekBar(
+                  progress: widget.progress,
+                  onSeekStart: widget.onSeekStart,
+                  onSeek: widget.onSeek,
+                  onSeekEnd: widget.onSeekEnd,
                 ),
             ],
           ),
@@ -276,6 +281,71 @@ class _FullReelBodyState extends State<FullReelBody> {
         //     ),
         //   ),
       ],
+    );
+  }
+}
+
+/// Draggable seek bar. Renders a thin progress line but exposes a taller
+/// transparent hit area so the user can grab it with a finger; horizontal
+/// drags and taps map to a normalized 0..1 target and are reported to the
+/// parent (which seeks the underlying player via [ReelPlayerController]).
+class _ReelSeekBar extends StatelessWidget {
+  const _ReelSeekBar({
+    required this.progress,
+    this.onSeekStart,
+    this.onSeek,
+    this.onSeekEnd,
+  });
+
+  final double progress;
+  final VoidCallback? onSeekStart;
+  final ValueChanged<double>? onSeek;
+  final VoidCallback? onSeekEnd;
+
+  @override
+  Widget build(BuildContext context) {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final width = constraints.maxWidth;
+        void emit(double dx) {
+          if (width <= 0) return;
+          onSeek?.call((dx / width).clamp(0.0, 1.0));
+        }
+
+        return GestureDetector(
+          behavior: HitTestBehavior.opaque,
+          onTapDown: (d) {
+            onSeekStart?.call();
+            emit(d.localPosition.dx);
+          },
+          onTapUp: (_) => onSeekEnd?.call(),
+          onTapCancel: () => onSeekEnd?.call(),
+          onHorizontalDragStart: (d) {
+            onSeekStart?.call();
+            emit(d.localPosition.dx);
+          },
+          onHorizontalDragUpdate: (d) => emit(d.localPosition.dx),
+          onHorizontalDragEnd: (_) => onSeekEnd?.call(),
+          onHorizontalDragCancel: () => onSeekEnd?.call(),
+          child: SizedBox(
+            height: 20,
+            child: Align(
+              alignment: Alignment.bottomCenter,
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(2),
+                child: LinearProgressIndicator(
+                  value: progress.clamp(0.0, 1.0),
+                  minHeight: 2,
+                  backgroundColor: AppColors.white.withValues(alpha: 0.3),
+                  valueColor: const AlwaysStoppedAnimation<Color>(
+                    AppColors.primary,
+                  ),
+                ),
+              ),
+            ),
+          ),
+        );
+      },
     );
   }
 }
