@@ -59,15 +59,14 @@ class _PersonalInfomationViewState
       );
       return;
     }
-    final country =
-        displayCountry ?? DthCountry.findByIso(countries, u.isoCode);
-    if (country == null) {
-      DthFlushBar.instance.showError(
-        title: "Country",
-        message: "Could not resolve your country. Try again shortly.",
-      );
-      return;
-    }
+    // Google-auth users skip phone collection at sign-up, so [u.isoCode] can
+    // be empty. Fall back to Nigeria (the app's default — same pick as the
+    // create-account form) and then the first available country, so the user
+    // can still enter edit mode and choose their own country from the picker.
+    final country = displayCountry ??
+        DthCountry.findByIso(countries, u.isoCode) ??
+        DthCountry.findByIso(countries, "NG") ??
+        countries.first;
     setState(() {
       _editingProfile = true;
       _editCountry = country;
