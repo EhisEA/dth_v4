@@ -39,12 +39,13 @@ class UpcomingShowsComponent extends StatelessWidget {
       onTap: onTap,
       behavior: HitTestBehavior.opaque,
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           ClipRRect(
             borderRadius: BorderRadius.circular(12),
             child: CachedNetworkImage(
               imageUrl: imageUrl,
+              width: double.infinity,
               height: 130,
               fit: BoxFit.cover,
               placeholder: (_, __) =>
@@ -70,7 +71,7 @@ class UpcomingShowsComponent extends StatelessWidget {
           if (showDescription) ...[
             AppText.regular(
               description,
-              color: AppColors.paleLavender,
+              color: AppColors.black,
               fontSize: 12,
               maxLines: 2,
               multiText: true,
@@ -84,12 +85,19 @@ class UpcomingShowsComponent extends StatelessWidget {
               children: [
                 Expanded(
                   flex: 3,
-                  child: _MetaChip(icon: SvgAssets.location, text: location),
+                  child: _MetaChip(
+                    icon: SvgAssets.location,
+                    text: location,
+                    maxLines: 1,
+                  ),
                 ),
                 Gap.w10,
                 Expanded(
-                  flex: 2,
-                  child: _MetaChip(icon: SvgAssets.clock, text: dateTimeLabel),
+                  flex: 5,
+                  child: _MetaChip(
+                    icon: SvgAssets.clockOutline,
+                    text: dateTimeLabel,
+                  ),
                 ),
               ],
             )
@@ -98,7 +106,7 @@ class UpcomingShowsComponent extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               children: [
                 SvgPicture.asset(
-                  SvgAssets.clock,
+                  SvgAssets.clockOutline,
                   width: 11,
                   height: 11,
                   colorFilter: ColorFilter.mode(
@@ -132,10 +140,11 @@ class UpcomingShowsComponent extends StatelessWidget {
 }
 
 class _MetaChip extends StatelessWidget {
-  const _MetaChip({required this.icon, required this.text});
+  const _MetaChip({required this.icon, required this.text, this.maxLines});
 
   final String icon;
   final String text;
+  final int? maxLines;
 
   @override
   Widget build(BuildContext context) {
@@ -154,7 +163,7 @@ class _MetaChip extends StatelessWidget {
             text,
             color: AppColors.blackTint20,
             fontSize: 10,
-            maxLines: 2,
+            maxLines: maxLines ?? 2,
             multiText: true,
             height: 1.25,
           ),

@@ -9,6 +9,8 @@ class ImageAssets {
   static const String line = "$imagePath/line.png";
   static const String logoWhite = "$imagePath/logo_white.png";
   static const String updateIcon = "$imagePath/update_icon.png";
+  static const String ticketEmptyState =
+      "$imagePath/empty_state/ticket_empty_state.png";
 
   /////////////////////AUTH//////////////////////
   ///
@@ -54,6 +56,7 @@ class ImageAssets {
 class SvgAssets {
   static const String svgPath = "assets/svgs";
   static const String backArrow = "$svgPath/arrow-left.svg";
+  static const String clockOutline = "$svgPath/clock_outline.svg";
   static const String downArrow = "$svgPath/arrow-down.svg";
   static const String rightArrow = "$svgPath/arrow-right.svg";
   static const String googleLogo = "$svgPath/auth/google.svg";

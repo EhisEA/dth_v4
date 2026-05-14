@@ -1,4 +1,8 @@
+export "view_model/ticket_home_view_model.dart";
+export "view_model/upcoming_shows_list_view_model.dart";
+export "view_model/event_detail_view_model.dart";
 export "views/ticket_view.dart";
+export "components/ticket_empty_state.dart";
 export "components/booked_shows_component.dart";
 export "components/description_widget.dart";
 export "views/upcoming_shows_view.dart";

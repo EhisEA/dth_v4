@@ -46,6 +46,9 @@ class RoutingArgumentKey {
 
   /// [ShowView] — badge label, default `Upcoming`.
   static const String eventStatusLabel = "eventStatusLabel";
+
+  /// [ShowView] — event uid for `GET /api/events/{event_uid}`.
+  static const String eventUid = "eventUid";
 }
 
 abstract class OtpFlowArg {
