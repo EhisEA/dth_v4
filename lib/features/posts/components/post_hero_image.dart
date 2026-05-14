@@ -105,30 +105,30 @@ class _PostHeroImageState extends State<PostHeroImage> {
                   ),
                 ),
               ),
-              if (isCarousel && _current > 0)
-                Positioned(
-                  left: 8,
-                  top: 0,
-                  bottom: 0,
-                  child: Center(
-                    child: _ChevronButton(
-                      icon: Icons.chevron_left_rounded,
-                      onTap: () => _step(-1),
-                    ),
-                  ),
-                ),
-              if (isCarousel && _current < n - 1)
-                Positioned(
-                  right: 8,
-                  top: 0,
-                  bottom: 0,
-                  child: Center(
-                    child: _ChevronButton(
-                      icon: Icons.chevron_right_rounded,
-                      onTap: () => _step(1),
-                    ),
-                  ),
-                ),
+              // if (isCarousel && _current > 0)
+              //   Positioned(
+              //     left: 8,
+              //     top: 0,
+              //     bottom: 0,
+              //     child: Center(
+              //       child: _ChevronButton(
+              //         icon: Icons.chevron_left_rounded,
+              //         onTap: () => _step(-1),
+              //       ),
+              //     ),
+              //   ),
+              // if (isCarousel && _current < n - 1)
+              //   Positioned(
+              //     right: 8,
+              //     top: 0,
+              //     bottom: 0,
+              //     child: Center(
+              //       child: _ChevronButton(
+              //         icon: Icons.chevron_right_rounded,
+              //         onTap: () => _step(1),
+              //       ),
+              //     ),
+              //   ),
               // if (isCarousel)
               //   Positioned(
               //     top: 0,

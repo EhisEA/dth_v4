@@ -68,6 +68,7 @@ class CommentTile extends StatelessWidget {
               Row(
                 children: [
                   LikeChip(
+                    padding: const EdgeInsets.all(8.0),
                     liked: comment.viewerReacted,
                     count: comment.likeCount,
                     onTap: onLike,
@@ -75,7 +76,7 @@ class CommentTile extends StatelessWidget {
                     fontSize: 11,
                   ),
                   if (showReplyChip) ...[
-                    Gap.w16,
+                    // Gap.w16,
                     _Chip(
                       icon: SvgAssets.messagesBorder,
                       count: comment.replyCount,
@@ -150,21 +151,24 @@ class _Chip extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       behavior: HitTestBehavior.opaque,
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          SvgPicture.asset(
-            icon,
-            height: 12,
-            width: 12,
-            colorFilter: ColorFilter.mode(
-              AppColors.blackTint20,
-              BlendMode.srcIn,
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            SvgPicture.asset(
+              icon,
+              height: 12,
+              width: 12,
+              colorFilter: ColorFilter.mode(
+                AppColors.blackTint20,
+                BlendMode.srcIn,
+              ),
             ),
-          ),
-          Gap.w4,
-          AppText.medium('$count', fontSize: 11, color: AppColors.tint25),
-        ],
+            Gap.w4,
+            AppText.medium('$count', fontSize: 11, color: AppColors.tint25),
+          ],
+        ),
       ),
     );
   }

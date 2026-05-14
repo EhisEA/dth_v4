@@ -39,16 +39,41 @@ class _PostDetailViewState extends ConsumerState<PostDetailView> {
   // entire screen.
   YoutubePlayerController? _ytController;
   String? _ytVideoId;
-  // Until the IFrame player calls back as "ready", we overlay a black mask
-  // with our own spinner — otherwise YouTube's own iframe loading chrome
-  // (logo + branding) flashes for a beat before our control bar takes over.
-  bool _ytReady = false;
+
+  /// Latches true on the first `isReady` event for the current controller.
+  /// `youtube_player_flutter` momentarily drops `isReady` back to false when
+  /// the video ends and its replay overlay appears — without this latch our
+  /// loading mask would reappear on top of the replay/retry button.
+  bool _hasBeenReady = false;
+  VoidCallback? _ytListener;
 
   @override
   void dispose() {
+    _detachYtListener();
     _ytController?.dispose();
+    // [_TransparentBackAppBar] uses SystemUiOverlayStyle.light; without a
+    // reset, that style outlives this route because home uses no AppBar.
     SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.dark);
     super.dispose();
+  }
+
+  void _attachYtListener(YoutubePlayerController c) {
+    void listener() {
+      if (_hasBeenReady) return;
+      if (c.value.isReady && mounted) {
+        setState(() => _hasBeenReady = true);
+      }
+    }
+
+    _ytListener = listener;
+    c.addListener(listener);
+  }
+
+  void _detachYtListener() {
+    if (_ytListener != null && _ytController != null) {
+      _ytController!.removeListener(_ytListener!);
+    }
+    _ytListener = null;
   }
 
   /// Keep [_ytController] in sync with [post]'s video URL. Called inline from
@@ -60,9 +85,10 @@ class _PostDetailViewState extends ConsumerState<PostDetailView> {
         : null;
     final newId = url == null ? null : YoutubePlayer.convertUrlToId(url);
     if (newId == _ytVideoId) return;
+    _detachYtListener();
     _ytController?.dispose();
     _ytVideoId = newId;
-    _ytReady = false;
+    _hasBeenReady = false;
     _ytController = newId == null
         ? null
         : YoutubePlayerController(
@@ -83,6 +109,10 @@ class _PostDetailViewState extends ConsumerState<PostDetailView> {
               // loop: true,
             ),
           );
+    final c = _ytController;
+    if (c != null) {
+      _attachYtListener(c);
+    }
   }
 
   void _showComingSoon(String label) {
@@ -150,6 +180,8 @@ class _PostDetailViewState extends ConsumerState<PostDetailView> {
                       return false;
                     },
                     child: ListView(
+                      keyboardDismissBehavior:
+                          ScrollViewKeyboardDismissBehavior.onDrag,
                       physics: const AlwaysScrollableScrollPhysics(),
                       padding: EdgeInsets.zero,
                       children: [
@@ -200,41 +232,48 @@ class _PostDetailViewState extends ConsumerState<PostDetailView> {
           // Strip the default top overlay row (video title, share, "more").
           // We only want our control bar at the bottom and the video itself.
           topActions: const [],
-          onReady: () {
-            if (mounted) setState(() => _ytReady = true);
-          },
         ),
-        builder: (context, player) => buildScaffold(
-          // Full-bleed pinned video — flush to top under the transparent
-          // app bar / status bar, no rounded corners. Loading mask stacks
-          // on top until `onReady` fires.
-          Container(
-            color: Colors.black,
-            padding: EdgeInsets.only(top: MediaQuery.paddingOf(context).top),
-            child: AspectRatio(
-              aspectRatio: 16 / 9,
-              child: Stack(
-                fit: StackFit.expand,
-                children: [
-                  player,
-                  if (!_ytReady)
-                    const ColoredBox(
-                      color: Colors.black,
-                      child: Center(
-                        child: SizedBox(
-                          width: 28,
-                          height: 28,
-                          child: CircularProgressIndicator(
-                            strokeWidth: 2,
-                            color: Colors.white,
+        builder: (context, player) => ListenableBuilder(
+          listenable: controller,
+          builder: (context, _) {
+            final v = controller.value;
+            // Latched: once the player has been ready, never show the mask
+            // again. The package briefly flips `isReady` back to false during
+            // end-of-video transitions, and we don't want our spinner to
+            // come back on top of YT's retry / replay overlay.
+            final showLoadingMask = !_hasBeenReady && !v.hasError;
+            return buildScaffold(
+              Container(
+                color: Colors.black,
+                padding: EdgeInsets.only(
+                  top: MediaQuery.paddingOf(context).top,
+                ),
+                child: AspectRatio(
+                  aspectRatio: 16 / 9,
+                  child: Stack(
+                    fit: StackFit.expand,
+                    children: [
+                      player,
+                      if (showLoadingMask)
+                        const ColoredBox(
+                          color: Colors.black,
+                          child: Center(
+                            child: SizedBox(
+                              width: 28,
+                              height: 28,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                color: Colors.white,
+                              ),
+                            ),
                           ),
                         ),
-                      ),
-                    ),
-                ],
+                    ],
+                  ),
+                ),
               ),
-            ),
-          ),
+            );
+          },
         ),
       );
     }

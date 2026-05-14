@@ -2,6 +2,8 @@ import "package:dth_v4/data/data.dart";
 import "package:dth_v4/features/posts/models/post_mapper.dart";
 import "package:dth_v4/features/posts/view_model/posts_cache.dart";
 import "package:dth_v4/features/stories/models/story.dart";
+import "package:dth_v4/features/stories/models/timeline_reel_story_mapper.dart";
+import "package:dth_v4/features/stories/view_model/reels_cache.dart";
 import "package:dth_v4/widgets/widgets.dart";
 import "package:flutter/material.dart";
 import "package:flutter_riverpod/flutter_riverpod.dart";
@@ -13,12 +15,14 @@ class HomeViewModel extends BaseChangeNotifierViewModel {
     this._timelineRepo,
     this._postRepo,
     this._postsCache,
+    this._reelsCache,
   );
 
   final UserState userState;
   final TimelineRepo _timelineRepo;
   final PostRepo _postRepo;
   final PostsCache _postsCache;
+  final ReelsCache _reelsCache;
 
   final Set<String> _likePending = <String>{};
 
@@ -53,7 +57,8 @@ class HomeViewModel extends BaseChangeNotifierViewModel {
 
       try {
         final reelsResult = await _timelineRepo.fetchTimelineReels();
-        _stories = reelsResult.items.map(_reelToStory).toList();
+        _reelsCache.upsertAll(reelsResult.items);
+        _stories = reelsResult.items.map(storyFromTimelineReel).toList();
       } on ApiFailure {
         _stories = const [];
       }
@@ -79,7 +84,7 @@ class HomeViewModel extends BaseChangeNotifierViewModel {
 
     try {
       final reelsResult = await _timelineRepo.fetchTimelineReels();
-      _stories = reelsResult.items.map(_reelToStory).toList();
+      _stories = reelsResult.items.map(storyFromTimelineReel).toList();
     } on ApiFailure catch (e) {
       DthFlushBar.instance.showError(message: e.message, title: "Reels");
     }
@@ -132,24 +137,12 @@ class HomeViewModel extends BaseChangeNotifierViewModel {
   }
 }
 
-Story _reelToStory(TimelineReel r) {
-  final thumb = r.media?.thumbnail?.trim();
-  final videoThumb = r.videoThumbnail?.trim();
-  final mediaUrl = r.media?.url?.trim();
-  final imageUrl = (thumb != null && thumb.isNotEmpty)
-      ? thumb
-      : (videoThumb != null && videoThumb.isNotEmpty)
-      ? videoThumb
-      : (mediaUrl ?? "");
-  final label = r.title.trim().isNotEmpty ? r.title.trim() : "Reel";
-  return Story(imageUrl: imageUrl, label: label);
-}
-
 final homeViewModelProvider = ChangeNotifierProvider<HomeViewModel>((ref) {
   return HomeViewModel(
     ref.read(userStateProvider),
     ref.read(timelineRepositoryProvider),
     ref.read(postRepositoryProvider),
     ref.read(postsCacheProvider),
+    ref.read(reelsCacheProvider),
   );
 });
