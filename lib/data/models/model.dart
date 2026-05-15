@@ -11,6 +11,7 @@ export "application_wizard_inputs.dart";
 export "dth_country.dart";
 export "paginated_result.dart";
 export "poll_model.dart";
+export "profile_phone_submit_result.dart";
 export "registration_models.dart";
 export "user_model.dart";
 export "subscription_model.dart";

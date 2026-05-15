@@ -27,6 +27,7 @@ class ImageAssets {
   /////////////////////HOME//////////////////////
   ///
   static const String applyimg = "$imagePath/home/apply_img.png";
+  static const String phoneVerify = "$imagePath/home/phone_verify.png";
 
   /////////////////////PROFILE//////////////////////
   ///
@@ -78,6 +79,7 @@ class SvgAssets {
 
   /////////////////////HOME//////////////////////
   static const String live = "$svgPath/home/live.svg";
+  static const String phoneVerify = "$svgPath/home/phone_verify.svg";
   static const String notification = "$svgPath/home/notification.svg";
   static const String greyLogo = "$svgPath/home/grey_logo.svg";
   static const String primaryLogo = "$svgPath/home/primary_logo.svg";

@@ -283,29 +283,6 @@ class _PersonalInfomationViewState
                   validator: _editingProfile
                       ? (v) => validateNationalPhone(v, _editCountry)
                       : null,
-                  suffix: (!_editingProfile && !u.isPhoneVerified)
-                      ? AppButton.primary(
-                          height: 32,
-                          width: 76,
-                          text: "Verify Now",
-                          radius: 30,
-                          fontSize: 11,
-                          isLoading: vm.isBaseBusy,
-                          fontWeight: FontWeight.w400,
-                          press: u.phoneNumber.trim().isEmpty
-                              ? () {}
-                              : () async {
-                                  final sent = await vm
-                                      .sendPhoneVerificationCode(
-                                        u.phoneNumber.trim(),
-                                      );
-                                  if (!mounted || !sent) return;
-                                  MobileNavigationService.instance.push(
-                                    ProfilePhoneVerifyOtpView.path,
-                                  );
-                                },
-                        )
-                      : null,
                 ),
               ],
             ),

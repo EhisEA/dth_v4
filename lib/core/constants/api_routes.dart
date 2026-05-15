@@ -49,6 +49,7 @@ class ApiRoute {
 
   ///PROFILE
   static String get user => "$baseUrl/profile";
+  static String get profilePhone => "$baseUrl/profile/phone";
   static String get profilePhoneSendOtp => "$baseUrl/profile/phone/send-otp";
   static String get profilePhoneVerifyOtp =>
       "$baseUrl/profile/phone/verify-otp";

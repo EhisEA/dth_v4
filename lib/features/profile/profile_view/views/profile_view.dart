@@ -101,37 +101,24 @@ class _ProfileViewState extends ConsumerState<ProfileView> {
                         color: AppColors.tint15,
                       ),
                       Gap.h24,
-                      ContestantDashboardTile(
-                        role: user?.participationRole ?? ParticipationRole.user,
-                        onTap: () {
-                          _navigationService.navigateTo(
-                            ApplicantDashboardView.path,
-                          );
-                        },
-                      ),
-                      Gap.h32,
+                      if (user?.eligible ?? false) ...[
+                        ContestantDashboardTile(
+                          role:
+                              user?.participationRole ?? ParticipationRole.user,
+                          applicationStatus: user?.applicationStatus,
+                          onTap: () {
+                            _navigationService.navigateTo(
+                              ApplicantDashboardView.path,
+                            );
+                          },
+                        ),
+                        Gap.h32,
+                      ],
                       ProfileTlle(
                         title: "Personal Information",
                         description: "Update your profile information",
                         icon: SvgAssets.personal,
                         showRightArrow: false,
-                        widget: user != null && !user.isPhoneVerified
-                            ? Container(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 8,
-                                  vertical: 6,
-                                ),
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(8),
-                                  color: const Color(0xffFFF2F1),
-                                ),
-                                child: AppText.regular(
-                                  "Need Attention",
-                                  fontSize: 10,
-                                  color: AppColors.redTint35,
-                                ),
-                              )
-                            : null,
                         onTap: () {
                           if (user == null) return;
                           _navigationService.navigateTo(
