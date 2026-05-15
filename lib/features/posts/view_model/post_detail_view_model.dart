@@ -83,7 +83,12 @@ class PostDetailViewModel extends BaseChangeNotifierViewModel {
     notifyListeners();
     try {
       final result = await _commentRepo.listComments(uid, sort: _sort);
-      final comments = result.items.map(commentFromTimelineComment).toList();
+      final fresh = result.items.map(commentFromTimelineComment);
+      // listComments doesn't reliably return `viewer_reacted` — keep the
+      // cached reaction state (set by the toggle endpoint, the only
+      // authoritative source) so navigating back to this screen doesn't
+      // flip a liked comment back to grey.
+      final comments = mergeViewerReacted(fresh, _commentsCache.get);
       _commentsCache.upsertAll(comments);
       _commentUids = comments.map((c) => c.uid).toList();
       _nextCommentCursor = result.nextCursor;
@@ -107,7 +112,8 @@ class PostDetailViewModel extends BaseChangeNotifierViewModel {
         cursor: _nextCommentCursor,
         sort: _sort,
       );
-      final comments = result.items.map(commentFromTimelineComment).toList();
+      final fresh = result.items.map(commentFromTimelineComment);
+      final comments = mergeViewerReacted(fresh, _commentsCache.get);
       _commentsCache.upsertAll(comments);
       _commentUids = [..._commentUids, ...comments.map((c) => c.uid)];
       _nextCommentCursor = result.nextCursor;
@@ -206,9 +212,13 @@ class PostDetailViewModel extends BaseChangeNotifierViewModel {
     try {
       final raw = await _commentRepo.toggleReaction(comment.uid);
       final fresh = commentFromTimelineComment(raw);
+      // Trust the server for aggregate counts only — the toggle endpoint
+      // doesn't always echo `viewer_reacted`, and our parser treats missing
+      // as `false`. Overriding the optimistic flip would flicker the heart
+      // back to grey while the count stayed bumped.
+      final current = _commentsCache.get(comment.uid) ?? comment;
       _commentsCache.upsert(
-        comment.copyWith(
-          viewerReacted: fresh.viewerReacted,
+        current.copyWith(
           likeCount: fresh.likeCount,
           replyCount: fresh.replyCount,
         ),

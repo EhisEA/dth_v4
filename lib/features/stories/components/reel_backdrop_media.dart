@@ -125,7 +125,7 @@ class _ReelBackdropMediaState extends State<ReelBackdropMedia> {
           autoPlay: true,
 
           // hideControls: true,
-          mute: true,
+          mute: false,
           loop: true,
           enableCaption: false,
         ),

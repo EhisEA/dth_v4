@@ -83,19 +83,26 @@ class _SubscriptionWidgetState extends ConsumerState<SubscriptionWidget> {
           separatorBuilder: (_, __) => Gap.h16,
           itemBuilder: (context, index) {
             final plan = widget.plans[index];
-            return SubscriptionPlanCard(
-              plan: plan,
-              activePlan: activePlan,
-              isCheckoutBusy: checkoutVm.isBaseBusy,
-              onCTATap: () {
-                if (activePlan != null && plan.uid == activePlan.uid) return;
-                if (activePlan != null &&
-                    compareSubscriptionPlanTier(plan, activePlan) < 0) {
-                  return;
-                }
-                unawaited(checkoutVm.purchasePlan(plan));
-                HapticFeedback.lightImpact();
-              },
+            return Column(
+              children: [
+                SubscriptionPlanCard(
+                  plan: plan,
+                  activePlan: activePlan,
+                  isCheckoutBusy: checkoutVm.isBaseBusy,
+                  onCTATap: () {
+                    if (activePlan != null && plan.uid == activePlan.uid)
+                      return;
+                    if (activePlan != null &&
+                        compareSubscriptionPlanTier(plan, activePlan) < 0) {
+                      return;
+                    }
+                    unawaited(checkoutVm.purchasePlan(plan));
+                    HapticFeedback.lightImpact();
+                  },
+                ),
+
+                if (index == widget.plans.length - 1) Gap.h(100),
+              ],
             );
           },
         );

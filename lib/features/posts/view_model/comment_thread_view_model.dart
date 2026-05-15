@@ -53,7 +53,11 @@ class CommentThreadViewModel extends BaseChangeNotifierViewModel {
     notifyListeners();
     try {
       final result = await _commentRepo.listReplies(commentUid, sort: _sort);
-      final replies = result.items.map(commentFromTimelineComment).toList();
+      final fresh = result.items.map(commentFromTimelineComment);
+      // The list endpoint doesn't reliably echo `viewer_reacted` — keep any
+      // reaction state we already confirmed via the toggle endpoint, so
+      // returning to this screen doesn't flip a liked reply back to grey.
+      final replies = mergeViewerReacted(fresh, _commentsCache.get);
       _commentsCache.upsertAll(replies);
       _replyUids = replies.map((r) => r.uid).toList();
       _nextCursor = result.nextCursor;
@@ -77,7 +81,8 @@ class CommentThreadViewModel extends BaseChangeNotifierViewModel {
         cursor: _nextCursor,
         sort: _sort,
       );
-      final replies = result.items.map(commentFromTimelineComment).toList();
+      final fresh = result.items.map(commentFromTimelineComment);
+      final replies = mergeViewerReacted(fresh, _commentsCache.get);
       _commentsCache.upsertAll(replies);
       _replyUids = [..._replyUids, ...replies.map((r) => r.uid)];
       _nextCursor = result.nextCursor;
@@ -155,9 +160,14 @@ class CommentThreadViewModel extends BaseChangeNotifierViewModel {
     try {
       final raw = await _commentRepo.toggleReaction(c.uid);
       final fresh = commentFromTimelineComment(raw);
+      // Trust the server for aggregate counts only — the toggle endpoint
+      // doesn't always echo `viewer_reacted`, and our parser treats missing
+      // as `false`. Overriding the optimistic flip would flicker the heart
+      // back to grey while the count stayed bumped. Read the current cache
+      // entry so we preserve the optimistic state we just wrote.
+      final current = _commentsCache.get(c.uid) ?? c;
       _commentsCache.upsert(
-        c.copyWith(
-          viewerReacted: fresh.viewerReacted,
+        current.copyWith(
           likeCount: fresh.likeCount,
           replyCount: fresh.replyCount,
         ),

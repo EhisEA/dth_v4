@@ -1,11 +1,11 @@
 import "package:dth_v4/core/core.dart";
+import "package:dth_v4/data/data.dart";
 import "package:dth_v4/features/stories/components/comment_tile.dart";
 import "package:dth_v4/features/stories/view_model/reel_chat_view_model.dart";
 import "package:dth_v4/widgets/dth_send_button.dart";
 import "package:dth_v4/widgets/widgets.dart";
 import "package:flutter/material.dart";
 import "package:flutter_riverpod/flutter_riverpod.dart";
-import "package:flutter_svg/flutter_svg.dart";
 import "package:flutter_utils/flutter_utils.dart";
 
 class ChatPanel extends ConsumerStatefulWidget {
@@ -79,20 +79,38 @@ class _ChatPanelState extends ConsumerState<ChatPanel> {
                             ),
                           ],
                         ),
-                        Row(
-                          children: [
-                            AppText.regular(
-                              "Most recent",
-                              fontSize: 12,
-                              color: AppColors.tint25,
+                        PopupMenuButton<CommentSort>(
+                          initialValue: vm.sort,
+                          onSelected: vm.setSort,
+                          tooltip: "Sort",
+                          itemBuilder: (_) => const [
+                            PopupMenuItem(
+                              value: CommentSort.latest,
+                              child: Text("Most recent"),
                             ),
-                            Gap.w4,
-                            SvgPicture.asset(
-                              SvgAssets.downArrow,
-                              width: 14,
-                              height: 14,
+                            PopupMenuItem(
+                              value: CommentSort.oldest,
+                              child: Text("Oldest"),
                             ),
                           ],
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              AppText.regular(
+                                vm.sort == CommentSort.latest
+                                    ? "Most recent"
+                                    : "Oldest",
+                                fontSize: 12,
+                                color: AppColors.tint25,
+                              ),
+                              Gap.w4,
+                              Icon(
+                                Icons.expand_more,
+                                size: 16,
+                                color: AppColors.tint25,
+                              ),
+                            ],
+                          ),
                         ),
                       ],
                     ),

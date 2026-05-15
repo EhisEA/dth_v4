@@ -49,12 +49,15 @@ class _PostDetailViewState extends ConsumerState<PostDetailView> {
   VoidCallback? _ytListener;
 
   /// YouTube-style metadata collapse: as the comments list scrolls down past
-  /// the pinned video, [_metaProgress] ramps 0 → 1 over the first
-  /// [_metaCollapseDistance] pixels. Used to fade + slide out the post header
-  /// and description and to lift the video by a few pixels.
+  /// the pinned video, [_metaProgress] ramps 0 → 1 between [_metaFadeStart]
+  /// and [_metaFadeStart] + [_metaFadeRange] pixels of scroll. The leading
+  /// dead-zone keeps the header at full opacity while the meta block is
+  /// still mostly on-screen; the fade only kicks in once the user is
+  /// actually pushing it out of view.
   final ScrollController _scrollController = ScrollController();
   final ValueNotifier<double> _metaProgress = ValueNotifier<double>(0);
-  static const double _metaCollapseDistance = 120;
+  static const double _metaFadeStart = 80;
+  static const double _metaFadeRange = 160;
   static const double _videoLiftPx = 6;
   static const double _metaSlidePx = 16;
 
@@ -66,8 +69,9 @@ class _PostDetailViewState extends ConsumerState<PostDetailView> {
 
   void _onScroll() {
     if (!_scrollController.hasClients) return;
-    final raw = _scrollController.offset.clamp(0.0, _metaCollapseDistance);
-    final next = raw / _metaCollapseDistance;
+    final shifted = (_scrollController.offset - _metaFadeStart)
+        .clamp(0.0, _metaFadeRange);
+    final next = shifted / _metaFadeRange;
     // Skip imperceptible deltas so the ValueNotifier doesn't churn every
     // pixel — keeps the Opacity / Transform rebuilds cheap during fast flings.
     if ((next - _metaProgress.value).abs() < 0.005) return;
@@ -125,7 +129,7 @@ class _PostDetailViewState extends ConsumerState<PostDetailView> {
             initialVideoId: newId,
             flags: const YoutubePlayerFlags(
               autoPlay: true,
-              mute: true,
+              mute: false,
 
               // enableCaption: false,
               // forceHD: false,

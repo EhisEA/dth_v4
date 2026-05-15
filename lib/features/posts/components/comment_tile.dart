@@ -70,6 +70,11 @@ class CommentTile extends StatelessWidget {
                 children: [
                   if (showReplyChip) ...[
                     LikeChip(
+                      // Key by uid so the animation State stays paired with
+                      // its comment even if the list reorders — otherwise
+                      // _colorTween can be reused across a different reply
+                      // and lock the heart in the wrong colour.
+                      key: ValueKey("like-${comment.uid}"),
                       padding: const EdgeInsets.all(8.0),
                       liked: comment.viewerReacted,
                       count: comment.likeCount,
@@ -91,6 +96,7 @@ class CommentTile extends StatelessWidget {
         ),
         if (!showReplyChip)
           LikeChip(
+            key: ValueKey("like-${comment.uid}"),
             padding: const EdgeInsets.all(8.0),
             liked: comment.viewerReacted,
             count: comment.likeCount,
