@@ -47,6 +47,9 @@ class _SearchTrendingReelsState extends ConsumerState<SearchTrendingReels> {
 
   @override
   Widget build(BuildContext context) {
+    final reelEnabled =
+        ref.watch(appModulesStateProvider).appModules.value?.reel == true;
+    if (!reelEnabled) return const SizedBox.shrink();
     if (_isLoading) {
       return const SizedBox.shrink();
     }

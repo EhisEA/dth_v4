@@ -327,15 +327,20 @@ class _ReelSeekBar extends StatelessWidget {
           onHorizontalDragUpdate: (d) => emit(d.localPosition.dx),
           onHorizontalDragEnd: (_) => onSeekEnd?.call(),
           onHorizontalDragCancel: () => onSeekEnd?.call(),
+          // Tall transparent hit zone (~44 logical px, matches Apple/Google
+          // minimum touch target) with the visible 2px bar pinned to the
+          // bottom. The full height of the SizedBox catches taps and drags
+          // so users get a generous scrub area without making the bar
+          // visually thicker.
           child: SizedBox(
-            height: 20,
+            height: 44,
             child: Align(
               alignment: Alignment.bottomCenter,
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(2),
                 child: LinearProgressIndicator(
                   value: progress.clamp(0.0, 1.0),
-                  minHeight: 2,
+                  minHeight: 3,
                   backgroundColor: AppColors.white.withValues(alpha: 0.3),
                   valueColor: const AlwaysStoppedAnimation<Color>(
                     AppColors.primary,
