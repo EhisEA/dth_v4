@@ -60,7 +60,8 @@ class _HomeViewState extends ConsumerState<HomeView> {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   Gap.h14,
-                  AppHeader(onLiveTap: () {}),
+                  AppHeader(onLiveTap: () {}, onNotificationTap: () {}),
+                  Gap.h10,
                   Expanded(
                     child: vm.baseState.when(
                       busy: () => const Center(
@@ -120,10 +121,7 @@ class _HomeViewState extends ConsumerState<HomeView> {
                               SliverToBoxAdapter(
                                 child:
                                     vm.stories.isEmpty ||
-                                        appModules
-                                                .appModules
-                                                .value
-                                                ?.reel !=
+                                        appModules.appModules.value?.reel !=
                                             true
                                     ? const SizedBox.shrink()
                                     : Column(

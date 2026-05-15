@@ -9,7 +9,16 @@ import "package:flutter_riverpod/flutter_riverpod.dart";
 class ReelsCache extends ChangeNotifier {
   final Map<String, TimelineReel> _byUid = {};
 
+  /// Uids in the order returned by the last [upsertAll] (timeline reels API).
+  List<String> _orderUids = const [];
+
   TimelineReel? get(String uid) => _byUid[uid];
+
+  /// Reels from the last full list sync, in API order (e.g. home timeline row).
+  List<TimelineReel> get orderedReels => _orderUids
+      .map((uid) => _byUid[uid])
+      .whereType<TimelineReel>()
+      .toList(growable: false);
 
   void upsert(TimelineReel reel) {
     _byUid[reel.uid] = reel;
@@ -17,12 +26,12 @@ class ReelsCache extends ChangeNotifier {
   }
 
   void upsertAll(Iterable<TimelineReel> reels) {
-    var changed = false;
-    for (final r in reels) {
+    final list = reels.toList();
+    _orderUids = list.map((r) => r.uid).toList(growable: false);
+    for (final r in list) {
       _byUid[r.uid] = r;
-      changed = true;
     }
-    if (changed) notifyListeners();
+    notifyListeners();
   }
 }
 

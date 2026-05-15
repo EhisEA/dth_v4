@@ -90,8 +90,9 @@ class _SubscriptionWidgetState extends ConsumerState<SubscriptionWidget> {
                   activePlan: activePlan,
                   isCheckoutBusy: checkoutVm.isBaseBusy,
                   onCTATap: () {
-                    if (activePlan != null && plan.uid == activePlan.uid)
+                    if (activePlan != null && plan.uid == activePlan.uid) {
                       return;
+                    }
                     if (activePlan != null &&
                         compareSubscriptionPlanTier(plan, activePlan) < 0) {
                       return;

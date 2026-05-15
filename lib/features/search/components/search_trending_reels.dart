@@ -1,11 +1,13 @@
-import 'package:dth_v4/core/core.dart';
-import 'package:dth_v4/data/data.dart';
-import 'package:dth_v4/features/stories/stories.dart';
-import 'package:dth_v4/features/stories/view_model/reels_cache.dart';
-import 'package:dth_v4/widgets/widgets.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_utils/flutter_utils.dart';
+import "dart:async";
+
+import "package:dth_v4/core/core.dart";
+import "package:dth_v4/data/data.dart";
+import "package:dth_v4/features/stories/stories.dart";
+import "package:dth_v4/features/stories/view_model/reels_cache.dart";
+import "package:dth_v4/widgets/widgets.dart";
+import "package:flutter/material.dart";
+import "package:flutter_riverpod/flutter_riverpod.dart";
+import "package:flutter_utils/flutter_utils.dart";
 
 class SearchTrendingReels extends ConsumerStatefulWidget {
   const SearchTrendingReels({super.key});
@@ -16,32 +18,27 @@ class SearchTrendingReels extends ConsumerStatefulWidget {
 }
 
 class _SearchTrendingReelsState extends ConsumerState<SearchTrendingReels> {
-  bool _isLoading = true;
-  List<Story> _stories = const [];
-
   @override
   void initState() {
     super.initState();
-    _loadReels();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final cache = ref.read(reelsCacheProvider);
+      if (cache.orderedReels.isEmpty) {
+        unawaited(_prefetchReels());
+      }
+    });
   }
 
-  Future<void> _loadReels() async {
+  /// Only when the shared cache is empty (e.g. user opened Search before Home).
+  Future<void> _prefetchReels() async {
     try {
       final result = await ref
           .read(timelineRepositoryProvider)
           .fetchTimelineReels();
       if (!mounted) return;
       ref.read(reelsCacheProvider).upsertAll(result.items);
-      setState(() {
-        _stories = result.items.map(storyFromTimelineReel).toList();
-        _isLoading = false;
-      });
     } on ApiFailure {
-      if (!mounted) return;
-      setState(() {
-        _stories = const [];
-        _isLoading = false;
-      });
+      // Same as home secondary strip — silent failure.
     }
   }
 
@@ -50,10 +47,12 @@ class _SearchTrendingReelsState extends ConsumerState<SearchTrendingReels> {
     final reelEnabled =
         ref.watch(appModulesStateProvider).appModules.value?.reel == true;
     if (!reelEnabled) return const SizedBox.shrink();
-    if (_isLoading) {
-      return const SizedBox.shrink();
-    }
-    if (_stories.isEmpty) {
+
+    final cache = ref.watch(reelsCacheProvider);
+    final stories = cache.orderedReels
+        .map(storyFromTimelineReel)
+        .toList(growable: false);
+    if (stories.isEmpty) {
       return const SizedBox.shrink();
     }
 
@@ -63,7 +62,7 @@ class _SearchTrendingReelsState extends ConsumerState<SearchTrendingReels> {
         AppText.medium("Trending Reels", color: AppColors.black, fontSize: 12),
         Gap.h8,
         StoriesBar(
-          stories: _stories,
+          stories: stories,
           onStoryTap: (story) {
             MobileNavigationService.instance.push(
               StoriesView.path,

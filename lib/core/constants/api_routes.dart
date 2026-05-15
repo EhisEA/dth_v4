@@ -90,4 +90,7 @@ class ApiRoute {
   static String get eventsBooked => "$baseUrl/events/booked";
   static String event(String eventUid) => "$baseUrl/events/$eventUid";
   static String get ticketsPurchase => "$baseUrl/tickets/purchase";
+
+  /// SUPPORT
+  static String get supportWebSession => "$baseUrl/support/web-session";
 }

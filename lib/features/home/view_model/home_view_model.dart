@@ -84,6 +84,7 @@ class HomeViewModel extends BaseChangeNotifierViewModel {
 
     try {
       final reelsResult = await _timelineRepo.fetchTimelineReels();
+      _reelsCache.upsertAll(reelsResult.items);
       _stories = reelsResult.items.map(storyFromTimelineReel).toList();
     } on ApiFailure {
       // Reels are a secondary strip — silent on refresh failure.

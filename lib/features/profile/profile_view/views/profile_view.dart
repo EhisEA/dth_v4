@@ -45,6 +45,12 @@ class _ProfileViewState extends ConsumerState<ProfileView> {
       valueListenable: userState.user,
       builder: (context, user, _) {
         final appModules = ref.watch(appModulesStateProvider);
+        final modulesPayload = appModules.appModules.value;
+        final hideApplicantDashboardTile =
+            user?.participationRole == ParticipationRole.user &&
+            modulesPayload?.application == false;
+        final showApplicantDashboardTile =
+            (user?.eligible ?? false) && !hideApplicantDashboardTile;
         final role = user?.participationRole ?? ParticipationRole.user;
         return Container(
           padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -95,8 +101,6 @@ class _ProfileViewState extends ConsumerState<ProfileView> {
                           },
                         ),
                         Gap.h32,
-                      ] else ...[
-                        Gap.h32,
                       ],
                       AppText.medium(
                         "Account Settings",
@@ -104,10 +108,11 @@ class _ProfileViewState extends ConsumerState<ProfileView> {
                         color: AppColors.tint15,
                       ),
                       Gap.h24,
-                      if (user?.eligible ?? false) ...[
+                      if (!showApplicantDashboardTile)
+                        const SizedBox.shrink()
+                      else ...[
                         ContestantDashboardTile(
-                          role:
-                              user?.participationRole ?? ParticipationRole.user,
+                          role: role,
                           applicationStatus: user?.applicationStatus,
                           onTap: () {
                             _navigationService.navigateTo(
