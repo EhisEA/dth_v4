@@ -37,6 +37,7 @@ class _HomeViewState extends ConsumerState<HomeView> {
 
   @override
   Widget build(BuildContext context) {
+    final appModules = ref.watch(appModulesStateProvider);
     final bottomInset = MediaQuery.paddingOf(context).bottom + 100;
     final vm = ref.watch(homeViewModelProvider);
     // The cache owns Post state; the VM owns order. Watching the cache here
@@ -117,7 +118,13 @@ class _HomeViewState extends ConsumerState<HomeView> {
                             physics: const AlwaysScrollableScrollPhysics(),
                             slivers: [
                               SliverToBoxAdapter(
-                                child: vm.stories.isEmpty
+                                child:
+                                    vm.stories.isEmpty ||
+                                        appModules
+                                                .appModules
+                                                .value
+                                                ?.reel !=
+                                            true
                                     ? const SizedBox.shrink()
                                     : Column(
                                         mainAxisSize: MainAxisSize.min,
@@ -146,7 +153,12 @@ class _HomeViewState extends ConsumerState<HomeView> {
                               SliverToBoxAdapter(
                                 child:
                                     value?.participationRole ==
-                                        ParticipationRole.user
+                                            ParticipationRole.user &&
+                                        appModules
+                                                .appModules
+                                                .value
+                                                ?.application ==
+                                            true
                                     ? Column(
                                         mainAxisSize: MainAxisSize.min,
                                         crossAxisAlignment:
@@ -235,7 +247,7 @@ class _HomeViewState extends ConsumerState<HomeView> {
                                       return Padding(
                                         padding: EdgeInsets.only(
                                           top: index == 0 ? 12 : 0,
-                                          bottom: isLast ? 0 : 28,
+                                          bottom: isLast ? 0 : 12,
                                         ),
                                         child: PostCard(
                                           post: post,

@@ -32,6 +32,7 @@ class CommentTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final tile = Row(
       crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisAlignment: MainAxisAlignment.start,
       children: [
         _Avatar(name: comment.authorName, url: comment.avatarUrl),
         Gap.w10,
@@ -67,15 +68,20 @@ class CommentTile extends StatelessWidget {
               Gap.h8,
               Row(
                 children: [
-                  LikeChip(
-                    padding: const EdgeInsets.all(8.0),
-                    liked: comment.viewerReacted,
-                    count: comment.likeCount,
-                    onTap: onLike,
-                    iconSize: 12,
-                    fontSize: 11,
-                  ),
                   if (showReplyChip) ...[
+                    LikeChip(
+                      // Key by uid so the animation State stays paired with
+                      // its comment even if the list reorders — otherwise
+                      // _colorTween can be reused across a different reply
+                      // and lock the heart in the wrong colour.
+                      key: ValueKey("like-${comment.uid}"),
+                      padding: const EdgeInsets.all(8.0),
+                      liked: comment.viewerReacted,
+                      count: comment.likeCount,
+                      onTap: onLike,
+                      iconSize: 12,
+                      fontSize: 11,
+                    ),
                     // Gap.w16,
                     _Chip(
                       icon: SvgAssets.messagesBorder,
@@ -88,6 +94,16 @@ class CommentTile extends StatelessWidget {
             ],
           ),
         ),
+        if (!showReplyChip)
+          LikeChip(
+            key: ValueKey("like-${comment.uid}"),
+            padding: const EdgeInsets.all(8.0),
+            liked: comment.viewerReacted,
+            count: comment.likeCount,
+            onTap: onLike,
+            iconSize: 12,
+            fontSize: 11,
+          ),
       ],
     );
     if (onTap == null) return tile;

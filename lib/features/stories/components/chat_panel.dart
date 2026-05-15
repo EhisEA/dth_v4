@@ -1,14 +1,14 @@
 import "package:dth_v4/core/core.dart";
+import "package:dth_v4/data/data.dart";
 import "package:dth_v4/features/stories/components/comment_tile.dart";
 import "package:dth_v4/features/stories/view_model/reel_chat_view_model.dart";
 import "package:dth_v4/widgets/dth_send_button.dart";
 import "package:dth_v4/widgets/widgets.dart";
 import "package:flutter/material.dart";
 import "package:flutter_riverpod/flutter_riverpod.dart";
-import "package:flutter_svg/flutter_svg.dart";
 import "package:flutter_utils/flutter_utils.dart";
 
-class ChatPanel extends ConsumerWidget {
+class ChatPanel extends ConsumerStatefulWidget {
   const ChatPanel({
     super.key,
     required this.reelUid,
@@ -24,10 +24,27 @@ class ChatPanel extends ConsumerWidget {
 
   final double bottomPad;
   final TextEditingController composerController;
+  @override
+  ConsumerState<ConsumerStatefulWidget> createState() => _ChatPanelState();
+}
+
+class _ChatPanelState extends ConsumerState<ChatPanel> {
+  final _focus = FocusNode();
+  bool _isTextfieldFocused = false;
+  @override
+  void initState() {
+    super.initState();
+
+    _focus.addListener(() {
+      setState(() {
+        _isTextfieldFocused = _focus.hasFocus;
+      });
+    });
+  }
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final vm = ref.watch(reelChatViewModelProvider(reelUid));
+  Widget build(BuildContext context) {
+    final vm = ref.watch(reelChatViewModelProvider(widget.reelUid));
     return GestureDetector(
       behavior: HitTestBehavior.opaque,
       onTap: () => FocusScope.of(context).unfocus(),
@@ -36,8 +53,8 @@ class ChatPanel extends ConsumerWidget {
         children: [
           Expanded(
             child: CustomScrollView(
-              controller: scrollController,
-              physics: scrollPhysics,
+              controller: widget.scrollController,
+              physics: widget.scrollPhysics,
               slivers: [
                 SliverToBoxAdapter(child: Gap.h2),
                 SliverPadding(
@@ -62,20 +79,38 @@ class ChatPanel extends ConsumerWidget {
                             ),
                           ],
                         ),
-                        Row(
-                          children: [
-                            AppText.regular(
-                              "Most recent",
-                              fontSize: 12,
-                              color: AppColors.tint25,
+                        PopupMenuButton<CommentSort>(
+                          initialValue: vm.sort,
+                          onSelected: vm.setSort,
+                          tooltip: "Sort",
+                          itemBuilder: (_) => const [
+                            PopupMenuItem(
+                              value: CommentSort.latest,
+                              child: Text("Most recent"),
                             ),
-                            Gap.w4,
-                            SvgPicture.asset(
-                              SvgAssets.downArrow,
-                              width: 14,
-                              height: 14,
+                            PopupMenuItem(
+                              value: CommentSort.oldest,
+                              child: Text("Oldest"),
                             ),
                           ],
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              AppText.regular(
+                                vm.sort == CommentSort.latest
+                                    ? "Most recent"
+                                    : "Oldest",
+                                fontSize: 12,
+                                color: AppColors.tint25,
+                              ),
+                              Gap.w4,
+                              Icon(
+                                Icons.expand_more,
+                                size: 16,
+                                color: AppColors.tint25,
+                              ),
+                            ],
+                          ),
                         ),
                       ],
                     ),
@@ -87,9 +122,9 @@ class ChatPanel extends ConsumerWidget {
             ),
           ),
           Padding(
-            padding: EdgeInsets.fromLTRB(16, 8, 16, bottomPad + 12),
+            padding: EdgeInsets.fromLTRB(16, 8, 16, widget.bottomPad + 12),
             child: ValueListenableBuilder<TextEditingValue>(
-              valueListenable: composerController,
+              valueListenable: widget.composerController,
               builder: (context, value, _) {
                 final hasText = value.text.trim().isNotEmpty;
                 return Row(
@@ -97,13 +132,16 @@ class ChatPanel extends ConsumerWidget {
                   children: [
                     Expanded(
                       child: AppTextField(
-                        controller: composerController,
-                        borderRadius: BorderRadius.circular(24),
+                        controller: widget.composerController,
                         hint: "Drop a banger...",
-                        fillColor: const Color(0xffFAFAFA),
+                        borderRadius: BorderRadius.circular(100),
+                        focusNode: _focus,
+                        fillColor: _isTextfieldFocused
+                            ? AppColors.white
+                            : const Color(0xffF4F4F4),
                         hintColor: AppColors.tint15,
-                        showBorder: false,
-                        enabled: !vm.submitting && reelUid.isNotEmpty,
+                        // showBorder: false,
+                        enabled: !vm.submitting && widget.reelUid.isNotEmpty,
                         minLines: 1,
                         maxLines: 5,
                         keyboardType: TextInputType.multiline,
@@ -131,9 +169,9 @@ class ChatPanel extends ConsumerWidget {
                                   onTap: () async {
                                     if (vm.submitting) return;
                                     final ok = await vm.submit(
-                                      composerController.text,
+                                      widget.composerController.text,
                                     );
-                                    if (ok) composerController.clear();
+                                    if (ok) widget.composerController.clear();
                                   },
                                 ),
                               ],

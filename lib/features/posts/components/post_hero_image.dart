@@ -1,5 +1,3 @@
-import "dart:ui";
-
 import "package:cached_network_image/cached_network_image.dart";
 import "package:dth_v4/core/core.dart";
 import "package:dth_v4/features/posts/views/photo_viewer.dart";
@@ -33,16 +31,6 @@ class _PostHeroImageState extends State<PostHeroImage> {
   void dispose() {
     _controller.dispose();
     super.dispose();
-  }
-
-  void _step(int delta) {
-    final next = _current + delta;
-    if (next < 0 || next >= widget.urls.length) return;
-    _controller.animateToPage(
-      next,
-      duration: const Duration(milliseconds: 280),
-      curve: Curves.easeOut,
-    );
   }
 
   @override
@@ -154,35 +142,6 @@ class _PostHeroImageState extends State<PostHeroImage> {
           ),
         ),
       ],
-    );
-  }
-}
-
-class _ChevronButton extends StatelessWidget {
-  const _ChevronButton({required this.icon, required this.onTap});
-
-  final IconData icon;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    return ClipOval(
-      child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 14, sigmaY: 14),
-        child: Material(
-          color: Color(0xFF101010).withValues(alpha: 0.4),
-          shape: const CircleBorder(),
-          child: InkWell(
-            customBorder: const CircleBorder(),
-            onTap: onTap,
-            child: SizedBox(
-              width: 36,
-              height: 36,
-              child: Icon(icon, color: Colors.white, size: 22),
-            ),
-          ),
-        ),
-      ),
     );
   }
 }

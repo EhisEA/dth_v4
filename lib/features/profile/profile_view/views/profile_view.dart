@@ -44,6 +44,7 @@ class _ProfileViewState extends ConsumerState<ProfileView> {
     return ValueListenableBuilder<UserModel?>(
       valueListenable: userState.user,
       builder: (context, user, _) {
+        final appModules = ref.watch(appModulesStateProvider);
         final role = user?.participationRole ?? ParticipationRole.user;
         return Container(
           padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -83,8 +84,8 @@ class _ProfileViewState extends ConsumerState<ProfileView> {
                         color: AppColors.tint15,
                       ),
                       ContestantPill(user: user),
-                      if (user?.participationRole ==
-                          ParticipationRole.user) ...[
+                      if (user?.participationRole == ParticipationRole.user &&
+                          appModules.appModules.value?.application == true) ...[
                         Gap.h32,
                         ApplicationWidget(
                           participationRole:
@@ -93,6 +94,8 @@ class _ProfileViewState extends ConsumerState<ProfileView> {
                             _navigationService.navigateTo(ApplicationView.path);
                           },
                         ),
+                        Gap.h32,
+                      ] else ...[
                         Gap.h32,
                       ],
                       AppText.medium(

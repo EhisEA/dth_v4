@@ -1,5 +1,3 @@
-import "dart:ui";
-
 import "package:dth_v4/core/core.dart";
 import "package:dth_v4/features/stories/components/chat_panel.dart";
 import "package:dth_v4/features/stories/components/reel_player_controller.dart";
@@ -350,30 +348,6 @@ class _ChatSplitBodyState extends State<ChatSplitBody>
                     colorFilter: const ColorFilter.mode(
                       Colors.white,
                       BlendMode.srcIn,
-                    ),
-                  ),
-                ),
-              ),
-              Positioned(
-                left: 0,
-                right: 0,
-                top: widget.topPad + 48,
-                bottom: sheetH + 8,
-                child: Center(
-                  child: ClipOval(
-                    child: BackdropFilter(
-                      filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
-                      child: Container(
-                        width: 56,
-                        height: 56,
-                        alignment: Alignment.center,
-                        color: Colors.black.withValues(alpha: 0.5),
-                        child: const Icon(
-                          Icons.pause_rounded,
-                          color: Colors.white,
-                          size: 36,
-                        ),
-                      ),
                     ),
                   ),
                 ),

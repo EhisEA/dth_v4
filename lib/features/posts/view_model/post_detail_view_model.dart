@@ -5,7 +5,6 @@ import "package:dth_v4/features/posts/models/post.dart";
 import "package:dth_v4/features/posts/models/post_mapper.dart";
 import "package:dth_v4/features/posts/view_model/comments_cache.dart";
 import "package:dth_v4/features/posts/view_model/posts_cache.dart";
-import "package:dth_v4/widgets/widgets.dart";
 import "package:flutter_riverpod/flutter_riverpod.dart";
 import "package:flutter_utils/flutter_utils.dart";
 
@@ -84,7 +83,12 @@ class PostDetailViewModel extends BaseChangeNotifierViewModel {
     notifyListeners();
     try {
       final result = await _commentRepo.listComments(uid, sort: _sort);
-      final comments = result.items.map(commentFromTimelineComment).toList();
+      final fresh = result.items.map(commentFromTimelineComment);
+      // listComments doesn't reliably return `viewer_reacted` — keep the
+      // cached reaction state (set by the toggle endpoint, the only
+      // authoritative source) so navigating back to this screen doesn't
+      // flip a liked comment back to grey.
+      final comments = mergeViewerReacted(fresh, _commentsCache.get);
       _commentsCache.upsertAll(comments);
       _commentUids = comments.map((c) => c.uid).toList();
       _nextCommentCursor = result.nextCursor;
@@ -108,12 +112,14 @@ class PostDetailViewModel extends BaseChangeNotifierViewModel {
         cursor: _nextCommentCursor,
         sort: _sort,
       );
-      final comments = result.items.map(commentFromTimelineComment).toList();
+      final fresh = result.items.map(commentFromTimelineComment);
+      final comments = mergeViewerReacted(fresh, _commentsCache.get);
       _commentsCache.upsertAll(comments);
       _commentUids = [..._commentUids, ...comments.map((c) => c.uid)];
       _nextCommentCursor = result.nextCursor;
-    } on ApiFailure catch (e) {
-      DthFlushBar.instance.showError(message: e.message, title: "Load more");
+    } on ApiFailure {
+      // Pagination failure — list just doesn't advance; user can scroll
+      // again to retry.
     } finally {
       _loadingMoreComments = false;
       notifyListeners();
@@ -143,8 +149,9 @@ class PostDetailViewModel extends BaseChangeNotifierViewModel {
       _commentUids = [comment.uid, ..._commentUids];
       _bumpPostCommentCount(1);
       return true;
-    } on ApiFailure catch (e) {
-      DthFlushBar.instance.showError(message: e.message, title: "Failed");
+    } on ApiFailure {
+      // Comment didn't appear in the list AND the composer didn't clear —
+      // both signal failure to the user without needing a toast.
       return false;
     } finally {
       _submitting = false;
@@ -177,9 +184,9 @@ class PostDetailViewModel extends BaseChangeNotifierViewModel {
     try {
       final raw = await _postRepo.toggleReaction(uid);
       _postsCache.upsert(postFromTimelinePost(raw));
-    } on ApiFailure catch (e) {
+    } on ApiFailure {
+      // Optimistic rollback above is the user-visible signal — no toast.
       _postsCache.upsert(original);
-      DthFlushBar.instance.showError(message: e.message, title: "Like");
     } finally {
       _postLikePending = false;
       notifyListeners();
@@ -205,16 +212,20 @@ class PostDetailViewModel extends BaseChangeNotifierViewModel {
     try {
       final raw = await _commentRepo.toggleReaction(comment.uid);
       final fresh = commentFromTimelineComment(raw);
+      // Trust the server for aggregate counts only — the toggle endpoint
+      // doesn't always echo `viewer_reacted`, and our parser treats missing
+      // as `false`. Overriding the optimistic flip would flicker the heart
+      // back to grey while the count stayed bumped.
+      final current = _commentsCache.get(comment.uid) ?? comment;
       _commentsCache.upsert(
-        comment.copyWith(
-          viewerReacted: fresh.viewerReacted,
+        current.copyWith(
           likeCount: fresh.likeCount,
           replyCount: fresh.replyCount,
         ),
       );
-    } on ApiFailure catch (e) {
+    } on ApiFailure {
+      // Optimistic rollback above is the user-visible signal — no toast.
       _commentsCache.upsert(comment);
-      DthFlushBar.instance.showError(message: e.message, title: "Like");
     } finally {
       _commentLikesPending.remove(comment.uid);
       notifyListeners();

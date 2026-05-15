@@ -2,7 +2,6 @@ import "package:dth_v4/data/data.dart";
 import "package:dth_v4/features/posts/models/comment.dart";
 import "package:dth_v4/features/posts/models/comment_mapper.dart";
 import "package:dth_v4/features/stories/view_model/reels_cache.dart";
-import "package:dth_v4/widgets/widgets.dart";
 import "package:flutter_riverpod/flutter_riverpod.dart";
 import "package:flutter_utils/flutter_utils.dart";
 
@@ -45,6 +44,11 @@ class ReelChatViewModel extends BaseChangeNotifierViewModel {
   String? _nextCursor;
   bool get hasMore => _nextCursor != null;
 
+  /// Sort applied to the comments list. Mirrors the post detail VM so the
+  /// reel comments behave the same as post comments under the same dropdown.
+  CommentSort _sort = CommentSort.latest;
+  CommentSort get sort => _sort;
+
   /// UI-friendly mirrors of [baseState] / keyed sub-states.
   bool get loading => isBaseBusy;
 
@@ -80,18 +84,21 @@ class ReelChatViewModel extends BaseChangeNotifierViewModel {
     } on ApiFailure catch (e) {
       if (reel == null) {
         changeBaseState(ViewModelState.error(e));
-      } else {
-        // Reel is already cached; treat the refresh failure as non-fatal.
-        DthFlushBar.instance.showError(message: e.message, title: "Reel");
       }
+      // Else: reel is already on screen from the cache — silent refresh.
     }
   }
 
   Future<void> _loadComments() async {
     setState(_commentsKey, const ViewModelState.busy());
     try {
-      final result = await _reelCommentRepo.listComments(reelUid);
-      _comments = result.items.map(commentFromTimelineComment).toList();
+      final result = await _reelCommentRepo.listComments(reelUid, sort: _sort);
+      final fresh = result.items.map(commentFromTimelineComment);
+      // listComments doesn't reliably return `viewer_reacted` — preserve any
+      // reaction we already confirmed via the toggle endpoint so reopening
+      // the sheet doesn't flip liked replies back to grey.
+      final byUid = {for (final c in _comments) c.uid: c};
+      _comments = mergeViewerReacted(fresh, (uid) => byUid[uid]);
       _nextCursor = result.nextCursor;
       setState(_commentsKey, const ViewModelState.idle());
     } on ApiFailure catch (e) {
@@ -106,17 +113,28 @@ class ReelChatViewModel extends BaseChangeNotifierViewModel {
       final result = await _reelCommentRepo.listComments(
         reelUid,
         cursor: _nextCursor,
+        sort: _sort,
       );
-      _comments = [
-        ..._comments,
-        ...result.items.map(commentFromTimelineComment),
-      ];
+      final fresh = result.items.map(commentFromTimelineComment);
+      final byUid = {for (final c in _comments) c.uid: c};
+      _comments = [..._comments, ...mergeViewerReacted(fresh, (uid) => byUid[uid])];
       _nextCursor = result.nextCursor;
       setState(_loadMoreKey, const ViewModelState.idle());
     } on ApiFailure catch (e) {
-      DthFlushBar.instance.showError(message: e.message, title: "Load more");
+      // Pagination failure — list just doesn't advance.
       setState(_loadMoreKey, ViewModelState.error(e));
     }
+  }
+
+  /// Switches the sort order and re-fetches the first page. Matches
+  /// [PostDetailViewModel.setSort].
+  Future<void> setSort(CommentSort next) async {
+    if (next == _sort) return;
+    _sort = next;
+    _comments = const [];
+    _nextCursor = null;
+    notifyListeners();
+    await _loadComments();
   }
 
   /// Posts a new top-level comment on the reel. Returns true on success so the
@@ -132,7 +150,8 @@ class ReelChatViewModel extends BaseChangeNotifierViewModel {
       setState(_submitKey, const ViewModelState.idle());
       return true;
     } on ApiFailure catch (e) {
-      DthFlushBar.instance.showError(message: e.message, title: "Comment");
+      // Comment didn't appear AND the composer didn't clear — both signal
+      // failure without a toast.
       setState(_submitKey, ViewModelState.error(e));
       return false;
     }
@@ -156,16 +175,23 @@ class ReelChatViewModel extends BaseChangeNotifierViewModel {
     try {
       final raw = await _reelCommentRepo.toggleCommentReaction(c.uid);
       final fresh = commentFromTimelineComment(raw);
+      // Trust the server for aggregate counts only — the toggle endpoint
+      // doesn't always echo `viewer_reacted`, and our parser treats missing
+      // as `false`. Overriding the optimistic flip would flicker the heart
+      // back to grey while the count stayed bumped.
+      final current = _comments.firstWhere(
+        (x) => x.uid == c.uid,
+        orElse: () => c,
+      );
       _replace(
-        c.copyWith(
-          viewerReacted: fresh.viewerReacted,
+        current.copyWith(
           likeCount: fresh.likeCount,
           replyCount: fresh.replyCount,
         ),
       );
-    } on ApiFailure catch (e) {
+    } on ApiFailure {
+      // Optimistic rollback above is the user-visible signal — no toast.
       _replace(c);
-      DthFlushBar.instance.showError(message: e.message, title: "Like");
     } finally {
       removeState(key);
     }
@@ -190,9 +216,9 @@ class ReelChatViewModel extends BaseChangeNotifierViewModel {
     try {
       final updated = await _reelCommentRepo.toggleReelReaction(reelUid);
       _reelsCache.upsert(updated);
-    } on ApiFailure catch (e) {
+    } on ApiFailure {
+      // Optimistic rollback above is the user-visible signal — no toast.
       _reelsCache.upsert(current);
-      DthFlushBar.instance.showError(message: e.message, title: "Like");
     } finally {
       removeState(_reelLikeKey);
     }
