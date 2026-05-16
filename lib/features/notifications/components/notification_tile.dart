@@ -23,7 +23,7 @@ class NotificationTile extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             _LeadingAvatar(item: item),
-            Gap.w12,
+            Gap.w16,
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -37,8 +37,8 @@ class NotificationTile extends StatelessWidget {
                         Padding(
                           padding: const EdgeInsets.only(top: 4),
                           child: Container(
-                            width: 8,
-                            height: 8,
+                            width: 6,
+                            height: 6,
                             decoration: BoxDecoration(
                               color: AppColors.redTint35,
                               shape: BoxShape.circle,
@@ -49,7 +49,6 @@ class NotificationTile extends StatelessWidget {
                     ],
                   ),
                   if (item.createdAt.isNotEmpty) ...[
-                    Gap.h4,
                     AppText.regular(
                       item.createdAt,
                       fontSize: 11,
@@ -78,21 +77,7 @@ class _LeadingAvatar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (item.isSystemStyle) {
-      return Container(
-        width: 40,
-        height: 40,
-        alignment: Alignment.center,
-        decoration: BoxDecoration(
-          color: AppColors.primary,
-          shape: BoxShape.circle,
-        ),
-        child: SvgPicture.asset(
-          SvgAssets.homeStar,
-          width: 18,
-          height: 18,
-          colorFilter: const ColorFilter.mode(Colors.white, BlendMode.srcIn),
-        ),
-      );
+      return SvgPicture.asset(SvgAssets.primaryLogo, width: 32, height: 32);
     }
 
     final avatar = item.user?.avatar?.trim() ?? "";
@@ -144,7 +129,7 @@ class _TitleText extends StatelessWidget {
               fontFamily: "Hanken Grotesk",
               fontSize: 14,
               fontWeight: FontWeight.w600,
-              color: AppColors.black,
+              color: AppColors.mainBlack,
               height: 1.3,
             ),
           ),
@@ -155,7 +140,7 @@ class _TitleText extends StatelessWidget {
                 fontFamily: "Hanken Grotesk",
                 fontSize: 14,
                 fontWeight: FontWeight.w400,
-                color: AppColors.blackTint20,
+                color: AppColors.mainBlack,
                 height: 1.3,
               ),
             ),

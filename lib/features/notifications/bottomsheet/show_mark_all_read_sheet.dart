@@ -30,10 +30,9 @@ class _MarkAllReadSheetBody extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final vm = ref.watch(notificationsViewModelProvider);
-    final bottomInset = MediaQuery.paddingOf(sheetContext).bottom;
 
     return Padding(
-      padding: EdgeInsets.fromLTRB(24, 12, 24, 16 + bottomInset),
+      padding: EdgeInsets.fromLTRB(24, 12, 24, 16 + 16),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [

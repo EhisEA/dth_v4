@@ -70,24 +70,7 @@ class _NotificationsViewState extends ConsumerState<NotificationsView> {
                   behavior: HitTestBehavior.opaque,
                   child: Container(
                     margin: const EdgeInsets.only(right: 16),
-                    height: 40,
-                    width: 40,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      border: Border.all(color: const Color(0xffF8F9FC)),
-                    ),
-                    child: FittedBox(
-                      fit: BoxFit.scaleDown,
-                      child: SvgPicture.asset(
-                        SvgAssets.searchActive,
-                        width: 20,
-                        height: 20,
-                        colorFilter: ColorFilter.mode(
-                          AppColors.black,
-                          BlendMode.srcIn,
-                        ),
-                      ),
-                    ),
+                    child: SvgPicture.asset(SvgAssets.notificationsMarkAllRead),
                   ),
                 ),
               ]
@@ -100,6 +83,7 @@ class _NotificationsViewState extends ConsumerState<NotificationsView> {
             child: ListView(
               padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 48),
               children: [
+                Gap.h24,
                 AppText.semiBold(
                   "Could not load notifications",
                   fontSize: 16,
