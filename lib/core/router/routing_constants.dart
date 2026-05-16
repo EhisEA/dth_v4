@@ -51,4 +51,8 @@ class NavigatorRoutes {
   static const String tickets = "/tickets";
   static const String upcomingShows = "/upcoming-shows";
   static const String show = "/show";
+
+  ////////////////NOTIFICATIONS////////////////////
+  ///
+  static const String notifications = "/notifications";
 }

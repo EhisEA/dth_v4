@@ -12,6 +12,10 @@ class ImageAssets {
   static const String ticketEmptyState =
       "$imagePath/empty_state/ticket_empty_state.png";
 
+  /////////////////////NOTIFICATIONS//////////////////////
+  static const String notificationsEmptyState =
+      "$imagePath/empty_state/notifications_empty_state.png";
+
   /////////////////////AUTH//////////////////////
   ///
   static const String authBg1 = "$imagePath/auth/1.png";
@@ -92,6 +96,12 @@ class SvgAssets {
   static const String message = "$svgPath/home/message.svg";
   static const String send2 = "$svgPath/home/send-2.svg";
   static const String homeStar = "$svgPath/home/home_star.svg";
+
+  /////////////////////NOTIFICATIONS//////////////////////
+  static const String notificationsMarkAllRead =
+      "$svgPath/notifications/mark_all_read.svg";
+  static const String notificationsMarkReadConfirm =
+      "$svgPath/notifications/mark_read_confirm.svg";
   static const String send = "$svgPath/home/send.svg";
 
   /////////////////////PROFILE//////////////////////
